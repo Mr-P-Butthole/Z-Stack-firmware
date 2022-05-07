@@ -1,6 +1,6 @@
-From e4018d617d1d7fb3de28fec04c212128ca0afb22 Mon Sep 17 00:00:00 2001
+From 93631bfd7145fe52d04b99588b49b73b881a82bd Mon Sep 17 00:00:00 2001
 From: Koen Kanters <koenkanters94@gmail.com>
-Date: Tue, 7 Dec 2021 20:41:07 +0100
+Date: Sat, 7 May 2022 15:21:01 +0200
 Subject: [PATCH 1/1] Own changes
 
 ---
@@ -8,11 +8,10 @@ Subject: [PATCH 1/1] Own changes
  .../Application/mt/mt_util.c                  | 108 +++++
  .../Application/mt/mt_version.c               |   8 +-
  .../Application/mt/mt_zdo.c                   |   5 +
- .../Stack/Config/preinclude.h                 |  78 ++++
+ .../Stack/Config/preinclude.h                 |  82 ++++
  .../Stack/Config/znp_cnf.opts                 |   2 +
  .../Stack/af/af.c                             |  18 +-
  .../Stack/nwk/nwk_globals.c                   |   8 +-
- .../Stack/nwk/stub_aps.c                      |   1 +
  .../Stack/sys/zglobals.c                      |   6 +-
  .../Stack/zdo/zd_app.c                        |  30 +-
  .../Stack/zdo/zd_object.c                     |  14 +
@@ -29,11 +28,10 @@ Subject: [PATCH 1/1] Own changes
  .../Application/mt/mt_util.c                  | 108 +++++
  .../Application/mt/mt_version.c               |   8 +-
  .../Application/mt/mt_zdo.c                   |   5 +
- .../Stack/Config/preinclude.h                 |  60 +++
+ .../Stack/Config/preinclude.h                 |  64 +++
  .../Stack/Config/znp_cnf.opts                 |   2 +
  .../Stack/af/af.c                             |  18 +-
  .../Stack/nwk/nwk_globals.c                   |   8 +-
- .../Stack/nwk/stub_aps.c                      |   1 +
  .../Stack/sys/zglobals.c                      |   6 +-
  .../Stack/zdo/zd_app.c                        |  30 +-
  .../Stack/zdo/zd_object.c                     |  14 +
@@ -46,11 +44,10 @@ Subject: [PATCH 1/1] Own changes
  .../Application/mt/mt_util.c                  | 108 +++++
  .../Application/mt/mt_version.c               |   8 +-
  .../Application/mt/mt_zdo.c                   |   5 +
- .../Stack/Config/preinclude.h                 |  60 +++
+ .../Stack/Config/preinclude.h                 |  64 +++
  .../Stack/Config/znp_cnf.opts                 |   2 +
  znp_LP_CC2652RB_tirtos_ccs/Stack/af/af.c      |  18 +-
  .../Stack/nwk/nwk_globals.c                   |   8 +-
- .../Stack/nwk/stub_aps.c                      |   1 +
  .../Stack/sys/zglobals.c                      |   6 +-
  znp_LP_CC2652RB_tirtos_ccs/Stack/zdo/zd_app.c |  30 +-
  .../Stack/zdo/zd_object.c                     |  14 +
@@ -59,7 +56,7 @@ Subject: [PATCH 1/1] Own changes
  znp_LP_CC2652RB_tirtos_ccs/app.cfg            |   4 +-
  znp_LP_CC2652RB_tirtos_ccs/cc13x2_cc26x2.cmd  |   6 +-
  znp_LP_CC2652RB_tirtos_ccs/znp.syscfg         |   6 +-
- 55 files changed, 1706 insertions(+), 87 deletions(-)
+ 52 files changed, 1715 insertions(+), 87 deletions(-)
  create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/Config/preinclude.h
  mode change 100644 => 100755 znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/af/af.c
  mode change 100644 => 100755 znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/nwk/nwk_globals.c
@@ -247,14 +244,14 @@ index 9eb8396..d3ab190 100644
   * @fn      MT_UtilAssocFindDevice
   *
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Application/mt/mt_version.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Application/mt/mt_version.c
-index 6a9b760..a21f86d 100644
+index 6a9b760..3245217 100644
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Application/mt/mt_version.c
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20220219
++#define CODE_REVISION_NUMBER 20220507
 +
  /******************************************************************************
   * CONSTANTS
@@ -291,12 +288,16 @@ index 7ee216e..727ba67 100644
  }
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/Config/preinclude.h b/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..3b3e552
+index 0000000..e9c159d
 --- /dev/null
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/Config/preinclude.h
-@@ -0,0 +1,78 @@
+@@ -0,0 +1,82 @@
 +#define MT_SYS_KEY_MANAGEMENT 1
 +#define FEATURE_NVEXID 1
++
++// Increase frame retries
++#define ZMAC_MAX_FRAME_RETRIES 7
++#define NWK_MAX_DATA_RETRIES 4
 +
 +// Increase MAC buffers
 +#undef MAC_CFG_TX_DATA_MAX
@@ -444,18 +445,6 @@ index a0acd95..c8d642e
  
  // 1-255 (0 -> 256) X RTG_TIMER_INTERVAL
  // A known shortcoming is that when a message is enqueued as "hold" for a
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/nwk/stub_aps.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/nwk/stub_aps.c
-index 5b8c6ec..d82fc4e 100644
---- a/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/nwk/stub_aps.c
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/nwk/stub_aps.c
-@@ -477,6 +477,7 @@ static ZStatus_t StubAPS_SetNewChannel( uint8_t channel )
-     ZMacSetReq( ZMacRxOnIdle, &rxOnIdle );
- 
-     channelChangeInProgress = FALSE;
-+    nwk_setStateIdle( FALSE );
- 
-     return ( ZSuccess );
-   }
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/sys/zglobals.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/sys/zglobals.c
 index 706736b..14d5932 100644
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/sys/zglobals.c
@@ -1070,7 +1059,7 @@ index 0000000..00c102a
 +#endif /* include guard */
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_radio_config.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_radio_config.c
 new file mode 100644
-index 0000000..d8a6f96
+index 0000000..da24b6d
 --- /dev/null
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_radio_config.c
 @@ -0,0 +1,385 @@
@@ -1081,8 +1070,8 @@ index 0000000..d8a6f96
 + *  DO NOT EDIT - This file is generated for the CC1352P1F3RGZ
 + *  by the SysConfig tool.
 + *
-+ *  Radio Config module version : 1.12
-+ *  SmartRF Studio data version : 2.24.0
++ *  Radio Config module version : 1.13
++ *  SmartRF Studio data version : 2.25.0
 + */
 +
 +#include "ti_radio_config.h"
@@ -1092,7 +1081,7 @@ index 0000000..d8a6f96
 +// *********************************************************************************
 +//   RF Frontend configuration
 +// *********************************************************************************
-+// RF design based on: LAUNCHXL-CC1352P-2 (CC1352PEM-XD7793-XD24-PA24)
++// RF design based on: LAUNCHXL-CC1352P-2 (LAUNCHXL-CC1352P2_20dBm)
 +
 +// TX Power tables
 +// The RF_TxPowerTable_DEFAULT_PA_ENTRY and RF_TxPowerTable_HIGH_PA_ENTRY macros are defined in RF.h.
@@ -1461,7 +1450,7 @@ index 0000000..d8a6f96
 +
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_radio_config.h b/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_radio_config.h
 new file mode 100644
-index 0000000..13f9295
+index 0000000..148f7c5
 --- /dev/null
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_radio_config.h
 @@ -0,0 +1,83 @@
@@ -1472,8 +1461,8 @@ index 0000000..13f9295
 + *  DO NOT EDIT - This file is generated for the CC1352P1F3RGZ
 + *  by the SysConfig tool.
 + *
-+ *  Radio Config module version : 1.12
-+ *  SmartRF Studio data version : 2.24.0
++ *  Radio Config module version : 1.13
++ *  SmartRF Studio data version : 2.25.0
 + */
 +#ifndef _TI_RADIO_CONFIG_H_
 +#define _TI_RADIO_CONFIG_H_
@@ -1485,12 +1474,12 @@ index 0000000..13f9295
 +#include <ti/drivers/rf/RF.h>
 +
 +/* SmartRF Studio version that the RF data is fetched from */
-+#define SMARTRF_STUDIO_VERSION "2.24.0"
++#define SMARTRF_STUDIO_VERSION "2.25.0"
 +
 +// *********************************************************************************
 +//   RF Frontend configuration
 +// *********************************************************************************
-+// RF design based on: LAUNCHXL-CC1352P-2 (CC1352PEM-XD7793-XD24-PA24)
++// RF design based on: LAUNCHXL-CC1352P-2 (LAUNCHXL-CC1352P2_20dBm)
 +#define LAUNCHXL_CC1352P_2
 +
 +// High-Power Amplifier supported
@@ -1549,12 +1538,12 @@ index 0000000..13f9295
 +
 +#endif // _TI_RADIO_CONFIG_H_
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/znp.syscfg b/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/znp.syscfg
-index 711973d..fb99622 100644
+index 56e8a52..74e858a 100644
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/znp.syscfg
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ccs/znp.syscfg
 @@ -4,6 +4,10 @@
-  * @cliArgs --board "/ti/boards/CC1352P_2_LAUNCHXL" --rtos "tirtos" --product "simplelink_cc13xx_cc26xx_sdk@5.40.00.40"
-  * @versions {"tool":"1.10.0+2163"}
+  * @cliArgs --board "/ti/boards/CC1352P_2_LAUNCHXL" --rtos "tirtos" --product "simplelink_cc13xx_cc26xx_sdk@6.10.00.29"
+  * @versions {"tool":"1.12.0+2406"}
   */
 +scripting.excludeFromBuild("ti_devices_config.c");
 +scripting.excludeFromBuild("ti_radio_config.c");
@@ -1568,7 +1557,7 @@ index 711973d..fb99622 100644
  CCFG.levelBootloaderBackdoor  = "Active low";
  CCFG.forceVddr                = true;
 +CCFG.enableDCDC               = false;
- CCFG.ccfgTemplate.$name       = "ti_devices_CCFGTemplate0";
+ CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
  
  rfdesign.rfDesign = "LAUNCHXL-CC1352P-2";
 @@ -75,8 +80,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
@@ -1767,14 +1756,14 @@ index 9eb8396..d3ab190 100644
   * @fn      MT_UtilAssocFindDevice
   *
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/Application/mt/mt_version.c b/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/Application/mt/mt_version.c
-index 6a9b760..a21f86d 100644
+index 6a9b760..3245217 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/Application/mt/mt_version.c
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20220219
++#define CODE_REVISION_NUMBER 20220507
 +
  /******************************************************************************
   * CONSTANTS
@@ -1811,12 +1800,16 @@ index 7ee216e..26b8d24 100644
  
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/Config/preinclude.h b/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..a19e37a
+index 0000000..2450e06
 --- /dev/null
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/Config/preinclude.h
-@@ -0,0 +1,60 @@
+@@ -0,0 +1,64 @@
 +#define MT_SYS_KEY_MANAGEMENT 1
 +#define FEATURE_NVEXID 1
++
++// Increase frame retries
++#define ZMAC_MAX_FRAME_RETRIES 7
++#define NWK_MAX_DATA_RETRIES 4
 +
 +// Increase MAC buffers
 +#undef MAC_CFG_TX_DATA_MAX
@@ -1942,18 +1935,6 @@ index a0acd95..c8d642e 100644
  
  // 1-255 (0 -> 256) X RTG_TIMER_INTERVAL
  // A known shortcoming is that when a message is enqueued as "hold" for a
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/nwk/stub_aps.c b/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/nwk/stub_aps.c
-index 5b8c6ec..d82fc4e 100644
---- a/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/nwk/stub_aps.c
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/nwk/stub_aps.c
-@@ -477,6 +477,7 @@ static ZStatus_t StubAPS_SetNewChannel( uint8_t channel )
-     ZMacSetReq( ZMacRxOnIdle, &rxOnIdle );
- 
-     channelChangeInProgress = FALSE;
-+    nwk_setStateIdle( FALSE );
- 
-     return ( ZSuccess );
-   }
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/sys/zglobals.c b/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/sys/zglobals.c
 index 706736b..14d5932 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/sys/zglobals.c
@@ -2176,7 +2157,7 @@ index 8dee15b..7967f1e 100755
  #define FLASH_LAST_SIZE         0x2000
  
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/znp.syscfg b/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/znp.syscfg
-index fde0a9a..58f6dcf 100644
+index 7430a81..938b394 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/znp.syscfg
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ccs/znp.syscfg
 @@ -47,6 +47,7 @@ CCFG.enableBootloader         = true;
@@ -2184,7 +2165,7 @@ index fde0a9a..58f6dcf 100644
  CCFG.dioBootloaderBackdoor    = 13;
  CCFG.levelBootloaderBackdoor  = "Active low";
 +CCFG.enableDCDC               = false;
- CCFG.ccfgTemplate.$name       = "ti_devices_CCFGTemplate0";
+ CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
  
  Display1.$hardware                = system.deviceData.board.components.XDS110UART;
 @@ -70,8 +71,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
@@ -2193,8 +2174,8 @@ index fde0a9a..58f6dcf 100644
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
 -NVS1.internalFlash.regionSize = 0x4000;
 -NVS1.internalFlash.regionBase = 0x52000;
-+NVS1.internalFlash.regionBase = 0x50000;
 +NVS1.internalFlash.regionSize = 0x6000;
++NVS1.internalFlash.regionBase = 0x50000;
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
@@ -2383,14 +2364,14 @@ index 9eb8396..d3ab190 100644
   * @fn      MT_UtilAssocFindDevice
   *
 diff --git a/znp_LP_CC2652RB_tirtos_ccs/Application/mt/mt_version.c b/znp_LP_CC2652RB_tirtos_ccs/Application/mt/mt_version.c
-index 6a9b760..a21f86d 100644
+index 6a9b760..3245217 100644
 --- a/znp_LP_CC2652RB_tirtos_ccs/Application/mt/mt_version.c
 +++ b/znp_LP_CC2652RB_tirtos_ccs/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20220219
++#define CODE_REVISION_NUMBER 20220507
 +
  /******************************************************************************
   * CONSTANTS
@@ -2427,12 +2408,16 @@ index 7ee216e..26b8d24 100644
  
 diff --git a/znp_LP_CC2652RB_tirtos_ccs/Stack/Config/preinclude.h b/znp_LP_CC2652RB_tirtos_ccs/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..a19e37a
+index 0000000..2450e06
 --- /dev/null
 +++ b/znp_LP_CC2652RB_tirtos_ccs/Stack/Config/preinclude.h
-@@ -0,0 +1,60 @@
+@@ -0,0 +1,64 @@
 +#define MT_SYS_KEY_MANAGEMENT 1
 +#define FEATURE_NVEXID 1
++
++// Increase frame retries
++#define ZMAC_MAX_FRAME_RETRIES 7
++#define NWK_MAX_DATA_RETRIES 4
 +
 +// Increase MAC buffers
 +#undef MAC_CFG_TX_DATA_MAX
@@ -2558,18 +2543,6 @@ index a0acd95..c8d642e 100644
  
  // 1-255 (0 -> 256) X RTG_TIMER_INTERVAL
  // A known shortcoming is that when a message is enqueued as "hold" for a
-diff --git a/znp_LP_CC2652RB_tirtos_ccs/Stack/nwk/stub_aps.c b/znp_LP_CC2652RB_tirtos_ccs/Stack/nwk/stub_aps.c
-index 5b8c6ec..d82fc4e 100644
---- a/znp_LP_CC2652RB_tirtos_ccs/Stack/nwk/stub_aps.c
-+++ b/znp_LP_CC2652RB_tirtos_ccs/Stack/nwk/stub_aps.c
-@@ -477,6 +477,7 @@ static ZStatus_t StubAPS_SetNewChannel( uint8_t channel )
-     ZMacSetReq( ZMacRxOnIdle, &rxOnIdle );
- 
-     channelChangeInProgress = FALSE;
-+    nwk_setStateIdle( FALSE );
- 
-     return ( ZSuccess );
-   }
 diff --git a/znp_LP_CC2652RB_tirtos_ccs/Stack/sys/zglobals.c b/znp_LP_CC2652RB_tirtos_ccs/Stack/sys/zglobals.c
 index 706736b..14d5932 100644
 --- a/znp_LP_CC2652RB_tirtos_ccs/Stack/sys/zglobals.c
@@ -2792,7 +2765,7 @@ index 8dee15b..7967f1e 100755
  #define FLASH_LAST_SIZE         0x2000
  
 diff --git a/znp_LP_CC2652RB_tirtos_ccs/znp.syscfg b/znp_LP_CC2652RB_tirtos_ccs/znp.syscfg
-index 9158120..d5eb7a5 100644
+index 239734c..58973d9 100644
 --- a/znp_LP_CC2652RB_tirtos_ccs/znp.syscfg
 +++ b/znp_LP_CC2652RB_tirtos_ccs/znp.syscfg
 @@ -48,6 +48,7 @@ CCFG.enableBootloaderBackdoor = true;
@@ -2800,7 +2773,7 @@ index 9158120..d5eb7a5 100644
  CCFG.levelBootloaderBackdoor  = "Active low";
  CCFG.srcClkLF                 = "Derived from HF XOSC";
 +CCFG.enableDCDC               = false;
- CCFG.ccfgTemplate.$name       = "ti_devices_CCFGTemplate0";
+ CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
  
  Display1.$hardware                = system.deviceData.board.components.XDS110UART;
 @@ -71,8 +72,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
@@ -2809,8 +2782,8 @@ index 9158120..d5eb7a5 100644
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
 -NVS1.internalFlash.regionSize = 0x4000;
 -NVS1.internalFlash.regionBase = 0x52000;
-+NVS1.internalFlash.regionBase = 0x50000;
 +NVS1.internalFlash.regionSize = 0x6000;
++NVS1.internalFlash.regionBase = 0x50000;
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
