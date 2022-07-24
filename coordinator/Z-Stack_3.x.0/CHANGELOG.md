@@ -1,6 +1,7 @@
-# 20220507
+# 20220724
 - Increase request retry attempts
-- SimpleLink SDK 6.10.00.29 ([changelog](https://software-dl.ti.com/simplelink/esd/simplelink_cc13xx_cc26xx_sdk/6.10.00.29/exports/changelog.html))
+- Increase routing table sizes
+- SimpleLink SDK 6.10.00.29 ([changelog](https://software-dl.ti.com/simplelink/esd/simplelink_cc13xx_cc26xx_sdk/6.10.00.29/exports/changelog.html)) and SimpleLink SDK 6.20.00.29 ([changelog](https://software-dl.ti.com/simplelink/esd/simplelink_cc13xx_cc26xx_sdk/6.20.00.29/exports/changelog.html))
 
 # 20220219
 - Fix Touchlink crash
