@@ -1,6 +1,6 @@
-From 41916c4f9b203b779f606244cb5be0748a2412fb Mon Sep 17 00:00:00 2001
+From e3218dcb96595529fb5e047084abd0a843dfed4c Mon Sep 17 00:00:00 2001
 From: Koen Kanters <koenkanters94@gmail.com>
-Date: Tue, 25 Jan 2022 19:51:16 +0100
+Date: Thu, 8 Sep 2022 16:44:03 +0200
 Subject: [PATCH 1/1] Own changes
 
 ---
@@ -8,40 +8,46 @@ Subject: [PATCH 1/1] Own changes
  .../Application/zcl_genericapp_data.c         |  22 +-
  .../Stack/Config/f8wrouter.opts               |   2 +
  .../Stack/Config/preinclude.h                 |  49 +++
+ .../Stack/sys/zglobals.c                      |   2 +-
+ .../Stack/zdo/zd_app.c                        |  22 +-
  .../app.cfg                                   |   4 +-
- .../cc13x2_cc26x2.cmd                         |   6 +-
- .../ti_devices_config.c                       | 105 +++++
+ .../cc13x2_cc26x2_ticlang.cmd                 |   4 +-
+ .../ti_devices_config.c                       | 108 +++++
  .../ti_drivers_config.h                       | 274 +++++++++++++
- .../ti_radio_config.c                         | 387 ++++++++++++++++++
+ .../ti_radio_config.c                         | 385 ++++++++++++++++++
  .../ti_radio_config.h                         |  83 ++++
  .../zr_genericapp.syscfg                      |  11 +-
  .../Application/zcl_genericapp.c              |  33 +-
  .../Application/zcl_genericapp_data.c         |  22 +-
  .../Stack/Config/f8wrouter.opts               |   2 +
  .../Stack/Config/preinclude.h                 |  31 ++
+ .../Stack/sys/zglobals.c                      |   2 +-
+ .../Stack/zdo/zd_app.c                        |  22 +-
  .../app.cfg                                   |   4 +-
- .../cc13x2_cc26x2.cmd                         |   6 +-
+ .../cc13x2_cc26x2_ticlang.cmd                 |   4 +-
  .../zr_genericapp.syscfg                      |   7 +-
  .../Application/zcl_genericapp.c              |  33 +-
  .../Application/zcl_genericapp_data.c         |  22 +-
  .../Stack/Config/f8wrouter.opts               |   2 +
  .../Stack/Config/preinclude.h                 |  31 ++
- zr_genericapp_LP_CC2652RB_tirtos_ccs/app.cfg  |   4 +-
- .../cc13x2_cc26x2.cmd                         |   6 +-
+ .../Stack/sys/zglobals.c                      |   2 +-
+ .../Stack/zdo/zd_app.c                        |  22 +-
+ .../app.cfg                                   |   4 +-
+ .../cc13x2_cc26x2_ticlang.cmd                 |   4 +-
  .../zr_genericapp.syscfg                      |   7 +-
- 25 files changed, 1105 insertions(+), 81 deletions(-)
- create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/Config/preinclude.h
- create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_devices_config.c
- create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_drivers_config.h
- create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_radio_config.c
- create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_radio_config.h
- create mode 100644 zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/Config/preinclude.h
- create mode 100644 zr_genericapp_LP_CC2652RB_tirtos_ccs/Stack/Config/preinclude.h
+ 31 files changed, 1133 insertions(+), 120 deletions(-)
+ create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
+ create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_devices_config.c
+ create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_drivers_config.h
+ create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.c
+ create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.h
+ create mode 100644 zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
+ create mode 100644 zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/Config/preinclude.h
 
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/Application/zcl_genericapp.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/Application/zcl_genericapp.c
-index 82a4bec..23788ff 100644
---- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/Application/zcl_genericapp.c
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/Application/zcl_genericapp.c
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp.c
+index 82a4bec..08116b8 100644
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp.c
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp.c
 @@ -53,6 +53,8 @@
   * INCLUDES
   */
@@ -105,16 +111,16 @@ index 82a4bec..23788ff 100644
  }
  
  
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/Application/zcl_genericapp_data.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/Application/zcl_genericapp_data.c
-index c0e473d..1446606 100644
---- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/Application/zcl_genericapp_data.c
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/Application/zcl_genericapp_data.c
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp_data.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp_data.c
+index c0e473d..7fdedb1 100644
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp_data.c
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp_data.c
 @@ -96,6 +96,8 @@ const uint16_t zclGenericApp_identify_clusterRevision = 0x0001;
  const uint8_t zclGenericApp_HWRevision = GENERICAPP_HWVERSION;
  const uint8_t zclGenericApp_ZCLVersion = GENERICAPP_ZCLVERSION;
  const uint8_t zclGenericApp_ManufacturerName[] = { 16, 'T','e','x','a','s','I','n','s','t','r','u','m','e','n','t','s' };
 +const uint8_t zclGenericApp_ModelID[] = { 9, 't','i','.','r','o','u','t','e','r' };
-+const uint8_t zclGenericApp_SwBuildID[] = { 8, '2','0','2','2','0','1','2','5' };
++const uint8_t zclGenericApp_SwBuildID[] = { 8, '2','0','2','2','0','9','0','8' };
  const uint8_t zclGenericApp_PowerSource = POWER_SOURCE_MAINS_1_PHASE;
  uint8_t zclGenericApp_PhysicalEnvironment = PHY_UNSPECIFIED_ENV;
  
@@ -148,22 +154,22 @@ index c0e473d..1446606 100644
    {
      ZCL_CLUSTER_ID_GENERAL_BASIC,
      { // Attribute record
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/Config/f8wrouter.opts b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/Config/f8wrouter.opts
-index b841d60..91eb00e 100644
---- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/Config/f8wrouter.opts
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/Config/f8wrouter.opts
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/f8wrouter.opts b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/f8wrouter.opts
+index b841d60..3308467 100644
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/f8wrouter.opts
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/f8wrouter.opts
 @@ -9,3 +9,5 @@
  -DADDRMGR_NV_SINGLES
  -DBINDINGTABLE_NV_SINGLES
  -DASSOCLIST_NV_SINGLES
 +
-+--preinclude=preinclude.h 
++-include preinclude.h
 \ No newline at end of file
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/Config/preinclude.h b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/Config/preinclude.h
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
 new file mode 100644
 index 0000000..2a92dd1
 --- /dev/null
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/Stack/Config/preinclude.h
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
 @@ -0,0 +1,49 @@
 +// Increase MAC buffers
 +#undef MAC_CFG_TX_DATA_MAX
@@ -214,10 +220,63 @@ index 0000000..2a92dd1
 +#define CONFIG_RF_HIGH_PA                       0x0000005
 +#define SET_CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA  0xfa
 +#endif
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/app.cfg b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/app.cfg
-index 5089a84..146ef06 100644
---- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/app.cfg
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/app.cfg
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
+index 706736b..b813ed7 100644
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
+@@ -225,7 +225,7 @@ uint8_t zgEndDeviceConfiguration = END_DEV_CONFIGURATION;
+ //
+ // NOTICE:  Before enabling Child Aging make sure to review all the related
+ // definitions in this file, especially zgNwkParentInformation.
+-uint8_t zgChildAgingEnable = TRUE;
++uint8_t zgChildAgingEnable = FALSE;
+ 
+ //==========    TouchLink NWK configuration    ===============
+ // Values used by Router when starts a network as initiator
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
+index 1f30180..b4481a1 100644
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
+@@ -441,12 +441,11 @@ uint32_t ZDApp_event_loop( uint8_t task_id, uint32_t events )
+           ZDApp_ChangeState( DEV_ROUTER );
+         }
+ 
+-        if ( zgChildAgingEnable == TRUE )
+-        {
+-          // Once the device has changed its state to a ROUTER set the timer to send
+-          // Parent annce
+-          ZDApp_SetParentAnnceTimer();
+-        }
++        // As we cannot enable child aging as Xiaomi devices will drop off
++        // but we stil want to have the parent announces we always enable it here.
++        // Otherwise some end devices could be unreachable when they changed parent
++        // while the coordinator was powered off.
++        ZDApp_SetParentAnnceTimer();
+       }
+       else
+       {
+@@ -907,12 +906,11 @@ void ZDApp_NetworkStartEvt( void )
+         bdb_reportCommissioningState(BDB_INITIALIZATION,TRUE);
+       }
+ 
+-      if ( zgChildAgingEnable == TRUE )
+-      {
+-        // Once the device has changed its state to a COORDINATOR set the timer to send
+-        // Parent annce
+-        ZDApp_SetParentAnnceTimer();
+-      }
++      // As we cannot enable child aging as Xiaomi devices will drop off
++      // but we stil want to have the parent announces we always enable it here.
++      // Otherwise some end devices could be unreachable when they changed parent
++      // while the coordinator was powered off.
++      ZDApp_SetParentAnnceTimer();
+     }
+     else
+     {
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg
+index 5089a84..b515ead 100644
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg
 @@ -700,7 +700,9 @@ var GateMutexPri = xdc.useModule('ti.sysbios.gates.GateMutexPri');
   */
  var Memory = xdc.useModule('xdc.runtime.Memory');
@@ -229,29 +288,27 @@ index 5089a84..146ef06 100644
  
  // The following will create the #define HEAPMGR_CONFIG. It can then be used by include  <xdc/cfg/global.h>
  Program.global.HEAPMGR_CONFIG = HEAPMGR_CONFIG;
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/cc13x2_cc26x2.cmd b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/cc13x2_cc26x2.cmd
-index 2856ad2..031cfeb 100755
---- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/cc13x2_cc26x2.cmd
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/cc13x2_cc26x2.cmd
-@@ -67,9 +67,9 @@
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
+index e138bb4..66b7965 100755
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
+@@ -66,9 +66,7 @@
+ /* The starting address of the application.  Normally the interrupt vectors  */
  /* must be located at the beginning of the application.                      */
  
- #define FLASH_BASE              0x00000000
--#define FLASH_SIZE              0x52000
--#define FLASH_NV_BASE           0x52000
--#define FLASH_NV_SIZE           0x4000
-+#define FLASH_SIZE              0x50000
-+#define FLASH_NV_BASE           0x50000
-+#define FLASH_NV_SIZE           0x6000
- #define FLASH_LAST_BASE         0x56000
- #define FLASH_LAST_SIZE         0x2000
+-#ifndef NVOCMP_NVPAGES
+-#define NVOCMP_NVPAGES          2
+-#endif
++#define NVOCMP_NVPAGES          3
  
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_devices_config.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_devices_config.c
+ #define FLASH_BASE              0x00000000
+ #define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_devices_config.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_devices_config.c
 new file mode 100644
-index 0000000..577e5a0
+index 0000000..c80aafd
 --- /dev/null
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_devices_config.c
-@@ -0,0 +1,105 @@
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_devices_config.c
+@@ -0,0 +1,108 @@
 +/*
 + *  ======== ti_devices_config.c ========
 + *  Customer Configuration for CC26XX and CC13XX devices.
@@ -323,8 +380,11 @@ index 0000000..577e5a0
 +// Debug access settings
 +//#####################################
 +
-+// Disable unlocking of TI FA option.
++// Disable unlocking of TI Failure Analysis option
 +#define SET_CCFG_CCFG_TI_OPTIONS_TI_FA_ENABLE           0x00
++
++// Disable customer key CKEY0-3 to be XOR'ed with TI FA option unlock key
++#define SET_CCFG_CCFG_TI_OPTIONS_C_FA_DIS               0xC5
 +
 +// Access enabled if also enabled in FCFG
 +#define SET_CCFG_CCFG_TAP_DAP_0_CPU_DAP_ENABLE          0xC5
@@ -357,11 +417,11 @@ index 0000000..577e5a0
 +
 +#include <ti/devices/DeviceFamily.h>
 +#include DeviceFamily_constructPath(startup_files/ccfg.c)
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_drivers_config.h b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_drivers_config.h
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_drivers_config.h b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_drivers_config.h
 new file mode 100644
 index 0000000..6a57a31
 --- /dev/null
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_drivers_config.h
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_drivers_config.h
 @@ -0,0 +1,274 @@
 +/*
 + *  ======== ti_drivers_config.h ========
@@ -637,12 +697,12 @@ index 0000000..6a57a31
 +#endif
 +
 +#endif /* include guard */
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_radio_config.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_radio_config.c
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.c
 new file mode 100644
-index 0000000..c23e14a
+index 0000000..6095b19
 --- /dev/null
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_radio_config.c
-@@ -0,0 +1,387 @@
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.c
+@@ -0,0 +1,385 @@
 +/*
 + *  ======== ti_radio_config.c ========
 + *  Configured RadioConfig module definitions
@@ -650,8 +710,8 @@ index 0000000..c23e14a
 + *  DO NOT EDIT - This file is generated for the CC1352P1F3RGZ
 + *  by the SysConfig tool.
 + *
-+ *  Radio Config module version : 1.11
-+ *  SmartRF Studio data version : 2.23.0
++ *  Radio Config module version : 1.14
++ *  SmartRF Studio data version : 2.26.0
 + */
 +
 +#include "ti_radio_config.h"
@@ -661,7 +721,7 @@ index 0000000..c23e14a
 +// *********************************************************************************
 +//   RF Frontend configuration
 +// *********************************************************************************
-+// RF design based on: LAUNCHXL-CC1352P-2 (CC1352PEM-XD4251-XD24-PA24_10dBm)
++// RF design based on: LAUNCHXL-CC1352P-2 (LAUNCHXL-CC1352P2_20dBm)
 +
 +// TX Power tables
 +// The RF_TxPowerTable_DEFAULT_PA_ENTRY and RF_TxPowerTable_HIGH_PA_ENTRY macros are defined in RF.h.
@@ -674,27 +734,29 @@ index 0000000..c23e14a
 +// 868 MHz, 13 dBm
 +RF_TxPowerTable_Entry txPowerTable_868_pa13[TXPOWERTABLE_868_PA13_SIZE] =
 +{
-+    {-20, RF_TxPowerTable_DEFAULT_PA_ENTRY(0, 3, 0, 2) },
-+    {-15, RF_TxPowerTable_DEFAULT_PA_ENTRY(1, 3, 0, 3) },
-+    {-10, RF_TxPowerTable_DEFAULT_PA_ENTRY(2, 3, 0, 5) },
-+    {-5, RF_TxPowerTable_DEFAULT_PA_ENTRY(4, 3, 0, 5) },
-+    {0, RF_TxPowerTable_DEFAULT_PA_ENTRY(8, 3, 0, 8) },
-+    {1, RF_TxPowerTable_DEFAULT_PA_ENTRY(9, 3, 0, 9) },
-+    {2, RF_TxPowerTable_DEFAULT_PA_ENTRY(10, 3, 0, 9) },
-+    {3, RF_TxPowerTable_DEFAULT_PA_ENTRY(11, 3, 0, 10) },
-+    {4, RF_TxPowerTable_DEFAULT_PA_ENTRY(13, 3, 0, 11) },
-+    {5, RF_TxPowerTable_DEFAULT_PA_ENTRY(14, 3, 0, 14) },
-+    {6, RF_TxPowerTable_DEFAULT_PA_ENTRY(17, 3, 0, 16) },
-+    {7, RF_TxPowerTable_DEFAULT_PA_ENTRY(20, 3, 0, 19) },
-+    {8, RF_TxPowerTable_DEFAULT_PA_ENTRY(24, 3, 0, 22) },
-+    {9, RF_TxPowerTable_DEFAULT_PA_ENTRY(28, 3, 0, 31) },
-+    {10, RF_TxPowerTable_DEFAULT_PA_ENTRY(18, 2, 0, 31) },
-+    {11, RF_TxPowerTable_DEFAULT_PA_ENTRY(26, 2, 0, 51) },
-+    {12, RF_TxPowerTable_DEFAULT_PA_ENTRY(16, 0, 0, 82) },
++    {-20, RF_TxPowerTable_DEFAULT_PA_ENTRY(0, 3, 0, 2) }, // 0x04C0
++    {-15, RF_TxPowerTable_DEFAULT_PA_ENTRY(1, 3, 0, 3) }, // 0x06C1
++    {-10, RF_TxPowerTable_DEFAULT_PA_ENTRY(2, 3, 0, 5) }, // 0x0AC2
++    {-7, RF_TxPowerTable_DEFAULT_PA_ENTRY(3, 3, 0, 5) }, // 0x0AC3
++    {-5, RF_TxPowerTable_DEFAULT_PA_ENTRY(4, 3, 0, 5) }, // 0x0AC4
++    {-3, RF_TxPowerTable_DEFAULT_PA_ENTRY(5, 3, 0, 6) }, // 0x0CC5
++    {0, RF_TxPowerTable_DEFAULT_PA_ENTRY(8, 3, 0, 8) }, // 0x10C8
++    {1, RF_TxPowerTable_DEFAULT_PA_ENTRY(9, 3, 0, 9) }, // 0x12C9
++    {2, RF_TxPowerTable_DEFAULT_PA_ENTRY(10, 3, 0, 9) }, // 0x12CA
++    {3, RF_TxPowerTable_DEFAULT_PA_ENTRY(11, 3, 0, 10) }, // 0x14CB
++    {4, RF_TxPowerTable_DEFAULT_PA_ENTRY(13, 3, 0, 11) }, // 0x16CD
++    {5, RF_TxPowerTable_DEFAULT_PA_ENTRY(14, 3, 0, 14) }, // 0x1CCE
++    {6, RF_TxPowerTable_DEFAULT_PA_ENTRY(17, 3, 0, 16) }, // 0x20D1
++    {7, RF_TxPowerTable_DEFAULT_PA_ENTRY(20, 3, 0, 19) }, // 0x26D4
++    {8, RF_TxPowerTable_DEFAULT_PA_ENTRY(24, 3, 0, 22) }, // 0x2CD8
++    {9, RF_TxPowerTable_DEFAULT_PA_ENTRY(28, 3, 0, 31) }, // 0x3EDC
++    {10, RF_TxPowerTable_DEFAULT_PA_ENTRY(18, 2, 0, 31) }, // 0x3E92
++    {11, RF_TxPowerTable_DEFAULT_PA_ENTRY(26, 2, 0, 51) }, // 0x669A
++    {12, RF_TxPowerTable_DEFAULT_PA_ENTRY(16, 0, 0, 82) }, // 0xA410
 +    // The original PA value (12.5 dBm) has been rounded to an integer value.
-+    {13, RF_TxPowerTable_DEFAULT_PA_ENTRY(36, 0, 0, 89) },
++    {13, RF_TxPowerTable_DEFAULT_PA_ENTRY(36, 0, 0, 89) }, // 0xB224
 +    // This setting requires CCFG_FORCE_VDDR_HH = 1.
-+    {14, RF_TxPowerTable_DEFAULT_PA_ENTRY(63, 0, 1, 0) },
++    {14, RF_TxPowerTable_DEFAULT_PA_ENTRY(63, 0, 1, 0) }, // 0x013F
 +    RF_TxPowerTable_TERMINATION_ENTRY
 +};
 +
@@ -702,42 +764,42 @@ index 0000000..c23e14a
 +// 2400 MHz, 5 dBm
 +RF_TxPowerTable_Entry txPowerTable_2400_pa5[TXPOWERTABLE_2400_PA5_SIZE] =
 +{
-+    {-20, RF_TxPowerTable_DEFAULT_PA_ENTRY(6, 3, 0, 2) },
-+    {-18, RF_TxPowerTable_DEFAULT_PA_ENTRY(8, 3, 0, 3) },
-+    {-15, RF_TxPowerTable_DEFAULT_PA_ENTRY(10, 3, 0, 3) },
-+    {-12, RF_TxPowerTable_DEFAULT_PA_ENTRY(12, 3, 0, 5) },
-+    {-10, RF_TxPowerTable_DEFAULT_PA_ENTRY(15, 3, 0, 5) },
-+    {-9, RF_TxPowerTable_DEFAULT_PA_ENTRY(16, 3, 0, 5) },
-+    {-6, RF_TxPowerTable_DEFAULT_PA_ENTRY(20, 3, 0, 8) },
-+    {-5, RF_TxPowerTable_DEFAULT_PA_ENTRY(22, 3, 0, 9) },
-+    {-3, RF_TxPowerTable_DEFAULT_PA_ENTRY(19, 2, 0, 12) },
-+    {0, RF_TxPowerTable_DEFAULT_PA_ENTRY(19, 1, 0, 20) },
-+    {1, RF_TxPowerTable_DEFAULT_PA_ENTRY(22, 1, 0, 20) },
-+    {2, RF_TxPowerTable_DEFAULT_PA_ENTRY(25, 1, 0, 25) },
-+    {3, RF_TxPowerTable_DEFAULT_PA_ENTRY(29, 1, 0, 28) },
-+    {4, RF_TxPowerTable_DEFAULT_PA_ENTRY(35, 1, 0, 39) },
-+    {5, RF_TxPowerTable_DEFAULT_PA_ENTRY(23, 0, 0, 57) },
++    {-20, RF_TxPowerTable_DEFAULT_PA_ENTRY(6, 3, 0, 2) }, // 0x04C6
++    {-18, RF_TxPowerTable_DEFAULT_PA_ENTRY(8, 3, 0, 3) }, // 0x06C8
++    {-15, RF_TxPowerTable_DEFAULT_PA_ENTRY(10, 3, 0, 3) }, // 0x06CA
++    {-12, RF_TxPowerTable_DEFAULT_PA_ENTRY(12, 3, 0, 5) }, // 0x0ACC
++    {-10, RF_TxPowerTable_DEFAULT_PA_ENTRY(15, 3, 0, 5) }, // 0x0ACF
++    {-9, RF_TxPowerTable_DEFAULT_PA_ENTRY(16, 3, 0, 5) }, // 0x0AD0
++    {-6, RF_TxPowerTable_DEFAULT_PA_ENTRY(20, 3, 0, 8) }, // 0x10D4
++    {-5, RF_TxPowerTable_DEFAULT_PA_ENTRY(22, 3, 0, 9) }, // 0x12D6
++    {-3, RF_TxPowerTable_DEFAULT_PA_ENTRY(19, 2, 0, 12) }, // 0x1893
++    {0, RF_TxPowerTable_DEFAULT_PA_ENTRY(19, 1, 0, 20) }, // 0x2853
++    {1, RF_TxPowerTable_DEFAULT_PA_ENTRY(22, 1, 0, 20) }, // 0x2856
++    {2, RF_TxPowerTable_DEFAULT_PA_ENTRY(25, 1, 0, 25) }, // 0x3259
++    {3, RF_TxPowerTable_DEFAULT_PA_ENTRY(29, 1, 0, 28) }, // 0x385D
++    {4, RF_TxPowerTable_DEFAULT_PA_ENTRY(35, 1, 0, 39) }, // 0x4E63
++    {5, RF_TxPowerTable_DEFAULT_PA_ENTRY(23, 0, 0, 57) }, // 0x7217
 +    RF_TxPowerTable_TERMINATION_ENTRY
 +};
 +
 +// 2400 MHz, 5 + 20 dBm
 +RF_TxPowerTable_Entry txPowerTable_2400_pa5_20[TXPOWERTABLE_2400_PA5_20_SIZE] =
 +{
-+    {-20, RF_TxPowerTable_DEFAULT_PA_ENTRY(6, 3, 0, 2) },
-+    {-18, RF_TxPowerTable_DEFAULT_PA_ENTRY(8, 3, 0, 3) },
-+    {-15, RF_TxPowerTable_DEFAULT_PA_ENTRY(10, 3, 0, 3) },
-+    {-12, RF_TxPowerTable_DEFAULT_PA_ENTRY(12, 3, 0, 5) },
-+    {-10, RF_TxPowerTable_DEFAULT_PA_ENTRY(15, 3, 0, 5) },
-+    {-9, RF_TxPowerTable_DEFAULT_PA_ENTRY(16, 3, 0, 5) },
-+    {-6, RF_TxPowerTable_DEFAULT_PA_ENTRY(20, 3, 0, 8) },
-+    {-5, RF_TxPowerTable_DEFAULT_PA_ENTRY(22, 3, 0, 9) },
-+    {-3, RF_TxPowerTable_DEFAULT_PA_ENTRY(19, 2, 0, 12) },
-+    {0, RF_TxPowerTable_DEFAULT_PA_ENTRY(19, 1, 0, 20) },
-+    {1, RF_TxPowerTable_DEFAULT_PA_ENTRY(22, 1, 0, 20) },
-+    {2, RF_TxPowerTable_DEFAULT_PA_ENTRY(25, 1, 0, 25) },
-+    {3, RF_TxPowerTable_DEFAULT_PA_ENTRY(29, 1, 0, 28) },
-+    {4, RF_TxPowerTable_DEFAULT_PA_ENTRY(35, 1, 0, 39) },
-+    {5, RF_TxPowerTable_DEFAULT_PA_ENTRY(23, 0, 0, 57) },
++    {-20, RF_TxPowerTable_DEFAULT_PA_ENTRY(6, 3, 0, 2) }, // 0x04C6
++    {-18, RF_TxPowerTable_DEFAULT_PA_ENTRY(8, 3, 0, 3) }, // 0x06C8
++    {-15, RF_TxPowerTable_DEFAULT_PA_ENTRY(10, 3, 0, 3) }, // 0x06CA
++    {-12, RF_TxPowerTable_DEFAULT_PA_ENTRY(12, 3, 0, 5) }, // 0x0ACC
++    {-10, RF_TxPowerTable_DEFAULT_PA_ENTRY(15, 3, 0, 5) }, // 0x0ACF
++    {-9, RF_TxPowerTable_DEFAULT_PA_ENTRY(16, 3, 0, 5) }, // 0x0AD0
++    {-6, RF_TxPowerTable_DEFAULT_PA_ENTRY(20, 3, 0, 8) }, // 0x10D4
++    {-5, RF_TxPowerTable_DEFAULT_PA_ENTRY(22, 3, 0, 9) }, // 0x12D6
++    {-3, RF_TxPowerTable_DEFAULT_PA_ENTRY(19, 2, 0, 12) }, // 0x1893
++    {0, RF_TxPowerTable_DEFAULT_PA_ENTRY(19, 1, 0, 20) }, // 0x2853
++    {1, RF_TxPowerTable_DEFAULT_PA_ENTRY(22, 1, 0, 20) }, // 0x2856
++    {2, RF_TxPowerTable_DEFAULT_PA_ENTRY(25, 1, 0, 25) }, // 0x3259
++    {3, RF_TxPowerTable_DEFAULT_PA_ENTRY(29, 1, 0, 28) }, // 0x385D
++    {4, RF_TxPowerTable_DEFAULT_PA_ENTRY(35, 1, 0, 39) }, // 0x4E63
++    {5, RF_TxPowerTable_DEFAULT_PA_ENTRY(23, 0, 0, 57) }, // 0x7217
 +
 +    // CUSTOM: allow transmit power 6 - 13 dbm
 +    {6, .value.rawValue = (0x144f2a), .value.paType = RF_TxPowerTable_HighPA },
@@ -749,13 +811,13 @@ index 0000000..c23e14a
 +    {12, .value.rawValue = (0x3f27cc), .value.paType = RF_TxPowerTable_HighPA },
 +    {13, .value.rawValue = (0x3fc3cd), .value.paType = RF_TxPowerTable_HighPA },
 +
-+    {14, RF_TxPowerTable_HIGH_PA_ENTRY(22, 3, 1, 19, 27) },
-+    {15, RF_TxPowerTable_HIGH_PA_ENTRY(26, 3, 1, 23, 27) },
-+    {16, RF_TxPowerTable_HIGH_PA_ENTRY(30, 3, 1, 28, 27) },
-+    {17, RF_TxPowerTable_HIGH_PA_ENTRY(37, 3, 1, 39, 27) },
-+    {18, RF_TxPowerTable_HIGH_PA_ENTRY(32, 3, 1, 35, 48) },
-+    {19, RF_TxPowerTable_HIGH_PA_ENTRY(34, 3, 1, 48, 63) },
-+    {20, RF_TxPowerTable_HIGH_PA_ENTRY(53, 3, 1, 58, 63) },
++    {14, RF_TxPowerTable_HIGH_PA_ENTRY(22, 3, 1, 19, 27) }, // 0x1B27D6
++    {15, RF_TxPowerTable_HIGH_PA_ENTRY(26, 3, 1, 23, 27) }, // 0x1B2FDA
++    {16, RF_TxPowerTable_HIGH_PA_ENTRY(30, 3, 1, 28, 27) }, // 0x1B39DE
++    {17, RF_TxPowerTable_HIGH_PA_ENTRY(37, 3, 1, 39, 27) }, // 0x1B4FE5
++    {18, RF_TxPowerTable_HIGH_PA_ENTRY(32, 3, 1, 35, 48) }, // 0x3047E0
++    {19, RF_TxPowerTable_HIGH_PA_ENTRY(34, 3, 1, 48, 63) }, // 0x3F61E2
++    {20, RF_TxPowerTable_HIGH_PA_ENTRY(53, 3, 1, 58, 63) }, // 0x3F75F5
 +    RF_TxPowerTable_TERMINATION_ENTRY
 +};
 +
@@ -807,8 +869,6 @@ index 0000000..c23e14a
 +    (uint32_t)0x050206C3,
 +    // Set TXRX pin to 0 in RX and high impedance in idle/TX. 
 +    HW_REG_OVERRIDE(0x60A8,0x0401),
-+    // Tx: Set DCDC settings IPEAK=3, dither = off
-+    (uint32_t)0x00F388D3,
 +    (uint32_t)0xFFFFFFFF
 +};
 +
@@ -827,8 +887,6 @@ index 0000000..c23e14a
 +    (uint32_t)0x010206C3,
 +    // Set TXRX pin to 0 in RX/TX and high impedance in idle. 
 +    HW_REG_OVERRIDE(0x60A8,0x0001),
-+    // Tx: Set DCDC settings IPEAK=7, dither = off
-+    (uint32_t)0x00F788D3,
 +    (uint32_t)0xFFFFFFFF
 +};
 +
@@ -1030,11 +1088,11 @@ index 0000000..c23e14a
 +};
 +
 +
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_radio_config.h b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_radio_config.h
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.h b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.h
 new file mode 100644
-index 0000000..9d58da3
+index 0000000..940d2a5
 --- /dev/null
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/ti_radio_config.h
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.h
 @@ -0,0 +1,83 @@
 +/*
 + *  ======== ti_radio_config.h ========
@@ -1043,8 +1101,8 @@ index 0000000..9d58da3
 + *  DO NOT EDIT - This file is generated for the CC1352P1F3RGZ
 + *  by the SysConfig tool.
 + *
-+ *  Radio Config module version : 1.11
-+ *  SmartRF Studio data version : 2.23.0
++ *  Radio Config module version : 1.14
++ *  SmartRF Studio data version : 2.26.0
 + */
 +#ifndef _TI_RADIO_CONFIG_H_
 +#define _TI_RADIO_CONFIG_H_
@@ -1056,12 +1114,12 @@ index 0000000..9d58da3
 +#include <ti/drivers/rf/RF.h>
 +
 +/* SmartRF Studio version that the RF data is fetched from */
-+#define SMARTRF_STUDIO_VERSION "2.23.0"
++#define SMARTRF_STUDIO_VERSION "2.26.0"
 +
 +// *********************************************************************************
 +//   RF Frontend configuration
 +// *********************************************************************************
-+// RF design based on: LAUNCHXL-CC1352P-2 (CC1352PEM-XD4251-XD24-PA24_10dBm)
++// RF design based on: LAUNCHXL-CC1352P-2 (LAUNCHXL-CC1352P2_20dBm)
 +#define LAUNCHXL_CC1352P_2
 +
 +// High-Power Amplifier supported
@@ -1078,7 +1136,7 @@ index 0000000..9d58da3
 +#define SUPPORT_FREQBAND_2400
 +
 +// TX power table size definitions
-+#define TXPOWERTABLE_868_PA13_SIZE 20 // 868 MHz, 13 dBm
++#define TXPOWERTABLE_868_PA13_SIZE 22 // 868 MHz, 13 dBm
 +#define TXPOWERTABLE_2400_PA5_SIZE 16 // 2400 MHz, 5 dBm
 +// CUSTOM: account for extra entities in ti_radio_config.c txPowerTable_2400_pa5_20
 +#define TXPOWERTABLE_2400_PA5_20_SIZE 31 // 2400 MHz, 5 + 20 dBm
@@ -1119,13 +1177,13 @@ index 0000000..9d58da3
 +extern uint32_t pOverrides_ieee154Tx20[];
 +
 +#endif // _TI_RADIO_CONFIG_H_
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/zr_genericapp.syscfg b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/zr_genericapp.syscfg
-index 3a3068f..b356b04 100644
---- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/zr_genericapp.syscfg
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ccs/zr_genericapp.syscfg
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/zr_genericapp.syscfg b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/zr_genericapp.syscfg
+index 1c8499b..d31ed10 100644
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/zr_genericapp.syscfg
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/zr_genericapp.syscfg
 @@ -4,6 +4,10 @@
-  * @cliArgs --board "/ti/boards/CC1352P_2_LAUNCHXL" --rtos "tirtos" --product "simplelink_cc13xx_cc26xx_sdk@5.30.01.01"
-  * @versions {"tool":"1.10.0+2163"}
+  * @cliArgs --board "/ti/boards/CC1352P_2_LAUNCHXL" --rtos "tirtos" --product "simplelink_cc13xx_cc26xx_sdk@6.20.00.29"
+  * @versions {"tool":"1.13.0+2553"}
   */
 +scripting.excludeFromBuild("ti_devices_config.c");
 +scripting.excludeFromBuild("ti_radio_config.c");
@@ -1139,7 +1197,7 @@ index 3a3068f..b356b04 100644
  CCFG.levelBootloaderBackdoor  = "Active low";
  CCFG.forceVddr                = true;
 +CCFG.enableDCDC               = false;
- CCFG.ccfgTemplate.$name       = "ti_devices_CCFGTemplate0";
+ CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
  
  rfdesign.rfDesign = "LAUNCHXL-CC1352P-2";
 @@ -72,8 +77,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
@@ -1162,10 +1220,10 @@ index 3a3068f..b356b04 100644
  zstack.rf.radioConfig.$name                  = "ti_devices_radioconfig_settings_ieee_15_40";
  zstack.rf.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
  zstack.rf.coexSettings.$name                 = "ti_zstack_rf_zstack_coex_mod0";
-diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/Application/zcl_genericapp.c b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/Application/zcl_genericapp.c
-index 82a4bec..23788ff 100644
---- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/Application/zcl_genericapp.c
-+++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/Application/zcl_genericapp.c
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp.c b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp.c
+index 82a4bec..08116b8 100644
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp.c
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp.c
 @@ -53,6 +53,8 @@
   * INCLUDES
   */
@@ -1229,16 +1287,16 @@ index 82a4bec..23788ff 100644
  }
  
  
-diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/Application/zcl_genericapp_data.c b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/Application/zcl_genericapp_data.c
-index c0e473d..1446606 100644
---- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/Application/zcl_genericapp_data.c
-+++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/Application/zcl_genericapp_data.c
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp_data.c b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp_data.c
+index c0e473d..7fdedb1 100644
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp_data.c
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp_data.c
 @@ -96,6 +96,8 @@ const uint16_t zclGenericApp_identify_clusterRevision = 0x0001;
  const uint8_t zclGenericApp_HWRevision = GENERICAPP_HWVERSION;
  const uint8_t zclGenericApp_ZCLVersion = GENERICAPP_ZCLVERSION;
  const uint8_t zclGenericApp_ManufacturerName[] = { 16, 'T','e','x','a','s','I','n','s','t','r','u','m','e','n','t','s' };
 +const uint8_t zclGenericApp_ModelID[] = { 9, 't','i','.','r','o','u','t','e','r' };
-+const uint8_t zclGenericApp_SwBuildID[] = { 8, '2','0','2','2','0','1','2','5' };
++const uint8_t zclGenericApp_SwBuildID[] = { 8, '2','0','2','2','0','9','0','8' };
  const uint8_t zclGenericApp_PowerSource = POWER_SOURCE_MAINS_1_PHASE;
  uint8_t zclGenericApp_PhysicalEnvironment = PHY_UNSPECIFIED_ENV;
  
@@ -1272,22 +1330,22 @@ index c0e473d..1446606 100644
    {
      ZCL_CLUSTER_ID_GENERAL_BASIC,
      { // Attribute record
-diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/Config/f8wrouter.opts b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/Config/f8wrouter.opts
-index b841d60..91eb00e 100644
---- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/Config/f8wrouter.opts
-+++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/Config/f8wrouter.opts
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/f8wrouter.opts b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/f8wrouter.opts
+index b841d60..3308467 100644
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/f8wrouter.opts
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/f8wrouter.opts
 @@ -9,3 +9,5 @@
  -DADDRMGR_NV_SINGLES
  -DBINDINGTABLE_NV_SINGLES
  -DASSOCLIST_NV_SINGLES
 +
-+--preinclude=preinclude.h 
++-include preinclude.h
 \ No newline at end of file
-diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/Config/preinclude.h b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/Config/preinclude.h
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
 new file mode 100644
 index 0000000..8a7300b
 --- /dev/null
-+++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/Stack/Config/preinclude.h
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
 @@ -0,0 +1,31 @@
 +// Increase MAC buffers
 +#undef MAC_CFG_TX_DATA_MAX
@@ -1320,10 +1378,63 @@ index 0000000..8a7300b
 +#define DEFAULT_ROUTE_REQUEST_RADIUS 8
 +#define ZDNWKMGR_MIN_TRANSMISSIONS 0
 +#define ROUTE_DISCOVERY_TIME 13
-diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/app.cfg b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/app.cfg
-index 5089a84..146ef06 100644
---- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/app.cfg
-+++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/app.cfg
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
+index 706736b..b813ed7 100644
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
+@@ -225,7 +225,7 @@ uint8_t zgEndDeviceConfiguration = END_DEV_CONFIGURATION;
+ //
+ // NOTICE:  Before enabling Child Aging make sure to review all the related
+ // definitions in this file, especially zgNwkParentInformation.
+-uint8_t zgChildAgingEnable = TRUE;
++uint8_t zgChildAgingEnable = FALSE;
+ 
+ //==========    TouchLink NWK configuration    ===============
+ // Values used by Router when starts a network as initiator
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
+index 1f30180..b4481a1 100644
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
+@@ -441,12 +441,11 @@ uint32_t ZDApp_event_loop( uint8_t task_id, uint32_t events )
+           ZDApp_ChangeState( DEV_ROUTER );
+         }
+ 
+-        if ( zgChildAgingEnable == TRUE )
+-        {
+-          // Once the device has changed its state to a ROUTER set the timer to send
+-          // Parent annce
+-          ZDApp_SetParentAnnceTimer();
+-        }
++        // As we cannot enable child aging as Xiaomi devices will drop off
++        // but we stil want to have the parent announces we always enable it here.
++        // Otherwise some end devices could be unreachable when they changed parent
++        // while the coordinator was powered off.
++        ZDApp_SetParentAnnceTimer();
+       }
+       else
+       {
+@@ -907,12 +906,11 @@ void ZDApp_NetworkStartEvt( void )
+         bdb_reportCommissioningState(BDB_INITIALIZATION,TRUE);
+       }
+ 
+-      if ( zgChildAgingEnable == TRUE )
+-      {
+-        // Once the device has changed its state to a COORDINATOR set the timer to send
+-        // Parent annce
+-        ZDApp_SetParentAnnceTimer();
+-      }
++      // As we cannot enable child aging as Xiaomi devices will drop off
++      // but we stil want to have the parent announces we always enable it here.
++      // Otherwise some end devices could be unreachable when they changed parent
++      // while the coordinator was powered off.
++      ZDApp_SetParentAnnceTimer();
+     }
+     else
+     {
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg
+index 5089a84..b515ead 100644
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg
 @@ -700,7 +700,9 @@ var GateMutexPri = xdc.useModule('ti.sysbios.gates.GateMutexPri');
   */
  var Memory = xdc.useModule('xdc.runtime.Memory');
@@ -1335,33 +1446,31 @@ index 5089a84..146ef06 100644
  
  // The following will create the #define HEAPMGR_CONFIG. It can then be used by include  <xdc/cfg/global.h>
  Program.global.HEAPMGR_CONFIG = HEAPMGR_CONFIG;
-diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/cc13x2_cc26x2.cmd b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/cc13x2_cc26x2.cmd
-index 2856ad2..031cfeb 100755
---- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/cc13x2_cc26x2.cmd
-+++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/cc13x2_cc26x2.cmd
-@@ -67,9 +67,9 @@
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
+index e138bb4..66b7965 100755
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
+@@ -66,9 +66,7 @@
+ /* The starting address of the application.  Normally the interrupt vectors  */
  /* must be located at the beginning of the application.                      */
  
- #define FLASH_BASE              0x00000000
--#define FLASH_SIZE              0x52000
--#define FLASH_NV_BASE           0x52000
--#define FLASH_NV_SIZE           0x4000
-+#define FLASH_SIZE              0x50000
-+#define FLASH_NV_BASE           0x50000
-+#define FLASH_NV_SIZE           0x6000
- #define FLASH_LAST_BASE         0x56000
- #define FLASH_LAST_SIZE         0x2000
+-#ifndef NVOCMP_NVPAGES
+-#define NVOCMP_NVPAGES          2
+-#endif
++#define NVOCMP_NVPAGES          3
  
-diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/zr_genericapp.syscfg b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/zr_genericapp.syscfg
-index 4b1ea23..b60ec66 100644
---- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/zr_genericapp.syscfg
-+++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ccs/zr_genericapp.syscfg
+ #define FLASH_BASE              0x00000000
+ #define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/zr_genericapp.syscfg b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/zr_genericapp.syscfg
+index 5c3c73d..218eda9 100644
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/zr_genericapp.syscfg
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/zr_genericapp.syscfg
 @@ -47,6 +47,7 @@ CCFG.enableBootloader         = true;
  CCFG.enableBootloaderBackdoor = true;
  CCFG.dioBootloaderBackdoor    = 13;
  CCFG.levelBootloaderBackdoor  = "Active low";
 +CCFG.enableDCDC               = false;
- CCFG.ccfgTemplate.$name       = "ti_devices_CCFGTemplate0";
+ CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
  
  Display1.$hardware  = system.deviceData.board.components.XDS110UART;
 @@ -67,8 +68,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
@@ -1384,10 +1493,10 @@ index 4b1ea23..b60ec66 100644
  zstack.rf.radioConfig.$name                  = "ti_devices_radioconfig_settings_ieee_15_40";
  zstack.rf.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
  zstack.rf.coexSettings.$name                 = "ti_zstack_rf_zstack_coex_mod0";
-diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ccs/Application/zcl_genericapp.c b/zr_genericapp_LP_CC2652RB_tirtos_ccs/Application/zcl_genericapp.c
-index 82a4bec..23788ff 100644
---- a/zr_genericapp_LP_CC2652RB_tirtos_ccs/Application/zcl_genericapp.c
-+++ b/zr_genericapp_LP_CC2652RB_tirtos_ccs/Application/zcl_genericapp.c
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Application/zcl_genericapp.c b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Application/zcl_genericapp.c
+index 82a4bec..08116b8 100644
+--- a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Application/zcl_genericapp.c
++++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Application/zcl_genericapp.c
 @@ -53,6 +53,8 @@
   * INCLUDES
   */
@@ -1451,16 +1560,16 @@ index 82a4bec..23788ff 100644
  }
  
  
-diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ccs/Application/zcl_genericapp_data.c b/zr_genericapp_LP_CC2652RB_tirtos_ccs/Application/zcl_genericapp_data.c
-index c0e473d..1446606 100644
---- a/zr_genericapp_LP_CC2652RB_tirtos_ccs/Application/zcl_genericapp_data.c
-+++ b/zr_genericapp_LP_CC2652RB_tirtos_ccs/Application/zcl_genericapp_data.c
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Application/zcl_genericapp_data.c b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Application/zcl_genericapp_data.c
+index c0e473d..7fdedb1 100644
+--- a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Application/zcl_genericapp_data.c
++++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Application/zcl_genericapp_data.c
 @@ -96,6 +96,8 @@ const uint16_t zclGenericApp_identify_clusterRevision = 0x0001;
  const uint8_t zclGenericApp_HWRevision = GENERICAPP_HWVERSION;
  const uint8_t zclGenericApp_ZCLVersion = GENERICAPP_ZCLVERSION;
  const uint8_t zclGenericApp_ManufacturerName[] = { 16, 'T','e','x','a','s','I','n','s','t','r','u','m','e','n','t','s' };
 +const uint8_t zclGenericApp_ModelID[] = { 9, 't','i','.','r','o','u','t','e','r' };
-+const uint8_t zclGenericApp_SwBuildID[] = { 8, '2','0','2','2','0','1','2','5' };
++const uint8_t zclGenericApp_SwBuildID[] = { 8, '2','0','2','2','0','9','0','8' };
  const uint8_t zclGenericApp_PowerSource = POWER_SOURCE_MAINS_1_PHASE;
  uint8_t zclGenericApp_PhysicalEnvironment = PHY_UNSPECIFIED_ENV;
  
@@ -1494,22 +1603,22 @@ index c0e473d..1446606 100644
    {
      ZCL_CLUSTER_ID_GENERAL_BASIC,
      { // Attribute record
-diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ccs/Stack/Config/f8wrouter.opts b/zr_genericapp_LP_CC2652RB_tirtos_ccs/Stack/Config/f8wrouter.opts
-index b841d60..91eb00e 100644
---- a/zr_genericapp_LP_CC2652RB_tirtos_ccs/Stack/Config/f8wrouter.opts
-+++ b/zr_genericapp_LP_CC2652RB_tirtos_ccs/Stack/Config/f8wrouter.opts
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/Config/f8wrouter.opts b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/Config/f8wrouter.opts
+index b841d60..3308467 100644
+--- a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/Config/f8wrouter.opts
++++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/Config/f8wrouter.opts
 @@ -9,3 +9,5 @@
  -DADDRMGR_NV_SINGLES
  -DBINDINGTABLE_NV_SINGLES
  -DASSOCLIST_NV_SINGLES
 +
-+--preinclude=preinclude.h 
++-include preinclude.h
 \ No newline at end of file
-diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ccs/Stack/Config/preinclude.h b/zr_genericapp_LP_CC2652RB_tirtos_ccs/Stack/Config/preinclude.h
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/Config/preinclude.h b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/Config/preinclude.h
 new file mode 100644
 index 0000000..8a7300b
 --- /dev/null
-+++ b/zr_genericapp_LP_CC2652RB_tirtos_ccs/Stack/Config/preinclude.h
++++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/Config/preinclude.h
 @@ -0,0 +1,31 @@
 +// Increase MAC buffers
 +#undef MAC_CFG_TX_DATA_MAX
@@ -1542,10 +1651,63 @@ index 0000000..8a7300b
 +#define DEFAULT_ROUTE_REQUEST_RADIUS 8
 +#define ZDNWKMGR_MIN_TRANSMISSIONS 0
 +#define ROUTE_DISCOVERY_TIME 13
-diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ccs/app.cfg b/zr_genericapp_LP_CC2652RB_tirtos_ccs/app.cfg
-index 5089a84..146ef06 100644
---- a/zr_genericapp_LP_CC2652RB_tirtos_ccs/app.cfg
-+++ b/zr_genericapp_LP_CC2652RB_tirtos_ccs/app.cfg
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/sys/zglobals.c b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/sys/zglobals.c
+index 706736b..b813ed7 100644
+--- a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/sys/zglobals.c
++++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/sys/zglobals.c
+@@ -225,7 +225,7 @@ uint8_t zgEndDeviceConfiguration = END_DEV_CONFIGURATION;
+ //
+ // NOTICE:  Before enabling Child Aging make sure to review all the related
+ // definitions in this file, especially zgNwkParentInformation.
+-uint8_t zgChildAgingEnable = TRUE;
++uint8_t zgChildAgingEnable = FALSE;
+ 
+ //==========    TouchLink NWK configuration    ===============
+ // Values used by Router when starts a network as initiator
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_app.c b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_app.c
+index 1f30180..b4481a1 100644
+--- a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_app.c
++++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_app.c
+@@ -441,12 +441,11 @@ uint32_t ZDApp_event_loop( uint8_t task_id, uint32_t events )
+           ZDApp_ChangeState( DEV_ROUTER );
+         }
+ 
+-        if ( zgChildAgingEnable == TRUE )
+-        {
+-          // Once the device has changed its state to a ROUTER set the timer to send
+-          // Parent annce
+-          ZDApp_SetParentAnnceTimer();
+-        }
++        // As we cannot enable child aging as Xiaomi devices will drop off
++        // but we stil want to have the parent announces we always enable it here.
++        // Otherwise some end devices could be unreachable when they changed parent
++        // while the coordinator was powered off.
++        ZDApp_SetParentAnnceTimer();
+       }
+       else
+       {
+@@ -907,12 +906,11 @@ void ZDApp_NetworkStartEvt( void )
+         bdb_reportCommissioningState(BDB_INITIALIZATION,TRUE);
+       }
+ 
+-      if ( zgChildAgingEnable == TRUE )
+-      {
+-        // Once the device has changed its state to a COORDINATOR set the timer to send
+-        // Parent annce
+-        ZDApp_SetParentAnnceTimer();
+-      }
++      // As we cannot enable child aging as Xiaomi devices will drop off
++      // but we stil want to have the parent announces we always enable it here.
++      // Otherwise some end devices could be unreachable when they changed parent
++      // while the coordinator was powered off.
++      ZDApp_SetParentAnnceTimer();
+     }
+     else
+     {
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/app.cfg b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/app.cfg
+index 5089a84..b515ead 100644
+--- a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/app.cfg
++++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/app.cfg
 @@ -700,7 +700,9 @@ var GateMutexPri = xdc.useModule('ti.sysbios.gates.GateMutexPri');
   */
  var Memory = xdc.useModule('xdc.runtime.Memory');
@@ -1557,33 +1719,31 @@ index 5089a84..146ef06 100644
  
  // The following will create the #define HEAPMGR_CONFIG. It can then be used by include  <xdc/cfg/global.h>
  Program.global.HEAPMGR_CONFIG = HEAPMGR_CONFIG;
-diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ccs/cc13x2_cc26x2.cmd b/zr_genericapp_LP_CC2652RB_tirtos_ccs/cc13x2_cc26x2.cmd
-index 2856ad2..031cfeb 100755
---- a/zr_genericapp_LP_CC2652RB_tirtos_ccs/cc13x2_cc26x2.cmd
-+++ b/zr_genericapp_LP_CC2652RB_tirtos_ccs/cc13x2_cc26x2.cmd
-@@ -67,9 +67,9 @@
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
+index e138bb4..66b7965 100755
+--- a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
++++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
+@@ -66,9 +66,7 @@
+ /* The starting address of the application.  Normally the interrupt vectors  */
  /* must be located at the beginning of the application.                      */
  
- #define FLASH_BASE              0x00000000
--#define FLASH_SIZE              0x52000
--#define FLASH_NV_BASE           0x52000
--#define FLASH_NV_SIZE           0x4000
-+#define FLASH_SIZE              0x50000
-+#define FLASH_NV_BASE           0x50000
-+#define FLASH_NV_SIZE           0x6000
- #define FLASH_LAST_BASE         0x56000
- #define FLASH_LAST_SIZE         0x2000
+-#ifndef NVOCMP_NVPAGES
+-#define NVOCMP_NVPAGES          2
+-#endif
++#define NVOCMP_NVPAGES          3
  
-diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ccs/zr_genericapp.syscfg b/zr_genericapp_LP_CC2652RB_tirtos_ccs/zr_genericapp.syscfg
-index d137337..d9e3ef6 100644
---- a/zr_genericapp_LP_CC2652RB_tirtos_ccs/zr_genericapp.syscfg
-+++ b/zr_genericapp_LP_CC2652RB_tirtos_ccs/zr_genericapp.syscfg
+ #define FLASH_BASE              0x00000000
+ #define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/zr_genericapp.syscfg b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/zr_genericapp.syscfg
+index b2ee528..023d3c3 100644
+--- a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/zr_genericapp.syscfg
++++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/zr_genericapp.syscfg
 @@ -48,6 +48,7 @@ CCFG.enableBootloaderBackdoor = true;
  CCFG.dioBootloaderBackdoor    = 13;
  CCFG.levelBootloaderBackdoor  = "Active low";
  CCFG.srcClkLF                 = "Derived from HF XOSC";
 +CCFG.enableDCDC               = false;
- CCFG.ccfgTemplate.$name       = "ti_devices_CCFGTemplate0";
+ CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
  
  Display1.$hardware  = system.deviceData.board.components.XDS110UART;
 @@ -68,8 +69,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
@@ -1607,5 +1767,5 @@ index d137337..d9e3ef6 100644
  zstack.rf.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
  zstack.rf.coexSettings.$name                 = "ti_zstack_rf_zstack_coex_mod0";
 -- 
-2.34.0
+2.37.0
 
