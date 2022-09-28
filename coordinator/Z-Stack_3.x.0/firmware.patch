@@ -1,4 +1,4 @@
-From e56100f0dbaf44869ac62f90e6b487edc89c0afe Mon Sep 17 00:00:00 2001
+From 7a65d86f7e18ae95b01f4b09c5e1123c928b60d2 Mon Sep 17 00:00:00 2001
 From: Koen Kanters <koenkanters94@gmail.com>
 Date: Sun, 24 Jul 2022 18:20:10 +0200
 Subject: [PATCH 1/1] Own changes
@@ -8,7 +8,7 @@ Subject: [PATCH 1/1] Own changes
  .../Application/mt/mt_util.c                  | 108 +++++
  .../Application/mt/mt_version.c               |   8 +-
  .../Application/mt/mt_zdo.c                   |   5 +
- .../Stack/Config/preinclude.h                 |  82 ++++
+ .../Stack/Config/preinclude.h                 |  83 ++++
  .../Stack/Config/znp_cnf.opts                 |   2 +
  .../Stack/af/af.c                             |  18 +-
  .../Stack/nwk/nwk_globals.c                   |   8 +-
@@ -28,7 +28,7 @@ Subject: [PATCH 1/1] Own changes
  .../Application/mt/mt_util.c                  | 108 +++++
  .../Application/mt/mt_version.c               |   8 +-
  .../Application/mt/mt_zdo.c                   |   5 +
- .../Stack/Config/preinclude.h                 |  64 +++
+ .../Stack/Config/preinclude.h                 |  65 +++
  .../Stack/Config/znp_cnf.opts                 |   2 +
  .../Stack/af/af.c                             |  18 +-
  .../Stack/nwk/nwk_globals.c                   |   8 +-
@@ -44,7 +44,7 @@ Subject: [PATCH 1/1] Own changes
  .../Application/mt/mt_util.c                  | 108 +++++
  .../Application/mt/mt_version.c               |   8 +-
  .../Application/mt/mt_zdo.c                   |   5 +
- .../Stack/Config/preinclude.h                 |  64 +++
+ .../Stack/Config/preinclude.h                 |  65 +++
  .../Stack/Config/znp_cnf.opts                 |   2 +
  znp_LP_CC2652RB_tirtos_ticlang/Stack/af/af.c  |  18 +-
  .../Stack/nwk/nwk_globals.c                   |   8 +-
@@ -56,7 +56,7 @@ Subject: [PATCH 1/1] Own changes
  znp_LP_CC2652RB_tirtos_ticlang/app.cfg        |   4 +-
  .../cc13x2_cc26x2_ticlang.cmd                 |   4 +-
  znp_LP_CC2652RB_tirtos_ticlang/znp.syscfg     |   6 +-
- 52 files changed, 1712 insertions(+), 87 deletions(-)
+ 52 files changed, 1715 insertions(+), 87 deletions(-)
  create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
  mode change 100644 => 100755 znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/af/af.c
  mode change 100644 => 100755 znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c
@@ -244,14 +244,14 @@ index 9eb8396..4805fa4 100644
   * @fn      MT_UtilAssocFindDevice
   *
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt_version.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt_version.c
-index 6a9b760..c2eec25 100644
+index 6a9b760..3fd9b12 100644
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt_version.c
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20220726
++#define CODE_REVISION_NUMBER 20220928
 +
  /******************************************************************************
   * CONSTANTS
@@ -288,10 +288,10 @@ index 7ee216e..2032cc0 100644
  }
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..4161189
+index 0000000..040c30f
 --- /dev/null
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
-@@ -0,0 +1,82 @@
+@@ -0,0 +1,83 @@
 +#define MT_SYS_KEY_MANAGEMENT 1
 +#define FEATURE_NVEXID 1
 +
@@ -301,11 +301,11 @@ index 0000000..4161189
 +
 +// Increase MAC buffers
 +#undef MAC_CFG_TX_DATA_MAX
-+#define MAC_CFG_TX_DATA_MAX 20
++#define MAC_CFG_TX_DATA_MAX 64
 +#undef MAC_CFG_TX_MAX
-+#define MAC_CFG_TX_MAX 32
++#define MAC_CFG_TX_MAX MAC_CFG_TX_DATA_MAX * 1.5
 +#undef MAC_CFG_RX_MAX
-+#define MAC_CFG_RX_MAX 20
++#define MAC_CFG_RX_MAX MAC_CFG_TX_DATA_MAX * 2
 +
 +// Save memory
 +#undef NWK_MAX_BINDING_ENTRIES
@@ -329,10 +329,11 @@ index 0000000..4161189
 + * Enable MTO routing
 + */
 +#define CONCENTRATOR_ENABLE TRUE
-+#define CONCENTRATOR_DISCOVERY_TIME 100
++#define CONCENTRATOR_DISCOVERY_TIME 60
 +#define CONCENTRATOR_ROUTE_CACHE TRUE
 +#define MAX_RTG_SRC_ENTRIES 500
-+#define SRC_RTG_EXPIRY_TIME 2
++#define SRC_RTG_EXPIRY_TIME 254
++#define ROUTE_EXPIRY_TIME 254
 +
 +/**
 + * Set default transmit power to 9
@@ -342,9 +343,9 @@ index 0000000..4161189
 +/**
 + * Scale other device tables appropriately
 + */
-+#define NWK_MAX_DEVICE_LIST 50
++#define NWK_MAX_DEVICE_LIST 100
 +#define ZDSECMGR_TC_DEVICE_MAX 200
-+#define MAX_NEIGHBOR_ENTRIES 50
++#define MAX_NEIGHBOR_ENTRIES 100
 +#define MAX_RTG_ENTRIES 250
 +
 +/**
@@ -427,7 +428,7 @@ index 12512a3..4298e70
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c
 old mode 100644
 new mode 100755
-index a0acd95..f0b7292
+index a0acd95..4953a48
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c
 @@ -91,10 +91,10 @@
@@ -438,10 +439,10 @@ index a0acd95..f0b7292
 -#define NWK_MAX_DATABUFS_SCHEDULED  5     // Timed messages to be sent
 -#define NWK_MAX_DATABUFS_CONFIRMED  5     // Held after MAC confirms
 -#define NWK_MAX_DATABUFS_TOTAL      12    // Total number of buffers
-+#define NWK_MAX_DATABUFS_WAITING    32     // Waiting to be sent to MAC
-+#define NWK_MAX_DATABUFS_SCHEDULED  20     // Timed messages to be sent
-+#define NWK_MAX_DATABUFS_CONFIRMED  20     // Held after MAC confirms
-+#define NWK_MAX_DATABUFS_TOTAL      48    // Total number of buffers
++#define NWK_MAX_DATABUFS_WAITING    48     // Waiting to be sent to MAC
++#define NWK_MAX_DATABUFS_SCHEDULED  30     // Timed messages to be sent
++#define NWK_MAX_DATABUFS_CONFIRMED  30     // Held after MAC confirms
++#define NWK_MAX_DATABUFS_TOTAL      72    // Total number of buffers
  
  // 1-255 (0 -> 256) X RTG_TIMER_INTERVAL
  // A known shortcoming is that when a message is enqueued as "hold" for a
@@ -635,7 +636,7 @@ index 9db9d84..e2a0eb5 100644
  {
  uint32_t              FrameCounter;
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg
-index 5089a84..b515ead 100644
+index 5089a84..c0a0687 100644
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg
 @@ -700,7 +700,9 @@ var GateMutexPri = xdc.useModule('ti.sysbios.gates.GateMutexPri');
@@ -643,9 +644,9 @@ index 5089a84..b515ead 100644
  var Memory = xdc.useModule('xdc.runtime.Memory');
  var HEAPMGR_CONFIG = 0;
 -var HEAPMGR_SIZE   = 0x1800;
-+// Increase heap to 48kb
++// Increase heap to 32kb
 +// https://e2e.ti.com/support/wireless-connectivity/zigbee-thread-group/zigbee-and-thread/f/zigbee-thread-forum/1052120/cc2652r-mac-no-resources-0x1a-errors-complete-crash-with-simplelink-cc13xx-cc26xx-sdk_5-30-00-56/3897554#3897554
-+var HEAPMGR_SIZE   = 0xc000;
++var HEAPMGR_SIZE   = 0x7D00;
  
  // The following will create the #define HEAPMGR_CONFIG. It can then be used by include  <xdc/cfg/global.h>
  Program.global.HEAPMGR_CONFIG = HEAPMGR_CONFIG;
@@ -1757,14 +1758,14 @@ index 9eb8396..4805fa4 100644
   * @fn      MT_UtilAssocFindDevice
   *
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt_version.c b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt_version.c
-index 6a9b760..c2eec25 100644
+index 6a9b760..3fd9b12 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt_version.c
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20220726
++#define CODE_REVISION_NUMBER 20220928
 +
  /******************************************************************************
   * CONSTANTS
@@ -1801,10 +1802,10 @@ index 7ee216e..1f884ca 100644
  
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..20feea5
+index 0000000..3aeafda
 --- /dev/null
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
-@@ -0,0 +1,64 @@
+@@ -0,0 +1,65 @@
 +#define MT_SYS_KEY_MANAGEMENT 1
 +#define FEATURE_NVEXID 1
 +
@@ -1814,11 +1815,11 @@ index 0000000..20feea5
 +
 +// Increase MAC buffers
 +#undef MAC_CFG_TX_DATA_MAX
-+#define MAC_CFG_TX_DATA_MAX 20
++#define MAC_CFG_TX_DATA_MAX 64
 +#undef MAC_CFG_TX_MAX
-+#define MAC_CFG_TX_MAX 32
++#define MAC_CFG_TX_MAX MAC_CFG_TX_DATA_MAX * 1.5
 +#undef MAC_CFG_RX_MAX
-+#define MAC_CFG_RX_MAX 20
++#define MAC_CFG_RX_MAX MAC_CFG_TX_DATA_MAX * 2
 +
 +// Save memory
 +#undef NWK_MAX_BINDING_ENTRIES
@@ -1842,17 +1843,18 @@ index 0000000..20feea5
 + * Enable MTO routing
 + */
 +#define CONCENTRATOR_ENABLE TRUE
-+#define CONCENTRATOR_DISCOVERY_TIME 100
++#define CONCENTRATOR_DISCOVERY_TIME 60
 +#define CONCENTRATOR_ROUTE_CACHE TRUE
 +#define MAX_RTG_SRC_ENTRIES 500
-+#define SRC_RTG_EXPIRY_TIME 2
++#define SRC_RTG_EXPIRY_TIME 254
++#define ROUTE_EXPIRY_TIME 254
 +
 +/**
 + * Scale other device tables appropriately
 + */
-+#define NWK_MAX_DEVICE_LIST 50
++#define NWK_MAX_DEVICE_LIST 100
 +#define ZDSECMGR_TC_DEVICE_MAX 200
-+#define MAX_NEIGHBOR_ENTRIES 50
++#define MAX_NEIGHBOR_ENTRIES 100
 +#define MAX_RTG_ENTRIES 250
 +
 +/**
@@ -1918,7 +1920,7 @@ index 12512a3..4298e70 100644
        // Save original endpoint
        uint8_t endpoint = aff->DstEndPoint;
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c
-index a0acd95..f0b7292 100644
+index a0acd95..4953a48 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c
 @@ -91,10 +91,10 @@
@@ -1929,10 +1931,10 @@ index a0acd95..f0b7292 100644
 -#define NWK_MAX_DATABUFS_SCHEDULED  5     // Timed messages to be sent
 -#define NWK_MAX_DATABUFS_CONFIRMED  5     // Held after MAC confirms
 -#define NWK_MAX_DATABUFS_TOTAL      12    // Total number of buffers
-+#define NWK_MAX_DATABUFS_WAITING    32     // Waiting to be sent to MAC
-+#define NWK_MAX_DATABUFS_SCHEDULED  20     // Timed messages to be sent
-+#define NWK_MAX_DATABUFS_CONFIRMED  20     // Held after MAC confirms
-+#define NWK_MAX_DATABUFS_TOTAL      48    // Total number of buffers
++#define NWK_MAX_DATABUFS_WAITING    48     // Waiting to be sent to MAC
++#define NWK_MAX_DATABUFS_SCHEDULED  30     // Timed messages to be sent
++#define NWK_MAX_DATABUFS_CONFIRMED  30     // Held after MAC confirms
++#define NWK_MAX_DATABUFS_TOTAL      72    // Total number of buffers
  
  // 1-255 (0 -> 256) X RTG_TIMER_INTERVAL
  // A known shortcoming is that when a message is enqueued as "hold" for a
@@ -2126,7 +2128,7 @@ index 9db9d84..e2a0eb5 100644
  {
  uint32_t              FrameCounter;
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg
-index 5089a84..b515ead 100644
+index 5089a84..c0a0687 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg
 @@ -700,7 +700,9 @@ var GateMutexPri = xdc.useModule('ti.sysbios.gates.GateMutexPri');
@@ -2134,9 +2136,9 @@ index 5089a84..b515ead 100644
  var Memory = xdc.useModule('xdc.runtime.Memory');
  var HEAPMGR_CONFIG = 0;
 -var HEAPMGR_SIZE   = 0x1800;
-+// Increase heap to 48kb
++// Increase heap to 32kb
 +// https://e2e.ti.com/support/wireless-connectivity/zigbee-thread-group/zigbee-and-thread/f/zigbee-thread-forum/1052120/cc2652r-mac-no-resources-0x1a-errors-complete-crash-with-simplelink-cc13xx-cc26xx-sdk_5-30-00-56/3897554#3897554
-+var HEAPMGR_SIZE   = 0xc000;
++var HEAPMGR_SIZE   = 0x7D00;
  
  // The following will create the #define HEAPMGR_CONFIG. It can then be used by include  <xdc/cfg/global.h>
  Program.global.HEAPMGR_CONFIG = HEAPMGR_CONFIG;
@@ -2363,14 +2365,14 @@ index 9eb8396..4805fa4 100644
   * @fn      MT_UtilAssocFindDevice
   *
 diff --git a/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt_version.c b/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt_version.c
-index 6a9b760..c2eec25 100644
+index 6a9b760..3fd9b12 100644
 --- a/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt_version.c
 +++ b/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20220726
++#define CODE_REVISION_NUMBER 20220928
 +
  /******************************************************************************
   * CONSTANTS
@@ -2407,10 +2409,10 @@ index 7ee216e..1f884ca 100644
  
 diff --git a/znp_LP_CC2652RB_tirtos_ticlang/Stack/Config/preinclude.h b/znp_LP_CC2652RB_tirtos_ticlang/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..20feea5
+index 0000000..3aeafda
 --- /dev/null
 +++ b/znp_LP_CC2652RB_tirtos_ticlang/Stack/Config/preinclude.h
-@@ -0,0 +1,64 @@
+@@ -0,0 +1,65 @@
 +#define MT_SYS_KEY_MANAGEMENT 1
 +#define FEATURE_NVEXID 1
 +
@@ -2420,11 +2422,11 @@ index 0000000..20feea5
 +
 +// Increase MAC buffers
 +#undef MAC_CFG_TX_DATA_MAX
-+#define MAC_CFG_TX_DATA_MAX 20
++#define MAC_CFG_TX_DATA_MAX 64
 +#undef MAC_CFG_TX_MAX
-+#define MAC_CFG_TX_MAX 32
++#define MAC_CFG_TX_MAX MAC_CFG_TX_DATA_MAX * 1.5
 +#undef MAC_CFG_RX_MAX
-+#define MAC_CFG_RX_MAX 20
++#define MAC_CFG_RX_MAX MAC_CFG_TX_DATA_MAX * 2
 +
 +// Save memory
 +#undef NWK_MAX_BINDING_ENTRIES
@@ -2448,17 +2450,18 @@ index 0000000..20feea5
 + * Enable MTO routing
 + */
 +#define CONCENTRATOR_ENABLE TRUE
-+#define CONCENTRATOR_DISCOVERY_TIME 100
++#define CONCENTRATOR_DISCOVERY_TIME 60
 +#define CONCENTRATOR_ROUTE_CACHE TRUE
 +#define MAX_RTG_SRC_ENTRIES 500
-+#define SRC_RTG_EXPIRY_TIME 2
++#define SRC_RTG_EXPIRY_TIME 254
++#define ROUTE_EXPIRY_TIME 254
 +
 +/**
 + * Scale other device tables appropriately
 + */
-+#define NWK_MAX_DEVICE_LIST 50
++#define NWK_MAX_DEVICE_LIST 100
 +#define ZDSECMGR_TC_DEVICE_MAX 200
-+#define MAX_NEIGHBOR_ENTRIES 50
++#define MAX_NEIGHBOR_ENTRIES 100
 +#define MAX_RTG_ENTRIES 250
 +
 +/**
@@ -2524,7 +2527,7 @@ index 12512a3..4298e70 100644
        // Save original endpoint
        uint8_t endpoint = aff->DstEndPoint;
 diff --git a/znp_LP_CC2652RB_tirtos_ticlang/Stack/nwk/nwk_globals.c b/znp_LP_CC2652RB_tirtos_ticlang/Stack/nwk/nwk_globals.c
-index a0acd95..f0b7292 100644
+index a0acd95..4953a48 100644
 --- a/znp_LP_CC2652RB_tirtos_ticlang/Stack/nwk/nwk_globals.c
 +++ b/znp_LP_CC2652RB_tirtos_ticlang/Stack/nwk/nwk_globals.c
 @@ -91,10 +91,10 @@
@@ -2535,10 +2538,10 @@ index a0acd95..f0b7292 100644
 -#define NWK_MAX_DATABUFS_SCHEDULED  5     // Timed messages to be sent
 -#define NWK_MAX_DATABUFS_CONFIRMED  5     // Held after MAC confirms
 -#define NWK_MAX_DATABUFS_TOTAL      12    // Total number of buffers
-+#define NWK_MAX_DATABUFS_WAITING    32     // Waiting to be sent to MAC
-+#define NWK_MAX_DATABUFS_SCHEDULED  20     // Timed messages to be sent
-+#define NWK_MAX_DATABUFS_CONFIRMED  20     // Held after MAC confirms
-+#define NWK_MAX_DATABUFS_TOTAL      48    // Total number of buffers
++#define NWK_MAX_DATABUFS_WAITING    48     // Waiting to be sent to MAC
++#define NWK_MAX_DATABUFS_SCHEDULED  30     // Timed messages to be sent
++#define NWK_MAX_DATABUFS_CONFIRMED  30     // Held after MAC confirms
++#define NWK_MAX_DATABUFS_TOTAL      72    // Total number of buffers
  
  // 1-255 (0 -> 256) X RTG_TIMER_INTERVAL
  // A known shortcoming is that when a message is enqueued as "hold" for a
@@ -2732,7 +2735,7 @@ index 9db9d84..e2a0eb5 100644
  {
  uint32_t              FrameCounter;
 diff --git a/znp_LP_CC2652RB_tirtos_ticlang/app.cfg b/znp_LP_CC2652RB_tirtos_ticlang/app.cfg
-index 5089a84..b515ead 100644
+index 5089a84..c0a0687 100644
 --- a/znp_LP_CC2652RB_tirtos_ticlang/app.cfg
 +++ b/znp_LP_CC2652RB_tirtos_ticlang/app.cfg
 @@ -700,7 +700,9 @@ var GateMutexPri = xdc.useModule('ti.sysbios.gates.GateMutexPri');
@@ -2740,9 +2743,9 @@ index 5089a84..b515ead 100644
  var Memory = xdc.useModule('xdc.runtime.Memory');
  var HEAPMGR_CONFIG = 0;
 -var HEAPMGR_SIZE   = 0x1800;
-+// Increase heap to 48kb
++// Increase heap to 32kb
 +// https://e2e.ti.com/support/wireless-connectivity/zigbee-thread-group/zigbee-and-thread/f/zigbee-thread-forum/1052120/cc2652r-mac-no-resources-0x1a-errors-complete-crash-with-simplelink-cc13xx-cc26xx-sdk_5-30-00-56/3897554#3897554
-+var HEAPMGR_SIZE   = 0xc000;
++var HEAPMGR_SIZE   = 0x7D00;
  
  // The following will create the #define HEAPMGR_CONFIG. It can then be used by include  <xdc/cfg/global.h>
  Program.global.HEAPMGR_CONFIG = HEAPMGR_CONFIG;
