@@ -1,53 +1,56 @@
-From e3218dcb96595529fb5e047084abd0a843dfed4c Mon Sep 17 00:00:00 2001
+From 3141c9a49a9e763c449b5731487eecaf8e6d56ca Mon Sep 17 00:00:00 2001
 From: Koen Kanters <koenkanters94@gmail.com>
-Date: Thu, 8 Sep 2022 16:44:03 +0200
+Date: Mon, 31 Oct 2022 20:04:41 +0100
 Subject: [PATCH 1/1] Own changes
 
 ---
- .../Application/zcl_genericapp.c              |  33 +-
- .../Application/zcl_genericapp_data.c         |  22 +-
+ .../Application/zcl_genericapp.c              |  43 +-
+ .../Application/zcl_genericapp_data.c         |  50 ++-
+ .../Common/zcl/zcl.c                          |  10 +
  .../Stack/Config/f8wrouter.opts               |   2 +
- .../Stack/Config/preinclude.h                 |  49 +++
+ .../Stack/Config/preinclude.h                 |  51 +++
+ .../Stack/sys/zcomdef.h                       |   3 +
  .../Stack/sys/zglobals.c                      |   2 +-
  .../Stack/zdo/zd_app.c                        |  22 +-
- .../app.cfg                                   |   4 +-
- .../cc13x2_cc26x2_ticlang.cmd                 |   4 +-
+ .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   6 +-
  .../ti_devices_config.c                       | 108 +++++
  .../ti_drivers_config.h                       | 274 +++++++++++++
  .../ti_radio_config.c                         | 385 ++++++++++++++++++
  .../ti_radio_config.h                         |  83 ++++
  .../zr_genericapp.syscfg                      |  11 +-
- .../Application/zcl_genericapp.c              |  33 +-
- .../Application/zcl_genericapp_data.c         |  22 +-
+ .../Application/zcl_genericapp.c              |  43 +-
+ .../Application/zcl_genericapp_data.c         |  50 ++-
+ .../Common/zcl/zcl.c                          |  10 +
  .../Stack/Config/f8wrouter.opts               |   2 +
- .../Stack/Config/preinclude.h                 |  31 ++
+ .../Stack/Config/preinclude.h                 |  33 ++
+ .../Stack/sys/zcomdef.h                       |   3 +
  .../Stack/sys/zglobals.c                      |   2 +-
  .../Stack/zdo/zd_app.c                        |  22 +-
- .../app.cfg                                   |   4 +-
- .../cc13x2_cc26x2_ticlang.cmd                 |   4 +-
+ .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   6 +-
  .../zr_genericapp.syscfg                      |   7 +-
- .../Application/zcl_genericapp.c              |  33 +-
- .../Application/zcl_genericapp_data.c         |  22 +-
+ .../Application/zcl_genericapp.c              |  43 +-
+ .../Application/zcl_genericapp_data.c         |  50 ++-
+ .../Common/zcl/zcl.c                          |  10 +
  .../Stack/Config/f8wrouter.opts               |   2 +
- .../Stack/Config/preinclude.h                 |  31 ++
+ .../Stack/Config/preinclude.h                 |  33 ++
+ .../Stack/sys/zcomdef.h                       |   3 +
  .../Stack/sys/zglobals.c                      |   2 +-
  .../Stack/zdo/zd_app.c                        |  22 +-
- .../app.cfg                                   |   4 +-
- .../cc13x2_cc26x2_ticlang.cmd                 |   4 +-
+ .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   6 +-
  .../zr_genericapp.syscfg                      |   7 +-
- 31 files changed, 1133 insertions(+), 120 deletions(-)
- create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
- create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_devices_config.c
- create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_drivers_config.h
- create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.c
- create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.h
- create mode 100644 zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
- create mode 100644 zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/Config/preinclude.h
+ 34 files changed, 1268 insertions(+), 138 deletions(-)
+ create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
+ create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_devices_config.c
+ create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_drivers_config.h
+ create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.c
+ create mode 100644 zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.h
+ create mode 100644 zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
+ create mode 100644 zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h
 
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp.c
-index 82a4bec..08116b8 100644
---- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp.c
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp.c
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/zcl_genericapp.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/zcl_genericapp.c
+index 550be7a..0725b39 100644
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/zcl_genericapp.c
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/zcl_genericapp.c
 @@ -53,6 +53,8 @@
   * INCLUDES
   */
@@ -57,7 +60,31 @@ index 82a4bec..08116b8 100644
  #include "rom_jt_154.h"
  #include "zcomdef.h"
  
-@@ -870,6 +872,7 @@ static void zclGenericApp_processAfIncomingMsgInd(zstack_afIncomingMsgInd_t *pIn
+@@ -68,6 +70,8 @@
+ #include "zcl_genericapp.h"
+ #include "zcl_port.h"
+ 
++#include "osal_nv.h"
++
+ #include <ti/drivers/apps/Button.h>
+ #include "ti_drivers_config.h"
+ #include "util_timer.h"
+@@ -261,6 +265,14 @@ void sampleApp_task(NVINTF_nvFuncts_t *pfnNV)
+   pfnZdlNV = pfnNV;
+   zclport_registerNV(pfnZdlNV, ZCL_PORT_SCENE_TABLE_NV_ID);
+ 
++  // Init the transmit power NV item, this will be skipped if item is already initialized
++  int8_t transmitPower = TXPOWER;
++  osal_nv_item_init( ZCD_NV_TRANSMIT_POWER, sizeof(transmitPower), &transmitPower );
++
++  // Set transmit power
++  osal_nv_read( ZCD_NV_TRANSMIT_POWER, 0, sizeof( transmitPower ), &transmitPower );
++  ZMacSetTransmitPower( (ZMacTransmitPower_t)transmitPower );
++
+   // Initialize application
+   zclGenericApp_initialization();
+ 
+@@ -870,6 +882,7 @@ static void zclGenericApp_processAfIncomingMsgInd(zstack_afIncomingMsgInd_t *pIn
   */
  static void zclGenericApp_ProcessCommissioningStatus(bdbCommissioningModeMsg_t *bdbCommissioningModeMsg)
  {
@@ -65,7 +92,7 @@ index 82a4bec..08116b8 100644
    switch(bdbCommissioningModeMsg->bdbCommissioningMode)
    {
      case BDB_COMMISSIONING_FORMATION:
-@@ -909,6 +912,8 @@ static void zclGenericApp_ProcessCommissioningStatus(bdbCommissioningModeMsg_t *
+@@ -909,6 +922,8 @@ static void zclGenericApp_ProcessCommissioningStatus(bdbCommissioningModeMsg_t *
        }
      break;
      case BDB_COMMISSIONING_INITIALIZATION:
@@ -74,7 +101,7 @@ index 82a4bec..08116b8 100644
        //Initialization notification can only be successful. Failure on initialization
        //only happens for ZED and is notified as BDB_COMMISSIONING_PARENT_LOST notification
  
-@@ -1209,28 +1214,16 @@ static void zclGenericApp_changeKeyCallback(Button_Handle _btn, Button_EventMask
+@@ -1209,28 +1224,16 @@ static void zclGenericApp_changeKeyCallback(Button_Handle _btn, Button_EventMask
   */
  static void zclGenericApp_processKey(Button_Handle _btn)
  {
@@ -111,25 +138,46 @@ index 82a4bec..08116b8 100644
  }
  
  
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp_data.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp_data.c
-index c0e473d..7fdedb1 100644
---- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp_data.c
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp_data.c
-@@ -96,6 +96,8 @@ const uint16_t zclGenericApp_identify_clusterRevision = 0x0001;
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/zcl_genericapp_data.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/zcl_genericapp_data.c
+index c0e473d..4d08810 100644
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/zcl_genericapp_data.c
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/zcl_genericapp_data.c
+@@ -49,6 +49,8 @@
+ #include "zcl_general.h"
+ #include "zcl_ha.h"
+ 
++#include "osal_nv.h"
++
+ /* GENERICAPP_TODO: Include any of the header files below to access specific cluster data
+ #include "zcl_poll_control.h"
+ #include "zcl_electrical_measurement.h"
+@@ -96,8 +98,11 @@ const uint16_t zclGenericApp_identify_clusterRevision = 0x0001;
  const uint8_t zclGenericApp_HWRevision = GENERICAPP_HWVERSION;
  const uint8_t zclGenericApp_ZCLVersion = GENERICAPP_ZCLVERSION;
  const uint8_t zclGenericApp_ManufacturerName[] = { 16, 'T','e','x','a','s','I','n','s','t','r','u','m','e','n','t','s' };
 +const uint8_t zclGenericApp_ModelID[] = { 9, 't','i','.','r','o','u','t','e','r' };
-+const uint8_t zclGenericApp_SwBuildID[] = { 8, '2','0','2','2','0','9','0','8' };
++const uint8_t zclGenericApp_SwBuildID[] = { 8, '2','0','2','2','1','1','0','2' };
  const uint8_t zclGenericApp_PowerSource = POWER_SOURCE_MAINS_1_PHASE;
  uint8_t zclGenericApp_PhysicalEnvironment = PHY_UNSPECIFIED_ENV;
++int8_t zclGenericApp_TransmitPower;
  
-@@ -143,10 +145,28 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+ #ifdef ZCL_IDENTIFY
+ // Identify Cluster
+@@ -134,7 +139,7 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     {  // Attribute record
+       ATTRID_BASIC_HW_VERSION,            // Attribute ID - Found in Cluster Library header (ie. zcl_general.h)
+       ZCL_DATATYPE_UINT8,                 // Data Type - found in zcl.h
+-      ACCESS_CONTROL_READ,                // Variable access control - found in zcl.h
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),                // Variable access control - found in zcl.h
+       (void *)&zclGenericApp_HWRevision  // Pointer to attribute variable
+     }
+   },
+@@ -143,16 +148,34 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
      { // Attribute record
        ATTRID_BASIC_ZCL_VERSION,
        ZCL_DATATYPE_UINT8,
 -      ACCESS_CONTROL_READ,
-+      (ACCESS_CONTROL_READ | ACCESS_REPORTABLE),
++      (ACCESS_CONTROL_READ | ACCESS_REPORTABLE | ACCESS_CONTROL_AUTH_READ),
        (void *)&zclGenericApp_ZCLVersion
      }
    },
@@ -138,7 +186,7 @@ index c0e473d..7fdedb1 100644
 +    { // Attribute record
 +      ATTRID_BASIC_MODEL_IDENTIFIER,
 +      ZCL_DATATYPE_CHAR_STR,
-+      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
 +      (void *)zclGenericApp_ModelID
 +    }
 +  },
@@ -147,17 +195,118 @@ index c0e473d..7fdedb1 100644
 +    { // Attribute record
 +      ATTRID_BASIC_SW_BUILD_ID,
 +      ZCL_DATATYPE_CHAR_STR,
-+      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
 +      (void *)zclGenericApp_SwBuildID
 +    }
 +  },
    {
      ZCL_CLUSTER_ID_GENERAL_BASIC,
      { // Attribute record
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/f8wrouter.opts b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/f8wrouter.opts
-index b841d60..3308467 100644
---- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/f8wrouter.opts
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/f8wrouter.opts
+       ATTRID_BASIC_MANUFACTURER_NAME,
+       ZCL_DATATYPE_CHAR_STR,
+-      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
+       (void *)zclGenericApp_ManufacturerName
+     }
+   },
+@@ -161,7 +184,7 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     { // Attribute record
+       ATTRID_BASIC_POWER_SOURCE,
+       ZCL_DATATYPE_ENUM8,
+-      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
+       (void *)&zclGenericApp_PowerSource
+     }
+   },
+@@ -170,7 +193,7 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     { // Attribute record
+       ATTRID_BASIC_PHYSICAL_ENVIRONMENT,
+       ZCL_DATATYPE_ENUM8,
+-      (ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE),
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE | ACCESS_CONTROL_AUTH_READ),
+       (void *)&zclGenericApp_PhysicalEnvironment
+     }
+   },
+@@ -179,10 +202,20 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     {  // Attribute record
+       ATTRID_CLUSTER_REVISION,
+       ZCL_DATATYPE_UINT16,
+-      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
+       (void *)&zclGenericApp_basic_clusterRevision
+     }
+   },
++  {
++    ZCL_CLUSTER_ID_GENERAL_BASIC,
++    {  // Attribute record
++     ATTRID_BASIC_TRANSMIT_POWER,
++     ZCL_DATATYPE_INT8,
++     (ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE | ACCESS_CONTROL_AUTH_READ),
++     (void *)&zclGenericApp_TransmitPower
++    }
++  },
++
+ 
+ #ifdef ZCL_IDENTIFY
+   // *** Identify Cluster Attribute ***
+@@ -191,7 +224,7 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     { // Attribute record
+       ATTRID_IDENTIFY_IDENTIFY_TIME,
+       ZCL_DATATYPE_UINT16,
+-      (ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE),
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE | ACCESS_CONTROL_AUTH_READ),
+       (void *)&zclGenericApp_IdentifyTime
+     }
+   },
+@@ -201,7 +234,7 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     {  // Attribute record
+       ATTRID_CLUSTER_REVISION,
+       ZCL_DATATYPE_UINT16,
+-      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
+       (void *)&zclGenericApp_identify_clusterRevision
+     }
+   },
+@@ -276,6 +309,7 @@ void zclGenericApp_ResetAttributesToDefaultValues(void)
+ {
+ 
+   zclGenericApp_PhysicalEnvironment = PHY_UNSPECIFIED_ENV;
++  osal_nv_read( ZCD_NV_TRANSMIT_POWER, 0, sizeof( zclGenericApp_TransmitPower ), &zclGenericApp_TransmitPower );
+ 
+ #ifdef ZCL_IDENTIFY
+   zclGenericApp_IdentifyTime = 0;
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Common/zcl/zcl.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Common/zcl/zcl.c
+index 51902c4..9afcba3 100644
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Common/zcl/zcl.c
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Common/zcl/zcl.c
+@@ -47,6 +47,8 @@
+ #include "zcl.h"
+ #include "zcl_general.h"
+ 
++#include "osal_nv.h"
++
+ #if defined ( INTER_PAN ) || defined ( BDB_TL_INITIATOR ) || defined ( BDB_TL_TARGET )
+   #include "stub_aps.h"
+ #endif
+@@ -4675,6 +4677,14 @@ static uint8_t zclProcessInWriteCmd( zclIncoming_t *pInMsg )
+             status = zclWriteAttrData( pInMsg->msg->endPoint, &(pInMsg->msg->srcAddr),
+                                        &attrRec, statusRec );
+           }
++
++          if((pInMsg->msg->clusterId == ZCL_CLUSTER_ID_GENERAL_BASIC) && (statusRec->attrID == ATTRID_BASIC_TRANSMIT_POWER))
++          {
++              int8_t transmitPower;
++              OsalPort_memcpy((int8_t*)&transmitPower,statusRec->attrData,sizeof(int8_t));
++              ZMacSetTransmitPower( (ZMacTransmitPower_t)transmitPower );
++              osal_nv_write( ZCD_NV_TRANSMIT_POWER, sizeof( transmitPower ), &transmitPower );
++          }
+         }
+         else // Use CB
+         {
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/f8wrouter.opts b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/f8wrouter.opts
+index b841d60..ed396c2 100644
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/f8wrouter.opts
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/f8wrouter.opts
 @@ -9,3 +9,5 @@
  -DADDRMGR_NV_SINGLES
  -DBINDINGTABLE_NV_SINGLES
@@ -165,12 +314,12 @@ index b841d60..3308467 100644
 +
 +-include preinclude.h
 \ No newline at end of file
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..2a92dd1
+index 0000000..1d0429a
 --- /dev/null
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
-@@ -0,0 +1,49 @@
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
+@@ -0,0 +1,51 @@
 +// Increase MAC buffers
 +#undef MAC_CFG_TX_DATA_MAX
 +#define MAC_CFG_TX_DATA_MAX 20
@@ -208,6 +357,8 @@ index 0000000..2a92dd1
 + */
 +#define TXPOWER 9
 +
++#define ATTRID_BASIC_TRANSMIT_POWER 0x1337
++
 +// Different configs, uncomment for for launchpad firmware
 +#define LAUNCHPAD_CONFIG 1
 +
@@ -220,10 +371,24 @@ index 0000000..2a92dd1
 +#define CONFIG_RF_HIGH_PA                       0x0000005
 +#define SET_CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA  0xfa
 +#endif
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
-index 706736b..b813ed7 100644
---- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/sys/zcomdef.h b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/sys/zcomdef.h
+index 26c0b45..8a338c1 100644
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/sys/zcomdef.h
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/sys/zcomdef.h
+@@ -123,6 +123,9 @@ extern "C"
+ #define ZCD_NV_STARTUP_OPTION             0x0003
+ #define ZCD_NV_START_DELAY                0x0004
+ 
++// Custom transmit power NV item
++#define ZCD_NV_TRANSMIT_POWER             0x0010
++
+ // NWK Layer NV item IDs
+ #define ZCD_NV_NIB                        0x0021
+ #define ZCD_NV_DEVICE_LIST                0x0022
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
+index 706736b..b63af7b 100644
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
 @@ -225,7 +225,7 @@ uint8_t zgEndDeviceConfiguration = END_DEV_CONFIGURATION;
  //
  // NOTICE:  Before enabling Child Aging make sure to review all the related
@@ -233,10 +398,10 @@ index 706736b..b813ed7 100644
  
  //==========    TouchLink NWK configuration    ===============
  // Values used by Router when starts a network as initiator
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
-index 1f30180..b4481a1 100644
---- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
+index 1f30180..0fd57f5 100644
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
 @@ -441,12 +441,11 @@ uint32_t ZDApp_event_loop( uint8_t task_id, uint32_t events )
            ZDApp_ChangeState( DEV_ROUTER );
          }
@@ -273,41 +438,28 @@ index 1f30180..b4481a1 100644
      }
      else
      {
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg
-index 5089a84..b515ead 100644
---- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg
-@@ -700,7 +700,9 @@ var GateMutexPri = xdc.useModule('ti.sysbios.gates.GateMutexPri');
-  */
- var Memory = xdc.useModule('xdc.runtime.Memory');
- var HEAPMGR_CONFIG = 0;
--var HEAPMGR_SIZE   = 0x1800;
-+// Increase heap to 48kb
-+// https://e2e.ti.com/support/wireless-connectivity/zigbee-thread-group/zigbee-and-thread/f/zigbee-thread-forum/1052120/cc2652r-mac-no-resources-0x1a-errors-complete-crash-with-simplelink-cc13xx-cc26xx-sdk_5-30-00-56/3897554#3897554
-+var HEAPMGR_SIZE   = 0xc000;
- 
- // The following will create the #define HEAPMGR_CONFIG. It can then be used by include  <xdc/cfg/global.h>
- Program.global.HEAPMGR_CONFIG = HEAPMGR_CONFIG;
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
-index e138bb4..66b7965 100755
---- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
-@@ -66,9 +66,7 @@
- /* The starting address of the application.  Normally the interrupt vectors  */
- /* must be located at the beginning of the application.                      */
- 
--#ifndef NVOCMP_NVPAGES
--#define NVOCMP_NVPAGES          2
--#endif
-+#define NVOCMP_NVPAGES          3
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
+index da62af1..234ac56 100755
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
+@@ -71,9 +71,9 @@
+ #endif
  
  #define FLASH_BASE              0x00000000
- #define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_devices_config.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_devices_config.c
+-#define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+-#define FLASH_NV_BASE           (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+-#define FLASH_NV_SIZE           (NVOCMP_NVPAGES * 0x2000)
++#define FLASH_SIZE              0x50000
++#define FLASH_NV_BASE           0x50000
++#define FLASH_NV_SIZE           0x6000
+ #define FLASH_LAST_BASE         0x56000
+ #define FLASH_LAST_SIZE         0x2000
+ 
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_devices_config.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_devices_config.c
 new file mode 100644
 index 0000000..c80aafd
 --- /dev/null
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_devices_config.c
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_devices_config.c
 @@ -0,0 +1,108 @@
 +/*
 + *  ======== ti_devices_config.c ========
@@ -417,11 +569,11 @@ index 0000000..c80aafd
 +
 +#include <ti/devices/DeviceFamily.h>
 +#include DeviceFamily_constructPath(startup_files/ccfg.c)
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_drivers_config.h b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_drivers_config.h
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_drivers_config.h b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_drivers_config.h
 new file mode 100644
 index 0000000..6a57a31
 --- /dev/null
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_drivers_config.h
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_drivers_config.h
 @@ -0,0 +1,274 @@
 +/*
 + *  ======== ti_drivers_config.h ========
@@ -697,11 +849,11 @@ index 0000000..6a57a31
 +#endif
 +
 +#endif /* include guard */
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.c
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.c b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.c
 new file mode 100644
-index 0000000..6095b19
+index 0000000..229cea7
 --- /dev/null
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.c
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.c
 @@ -0,0 +1,385 @@
 +/*
 + *  ======== ti_radio_config.c ========
@@ -711,7 +863,7 @@ index 0000000..6095b19
 + *  by the SysConfig tool.
 + *
 + *  Radio Config module version : 1.14
-+ *  SmartRF Studio data version : 2.26.0
++ *  SmartRF Studio data version : 2.27.0
 + */
 +
 +#include "ti_radio_config.h"
@@ -721,7 +873,7 @@ index 0000000..6095b19
 +// *********************************************************************************
 +//   RF Frontend configuration
 +// *********************************************************************************
-+// RF design based on: LAUNCHXL-CC1352P-2 (LAUNCHXL-CC1352P2_20dBm)
++// RF design based on: LAUNCHXL-CC1352P-2
 +
 +// TX Power tables
 +// The RF_TxPowerTable_DEFAULT_PA_ENTRY and RF_TxPowerTable_HIGH_PA_ENTRY macros are defined in RF.h.
@@ -1088,11 +1240,11 @@ index 0000000..6095b19
 +};
 +
 +
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.h b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.h
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.h b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.h
 new file mode 100644
-index 0000000..940d2a5
+index 0000000..870127b
 --- /dev/null
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.h
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.h
 @@ -0,0 +1,83 @@
 +/*
 + *  ======== ti_radio_config.h ========
@@ -1102,7 +1254,7 @@ index 0000000..940d2a5
 + *  by the SysConfig tool.
 + *
 + *  Radio Config module version : 1.14
-+ *  SmartRF Studio data version : 2.26.0
++ *  SmartRF Studio data version : 2.27.0
 + */
 +#ifndef _TI_RADIO_CONFIG_H_
 +#define _TI_RADIO_CONFIG_H_
@@ -1114,12 +1266,12 @@ index 0000000..940d2a5
 +#include <ti/drivers/rf/RF.h>
 +
 +/* SmartRF Studio version that the RF data is fetched from */
-+#define SMARTRF_STUDIO_VERSION "2.26.0"
++#define SMARTRF_STUDIO_VERSION "2.27.0"
 +
 +// *********************************************************************************
 +//   RF Frontend configuration
 +// *********************************************************************************
-+// RF design based on: LAUNCHXL-CC1352P-2 (LAUNCHXL-CC1352P2_20dBm)
++// RF design based on: LAUNCHXL-CC1352P-2
 +#define LAUNCHXL_CC1352P_2
 +
 +// High-Power Amplifier supported
@@ -1177,13 +1329,13 @@ index 0000000..940d2a5
 +extern uint32_t pOverrides_ieee154Tx20[];
 +
 +#endif // _TI_RADIO_CONFIG_H_
-diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/zr_genericapp.syscfg b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/zr_genericapp.syscfg
-index 1c8499b..d31ed10 100644
---- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/zr_genericapp.syscfg
-+++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos_ticlang/zr_genericapp.syscfg
+diff --git a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/zr_genericapp.syscfg b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/zr_genericapp.syscfg
+index 1b16340..f700be5 100644
+--- a/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/zr_genericapp.syscfg
++++ b/zr_genericapp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/zr_genericapp.syscfg
 @@ -4,6 +4,10 @@
-  * @cliArgs --board "/ti/boards/CC1352P_2_LAUNCHXL" --rtos "tirtos" --product "simplelink_cc13xx_cc26xx_sdk@6.20.00.29"
-  * @versions {"tool":"1.13.0+2553"}
+  * @cliArgs --board "/ti/boards/CC1352P_2_LAUNCHXL" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@6.30.00.84"
+  * @versions {"tool":"1.14.0+2667"}
   */
 +scripting.excludeFromBuild("ti_devices_config.c");
 +scripting.excludeFromBuild("ti_radio_config.c");
@@ -1192,7 +1344,7 @@ index 1c8499b..d31ed10 100644
  
  /**
   * Import the modules used in this configuration.
-@@ -50,6 +54,7 @@ CCFG.enableBootloaderBackdoor = true;
+@@ -65,6 +69,7 @@ CCFG.enableBootloaderBackdoor = true;
  CCFG.dioBootloaderBackdoor    = 15;
  CCFG.levelBootloaderBackdoor  = "Active low";
  CCFG.forceVddr                = true;
@@ -1200,7 +1352,7 @@ index 1c8499b..d31ed10 100644
  CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
  
  rfdesign.rfDesign = "LAUNCHXL-CC1352P-2";
-@@ -72,8 +77,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
+@@ -87,8 +92,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
  
  NVS1.$name                    = "CONFIG_NVSINTERNAL";
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
@@ -1211,7 +1363,7 @@ index 1c8499b..d31ed10 100644
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
-@@ -125,6 +130,8 @@ zstack.deviceTypeReadOnly                    = true;
+@@ -179,6 +184,8 @@ zstack.deviceTypeReadOnly                    = true;
  zstack.touchlink.$name                       = "ti_zstack_touchlink_zstack_touchlink0";
  zstack.pm.$name                              = "ti_zstack_pm_zstack_pm0";
  zstack.rf.$name                              = "ti_zstack_rf_zstack_rf0";
@@ -1220,10 +1372,10 @@ index 1c8499b..d31ed10 100644
  zstack.rf.radioConfig.$name                  = "ti_devices_radioconfig_settings_ieee_15_40";
  zstack.rf.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
  zstack.rf.coexSettings.$name                 = "ti_zstack_rf_zstack_coex_mod0";
-diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp.c b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp.c
-index 82a4bec..08116b8 100644
---- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp.c
-+++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp.c
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/zcl_genericapp.c b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/zcl_genericapp.c
+index 550be7a..0725b39 100644
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/zcl_genericapp.c
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/zcl_genericapp.c
 @@ -53,6 +53,8 @@
   * INCLUDES
   */
@@ -1233,7 +1385,31 @@ index 82a4bec..08116b8 100644
  #include "rom_jt_154.h"
  #include "zcomdef.h"
  
-@@ -870,6 +872,7 @@ static void zclGenericApp_processAfIncomingMsgInd(zstack_afIncomingMsgInd_t *pIn
+@@ -68,6 +70,8 @@
+ #include "zcl_genericapp.h"
+ #include "zcl_port.h"
+ 
++#include "osal_nv.h"
++
+ #include <ti/drivers/apps/Button.h>
+ #include "ti_drivers_config.h"
+ #include "util_timer.h"
+@@ -261,6 +265,14 @@ void sampleApp_task(NVINTF_nvFuncts_t *pfnNV)
+   pfnZdlNV = pfnNV;
+   zclport_registerNV(pfnZdlNV, ZCL_PORT_SCENE_TABLE_NV_ID);
+ 
++  // Init the transmit power NV item, this will be skipped if item is already initialized
++  int8_t transmitPower = TXPOWER;
++  osal_nv_item_init( ZCD_NV_TRANSMIT_POWER, sizeof(transmitPower), &transmitPower );
++
++  // Set transmit power
++  osal_nv_read( ZCD_NV_TRANSMIT_POWER, 0, sizeof( transmitPower ), &transmitPower );
++  ZMacSetTransmitPower( (ZMacTransmitPower_t)transmitPower );
++
+   // Initialize application
+   zclGenericApp_initialization();
+ 
+@@ -870,6 +882,7 @@ static void zclGenericApp_processAfIncomingMsgInd(zstack_afIncomingMsgInd_t *pIn
   */
  static void zclGenericApp_ProcessCommissioningStatus(bdbCommissioningModeMsg_t *bdbCommissioningModeMsg)
  {
@@ -1241,7 +1417,7 @@ index 82a4bec..08116b8 100644
    switch(bdbCommissioningModeMsg->bdbCommissioningMode)
    {
      case BDB_COMMISSIONING_FORMATION:
-@@ -909,6 +912,8 @@ static void zclGenericApp_ProcessCommissioningStatus(bdbCommissioningModeMsg_t *
+@@ -909,6 +922,8 @@ static void zclGenericApp_ProcessCommissioningStatus(bdbCommissioningModeMsg_t *
        }
      break;
      case BDB_COMMISSIONING_INITIALIZATION:
@@ -1250,7 +1426,7 @@ index 82a4bec..08116b8 100644
        //Initialization notification can only be successful. Failure on initialization
        //only happens for ZED and is notified as BDB_COMMISSIONING_PARENT_LOST notification
  
-@@ -1209,28 +1214,16 @@ static void zclGenericApp_changeKeyCallback(Button_Handle _btn, Button_EventMask
+@@ -1209,28 +1224,16 @@ static void zclGenericApp_changeKeyCallback(Button_Handle _btn, Button_EventMask
   */
  static void zclGenericApp_processKey(Button_Handle _btn)
  {
@@ -1287,25 +1463,46 @@ index 82a4bec..08116b8 100644
  }
  
  
-diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp_data.c b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp_data.c
-index c0e473d..7fdedb1 100644
---- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp_data.c
-+++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/zcl_genericapp_data.c
-@@ -96,6 +96,8 @@ const uint16_t zclGenericApp_identify_clusterRevision = 0x0001;
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/zcl_genericapp_data.c b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/zcl_genericapp_data.c
+index c0e473d..4d08810 100644
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/zcl_genericapp_data.c
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/zcl_genericapp_data.c
+@@ -49,6 +49,8 @@
+ #include "zcl_general.h"
+ #include "zcl_ha.h"
+ 
++#include "osal_nv.h"
++
+ /* GENERICAPP_TODO: Include any of the header files below to access specific cluster data
+ #include "zcl_poll_control.h"
+ #include "zcl_electrical_measurement.h"
+@@ -96,8 +98,11 @@ const uint16_t zclGenericApp_identify_clusterRevision = 0x0001;
  const uint8_t zclGenericApp_HWRevision = GENERICAPP_HWVERSION;
  const uint8_t zclGenericApp_ZCLVersion = GENERICAPP_ZCLVERSION;
  const uint8_t zclGenericApp_ManufacturerName[] = { 16, 'T','e','x','a','s','I','n','s','t','r','u','m','e','n','t','s' };
 +const uint8_t zclGenericApp_ModelID[] = { 9, 't','i','.','r','o','u','t','e','r' };
-+const uint8_t zclGenericApp_SwBuildID[] = { 8, '2','0','2','2','0','9','0','8' };
++const uint8_t zclGenericApp_SwBuildID[] = { 8, '2','0','2','2','1','1','0','2' };
  const uint8_t zclGenericApp_PowerSource = POWER_SOURCE_MAINS_1_PHASE;
  uint8_t zclGenericApp_PhysicalEnvironment = PHY_UNSPECIFIED_ENV;
++int8_t zclGenericApp_TransmitPower;
  
-@@ -143,10 +145,28 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+ #ifdef ZCL_IDENTIFY
+ // Identify Cluster
+@@ -134,7 +139,7 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     {  // Attribute record
+       ATTRID_BASIC_HW_VERSION,            // Attribute ID - Found in Cluster Library header (ie. zcl_general.h)
+       ZCL_DATATYPE_UINT8,                 // Data Type - found in zcl.h
+-      ACCESS_CONTROL_READ,                // Variable access control - found in zcl.h
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),                // Variable access control - found in zcl.h
+       (void *)&zclGenericApp_HWRevision  // Pointer to attribute variable
+     }
+   },
+@@ -143,16 +148,34 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
      { // Attribute record
        ATTRID_BASIC_ZCL_VERSION,
        ZCL_DATATYPE_UINT8,
 -      ACCESS_CONTROL_READ,
-+      (ACCESS_CONTROL_READ | ACCESS_REPORTABLE),
++      (ACCESS_CONTROL_READ | ACCESS_REPORTABLE | ACCESS_CONTROL_AUTH_READ),
        (void *)&zclGenericApp_ZCLVersion
      }
    },
@@ -1314,7 +1511,7 @@ index c0e473d..7fdedb1 100644
 +    { // Attribute record
 +      ATTRID_BASIC_MODEL_IDENTIFIER,
 +      ZCL_DATATYPE_CHAR_STR,
-+      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
 +      (void *)zclGenericApp_ModelID
 +    }
 +  },
@@ -1323,17 +1520,118 @@ index c0e473d..7fdedb1 100644
 +    { // Attribute record
 +      ATTRID_BASIC_SW_BUILD_ID,
 +      ZCL_DATATYPE_CHAR_STR,
-+      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
 +      (void *)zclGenericApp_SwBuildID
 +    }
 +  },
    {
      ZCL_CLUSTER_ID_GENERAL_BASIC,
      { // Attribute record
-diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/f8wrouter.opts b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/f8wrouter.opts
-index b841d60..3308467 100644
---- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/f8wrouter.opts
-+++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/f8wrouter.opts
+       ATTRID_BASIC_MANUFACTURER_NAME,
+       ZCL_DATATYPE_CHAR_STR,
+-      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
+       (void *)zclGenericApp_ManufacturerName
+     }
+   },
+@@ -161,7 +184,7 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     { // Attribute record
+       ATTRID_BASIC_POWER_SOURCE,
+       ZCL_DATATYPE_ENUM8,
+-      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
+       (void *)&zclGenericApp_PowerSource
+     }
+   },
+@@ -170,7 +193,7 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     { // Attribute record
+       ATTRID_BASIC_PHYSICAL_ENVIRONMENT,
+       ZCL_DATATYPE_ENUM8,
+-      (ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE),
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE | ACCESS_CONTROL_AUTH_READ),
+       (void *)&zclGenericApp_PhysicalEnvironment
+     }
+   },
+@@ -179,10 +202,20 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     {  // Attribute record
+       ATTRID_CLUSTER_REVISION,
+       ZCL_DATATYPE_UINT16,
+-      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
+       (void *)&zclGenericApp_basic_clusterRevision
+     }
+   },
++  {
++    ZCL_CLUSTER_ID_GENERAL_BASIC,
++    {  // Attribute record
++     ATTRID_BASIC_TRANSMIT_POWER,
++     ZCL_DATATYPE_INT8,
++     (ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE | ACCESS_CONTROL_AUTH_READ),
++     (void *)&zclGenericApp_TransmitPower
++    }
++  },
++
+ 
+ #ifdef ZCL_IDENTIFY
+   // *** Identify Cluster Attribute ***
+@@ -191,7 +224,7 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     { // Attribute record
+       ATTRID_IDENTIFY_IDENTIFY_TIME,
+       ZCL_DATATYPE_UINT16,
+-      (ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE),
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE | ACCESS_CONTROL_AUTH_READ),
+       (void *)&zclGenericApp_IdentifyTime
+     }
+   },
+@@ -201,7 +234,7 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     {  // Attribute record
+       ATTRID_CLUSTER_REVISION,
+       ZCL_DATATYPE_UINT16,
+-      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
+       (void *)&zclGenericApp_identify_clusterRevision
+     }
+   },
+@@ -276,6 +309,7 @@ void zclGenericApp_ResetAttributesToDefaultValues(void)
+ {
+ 
+   zclGenericApp_PhysicalEnvironment = PHY_UNSPECIFIED_ENV;
++  osal_nv_read( ZCD_NV_TRANSMIT_POWER, 0, sizeof( zclGenericApp_TransmitPower ), &zclGenericApp_TransmitPower );
+ 
+ #ifdef ZCL_IDENTIFY
+   zclGenericApp_IdentifyTime = 0;
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Common/zcl/zcl.c b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Common/zcl/zcl.c
+index 51902c4..9afcba3 100644
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Common/zcl/zcl.c
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Common/zcl/zcl.c
+@@ -47,6 +47,8 @@
+ #include "zcl.h"
+ #include "zcl_general.h"
+ 
++#include "osal_nv.h"
++
+ #if defined ( INTER_PAN ) || defined ( BDB_TL_INITIATOR ) || defined ( BDB_TL_TARGET )
+   #include "stub_aps.h"
+ #endif
+@@ -4675,6 +4677,14 @@ static uint8_t zclProcessInWriteCmd( zclIncoming_t *pInMsg )
+             status = zclWriteAttrData( pInMsg->msg->endPoint, &(pInMsg->msg->srcAddr),
+                                        &attrRec, statusRec );
+           }
++
++          if((pInMsg->msg->clusterId == ZCL_CLUSTER_ID_GENERAL_BASIC) && (statusRec->attrID == ATTRID_BASIC_TRANSMIT_POWER))
++          {
++              int8_t transmitPower;
++              OsalPort_memcpy((int8_t*)&transmitPower,statusRec->attrData,sizeof(int8_t));
++              ZMacSetTransmitPower( (ZMacTransmitPower_t)transmitPower );
++              osal_nv_write( ZCD_NV_TRANSMIT_POWER, sizeof( transmitPower ), &transmitPower );
++          }
+         }
+         else // Use CB
+         {
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/f8wrouter.opts b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/f8wrouter.opts
+index b841d60..ed396c2 100644
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/f8wrouter.opts
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/f8wrouter.opts
 @@ -9,3 +9,5 @@
  -DADDRMGR_NV_SINGLES
  -DBINDINGTABLE_NV_SINGLES
@@ -1341,12 +1639,12 @@ index b841d60..3308467 100644
 +
 +-include preinclude.h
 \ No newline at end of file
-diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..8a7300b
+index 0000000..1ce7b56
 --- /dev/null
-+++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
-@@ -0,0 +1,31 @@
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
+@@ -0,0 +1,33 @@
 +// Increase MAC buffers
 +#undef MAC_CFG_TX_DATA_MAX
 +#define MAC_CFG_TX_DATA_MAX 20
@@ -1371,6 +1669,8 @@ index 0000000..8a7300b
 +#define MAX_RTG_ENTRIES         150
 +#define ZDO_API_ADVANCED
 +
++#define ATTRID_BASIC_TRANSMIT_POWER 0x1337
++
 +// From https://www.ti.com/lit/an/swra650b/swra650b.pdf
 +#define LINK_DOWN_TRIGGER 12
 +#define NWK_ROUTE_AGE_LIMIT 5
@@ -1378,10 +1678,24 @@ index 0000000..8a7300b
 +#define DEFAULT_ROUTE_REQUEST_RADIUS 8
 +#define ZDNWKMGR_MIN_TRANSMISSIONS 0
 +#define ROUTE_DISCOVERY_TIME 13
-diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
-index 706736b..b813ed7 100644
---- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
-+++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/sys/zcomdef.h b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/sys/zcomdef.h
+index 26c0b45..8a338c1 100644
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/sys/zcomdef.h
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/sys/zcomdef.h
+@@ -123,6 +123,9 @@ extern "C"
+ #define ZCD_NV_STARTUP_OPTION             0x0003
+ #define ZCD_NV_START_DELAY                0x0004
+ 
++// Custom transmit power NV item
++#define ZCD_NV_TRANSMIT_POWER             0x0010
++
+ // NWK Layer NV item IDs
+ #define ZCD_NV_NIB                        0x0021
+ #define ZCD_NV_DEVICE_LIST                0x0022
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
+index 706736b..b63af7b 100644
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
 @@ -225,7 +225,7 @@ uint8_t zgEndDeviceConfiguration = END_DEV_CONFIGURATION;
  //
  // NOTICE:  Before enabling Child Aging make sure to review all the related
@@ -1391,10 +1705,10 @@ index 706736b..b813ed7 100644
  
  //==========    TouchLink NWK configuration    ===============
  // Values used by Router when starts a network as initiator
-diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
-index 1f30180..b4481a1 100644
---- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
-+++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
+index 1f30180..0fd57f5 100644
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
 @@ -441,12 +441,11 @@ uint32_t ZDApp_event_loop( uint8_t task_id, uint32_t events )
            ZDApp_ChangeState( DEV_ROUTER );
          }
@@ -1431,41 +1745,28 @@ index 1f30180..b4481a1 100644
      }
      else
      {
-diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg
-index 5089a84..b515ead 100644
---- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg
-+++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg
-@@ -700,7 +700,9 @@ var GateMutexPri = xdc.useModule('ti.sysbios.gates.GateMutexPri');
-  */
- var Memory = xdc.useModule('xdc.runtime.Memory');
- var HEAPMGR_CONFIG = 0;
--var HEAPMGR_SIZE   = 0x1800;
-+// Increase heap to 48kb
-+// https://e2e.ti.com/support/wireless-connectivity/zigbee-thread-group/zigbee-and-thread/f/zigbee-thread-forum/1052120/cc2652r-mac-no-resources-0x1a-errors-complete-crash-with-simplelink-cc13xx-cc26xx-sdk_5-30-00-56/3897554#3897554
-+var HEAPMGR_SIZE   = 0xc000;
- 
- // The following will create the #define HEAPMGR_CONFIG. It can then be used by include  <xdc/cfg/global.h>
- Program.global.HEAPMGR_CONFIG = HEAPMGR_CONFIG;
-diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
-index e138bb4..66b7965 100755
---- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
-+++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
-@@ -66,9 +66,7 @@
- /* The starting address of the application.  Normally the interrupt vectors  */
- /* must be located at the beginning of the application.                      */
- 
--#ifndef NVOCMP_NVPAGES
--#define NVOCMP_NVPAGES          2
--#endif
-+#define NVOCMP_NVPAGES          3
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
+index da62af1..234ac56 100755
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
+@@ -71,9 +71,9 @@
+ #endif
  
  #define FLASH_BASE              0x00000000
- #define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
-diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/zr_genericapp.syscfg b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/zr_genericapp.syscfg
-index 5c3c73d..218eda9 100644
---- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/zr_genericapp.syscfg
-+++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos_ticlang/zr_genericapp.syscfg
-@@ -47,6 +47,7 @@ CCFG.enableBootloader         = true;
+-#define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+-#define FLASH_NV_BASE           (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+-#define FLASH_NV_SIZE           (NVOCMP_NVPAGES * 0x2000)
++#define FLASH_SIZE              0x50000
++#define FLASH_NV_BASE           0x50000
++#define FLASH_NV_SIZE           0x6000
+ #define FLASH_LAST_BASE         0x56000
+ #define FLASH_LAST_SIZE         0x2000
+ 
+diff --git a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/zr_genericapp.syscfg b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/zr_genericapp.syscfg
+index 7af3313..300960f 100644
+--- a/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/zr_genericapp.syscfg
++++ b/zr_genericapp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/zr_genericapp.syscfg
+@@ -62,6 +62,7 @@ CCFG.enableBootloader         = true;
  CCFG.enableBootloaderBackdoor = true;
  CCFG.dioBootloaderBackdoor    = 13;
  CCFG.levelBootloaderBackdoor  = "Active low";
@@ -1473,7 +1774,7 @@ index 5c3c73d..218eda9 100644
  CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
  
  Display1.$hardware  = system.deviceData.board.components.XDS110UART;
-@@ -67,8 +68,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
+@@ -82,8 +83,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
  
  NVS1.$name                    = "CONFIG_NVSINTERNAL";
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
@@ -1484,7 +1785,7 @@ index 5c3c73d..218eda9 100644
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
-@@ -118,6 +119,8 @@ zstack.deviceTypeReadOnly                    = true;
+@@ -172,6 +173,8 @@ zstack.deviceTypeReadOnly                    = true;
  zstack.touchlink.$name                       = "ti_zstack_touchlink_zstack_touchlink0";
  zstack.pm.$name                              = "ti_zstack_pm_zstack_pm0";
  zstack.rf.$name                              = "ti_zstack_rf_zstack_rf0";
@@ -1493,10 +1794,10 @@ index 5c3c73d..218eda9 100644
  zstack.rf.radioConfig.$name                  = "ti_devices_radioconfig_settings_ieee_15_40";
  zstack.rf.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
  zstack.rf.coexSettings.$name                 = "ti_zstack_rf_zstack_coex_mod0";
-diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Application/zcl_genericapp.c b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Application/zcl_genericapp.c
-index 82a4bec..08116b8 100644
---- a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Application/zcl_genericapp.c
-+++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Application/zcl_genericapp.c
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Application/zcl_genericapp.c b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Application/zcl_genericapp.c
+index 550be7a..0725b39 100644
+--- a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Application/zcl_genericapp.c
++++ b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Application/zcl_genericapp.c
 @@ -53,6 +53,8 @@
   * INCLUDES
   */
@@ -1506,7 +1807,31 @@ index 82a4bec..08116b8 100644
  #include "rom_jt_154.h"
  #include "zcomdef.h"
  
-@@ -870,6 +872,7 @@ static void zclGenericApp_processAfIncomingMsgInd(zstack_afIncomingMsgInd_t *pIn
+@@ -68,6 +70,8 @@
+ #include "zcl_genericapp.h"
+ #include "zcl_port.h"
+ 
++#include "osal_nv.h"
++
+ #include <ti/drivers/apps/Button.h>
+ #include "ti_drivers_config.h"
+ #include "util_timer.h"
+@@ -261,6 +265,14 @@ void sampleApp_task(NVINTF_nvFuncts_t *pfnNV)
+   pfnZdlNV = pfnNV;
+   zclport_registerNV(pfnZdlNV, ZCL_PORT_SCENE_TABLE_NV_ID);
+ 
++  // Init the transmit power NV item, this will be skipped if item is already initialized
++  int8_t transmitPower = TXPOWER;
++  osal_nv_item_init( ZCD_NV_TRANSMIT_POWER, sizeof(transmitPower), &transmitPower );
++
++  // Set transmit power
++  osal_nv_read( ZCD_NV_TRANSMIT_POWER, 0, sizeof( transmitPower ), &transmitPower );
++  ZMacSetTransmitPower( (ZMacTransmitPower_t)transmitPower );
++
+   // Initialize application
+   zclGenericApp_initialization();
+ 
+@@ -870,6 +882,7 @@ static void zclGenericApp_processAfIncomingMsgInd(zstack_afIncomingMsgInd_t *pIn
   */
  static void zclGenericApp_ProcessCommissioningStatus(bdbCommissioningModeMsg_t *bdbCommissioningModeMsg)
  {
@@ -1514,7 +1839,7 @@ index 82a4bec..08116b8 100644
    switch(bdbCommissioningModeMsg->bdbCommissioningMode)
    {
      case BDB_COMMISSIONING_FORMATION:
-@@ -909,6 +912,8 @@ static void zclGenericApp_ProcessCommissioningStatus(bdbCommissioningModeMsg_t *
+@@ -909,6 +922,8 @@ static void zclGenericApp_ProcessCommissioningStatus(bdbCommissioningModeMsg_t *
        }
      break;
      case BDB_COMMISSIONING_INITIALIZATION:
@@ -1523,7 +1848,7 @@ index 82a4bec..08116b8 100644
        //Initialization notification can only be successful. Failure on initialization
        //only happens for ZED and is notified as BDB_COMMISSIONING_PARENT_LOST notification
  
-@@ -1209,28 +1214,16 @@ static void zclGenericApp_changeKeyCallback(Button_Handle _btn, Button_EventMask
+@@ -1209,28 +1224,16 @@ static void zclGenericApp_changeKeyCallback(Button_Handle _btn, Button_EventMask
   */
  static void zclGenericApp_processKey(Button_Handle _btn)
  {
@@ -1560,25 +1885,46 @@ index 82a4bec..08116b8 100644
  }
  
  
-diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Application/zcl_genericapp_data.c b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Application/zcl_genericapp_data.c
-index c0e473d..7fdedb1 100644
---- a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Application/zcl_genericapp_data.c
-+++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Application/zcl_genericapp_data.c
-@@ -96,6 +96,8 @@ const uint16_t zclGenericApp_identify_clusterRevision = 0x0001;
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Application/zcl_genericapp_data.c b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Application/zcl_genericapp_data.c
+index c0e473d..4d08810 100644
+--- a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Application/zcl_genericapp_data.c
++++ b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Application/zcl_genericapp_data.c
+@@ -49,6 +49,8 @@
+ #include "zcl_general.h"
+ #include "zcl_ha.h"
+ 
++#include "osal_nv.h"
++
+ /* GENERICAPP_TODO: Include any of the header files below to access specific cluster data
+ #include "zcl_poll_control.h"
+ #include "zcl_electrical_measurement.h"
+@@ -96,8 +98,11 @@ const uint16_t zclGenericApp_identify_clusterRevision = 0x0001;
  const uint8_t zclGenericApp_HWRevision = GENERICAPP_HWVERSION;
  const uint8_t zclGenericApp_ZCLVersion = GENERICAPP_ZCLVERSION;
  const uint8_t zclGenericApp_ManufacturerName[] = { 16, 'T','e','x','a','s','I','n','s','t','r','u','m','e','n','t','s' };
 +const uint8_t zclGenericApp_ModelID[] = { 9, 't','i','.','r','o','u','t','e','r' };
-+const uint8_t zclGenericApp_SwBuildID[] = { 8, '2','0','2','2','0','9','0','8' };
++const uint8_t zclGenericApp_SwBuildID[] = { 8, '2','0','2','2','1','1','0','2' };
  const uint8_t zclGenericApp_PowerSource = POWER_SOURCE_MAINS_1_PHASE;
  uint8_t zclGenericApp_PhysicalEnvironment = PHY_UNSPECIFIED_ENV;
++int8_t zclGenericApp_TransmitPower;
  
-@@ -143,10 +145,28 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+ #ifdef ZCL_IDENTIFY
+ // Identify Cluster
+@@ -134,7 +139,7 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     {  // Attribute record
+       ATTRID_BASIC_HW_VERSION,            // Attribute ID - Found in Cluster Library header (ie. zcl_general.h)
+       ZCL_DATATYPE_UINT8,                 // Data Type - found in zcl.h
+-      ACCESS_CONTROL_READ,                // Variable access control - found in zcl.h
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),                // Variable access control - found in zcl.h
+       (void *)&zclGenericApp_HWRevision  // Pointer to attribute variable
+     }
+   },
+@@ -143,16 +148,34 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
      { // Attribute record
        ATTRID_BASIC_ZCL_VERSION,
        ZCL_DATATYPE_UINT8,
 -      ACCESS_CONTROL_READ,
-+      (ACCESS_CONTROL_READ | ACCESS_REPORTABLE),
++      (ACCESS_CONTROL_READ | ACCESS_REPORTABLE | ACCESS_CONTROL_AUTH_READ),
        (void *)&zclGenericApp_ZCLVersion
      }
    },
@@ -1587,7 +1933,7 @@ index c0e473d..7fdedb1 100644
 +    { // Attribute record
 +      ATTRID_BASIC_MODEL_IDENTIFIER,
 +      ZCL_DATATYPE_CHAR_STR,
-+      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
 +      (void *)zclGenericApp_ModelID
 +    }
 +  },
@@ -1596,17 +1942,118 @@ index c0e473d..7fdedb1 100644
 +    { // Attribute record
 +      ATTRID_BASIC_SW_BUILD_ID,
 +      ZCL_DATATYPE_CHAR_STR,
-+      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
 +      (void *)zclGenericApp_SwBuildID
 +    }
 +  },
    {
      ZCL_CLUSTER_ID_GENERAL_BASIC,
      { // Attribute record
-diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/Config/f8wrouter.opts b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/Config/f8wrouter.opts
-index b841d60..3308467 100644
---- a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/Config/f8wrouter.opts
-+++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/Config/f8wrouter.opts
+       ATTRID_BASIC_MANUFACTURER_NAME,
+       ZCL_DATATYPE_CHAR_STR,
+-      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
+       (void *)zclGenericApp_ManufacturerName
+     }
+   },
+@@ -161,7 +184,7 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     { // Attribute record
+       ATTRID_BASIC_POWER_SOURCE,
+       ZCL_DATATYPE_ENUM8,
+-      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
+       (void *)&zclGenericApp_PowerSource
+     }
+   },
+@@ -170,7 +193,7 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     { // Attribute record
+       ATTRID_BASIC_PHYSICAL_ENVIRONMENT,
+       ZCL_DATATYPE_ENUM8,
+-      (ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE),
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE | ACCESS_CONTROL_AUTH_READ),
+       (void *)&zclGenericApp_PhysicalEnvironment
+     }
+   },
+@@ -179,10 +202,20 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     {  // Attribute record
+       ATTRID_CLUSTER_REVISION,
+       ZCL_DATATYPE_UINT16,
+-      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
+       (void *)&zclGenericApp_basic_clusterRevision
+     }
+   },
++  {
++    ZCL_CLUSTER_ID_GENERAL_BASIC,
++    {  // Attribute record
++     ATTRID_BASIC_TRANSMIT_POWER,
++     ZCL_DATATYPE_INT8,
++     (ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE | ACCESS_CONTROL_AUTH_READ),
++     (void *)&zclGenericApp_TransmitPower
++    }
++  },
++
+ 
+ #ifdef ZCL_IDENTIFY
+   // *** Identify Cluster Attribute ***
+@@ -191,7 +224,7 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     { // Attribute record
+       ATTRID_IDENTIFY_IDENTIFY_TIME,
+       ZCL_DATATYPE_UINT16,
+-      (ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE),
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE | ACCESS_CONTROL_AUTH_READ),
+       (void *)&zclGenericApp_IdentifyTime
+     }
+   },
+@@ -201,7 +234,7 @@ CONST zclAttrRec_t zclGenericApp_Attrs[] =
+     {  // Attribute record
+       ATTRID_CLUSTER_REVISION,
+       ZCL_DATATYPE_UINT16,
+-      ACCESS_CONTROL_READ,
++      (ACCESS_CONTROL_READ | ACCESS_CONTROL_AUTH_READ),
+       (void *)&zclGenericApp_identify_clusterRevision
+     }
+   },
+@@ -276,6 +309,7 @@ void zclGenericApp_ResetAttributesToDefaultValues(void)
+ {
+ 
+   zclGenericApp_PhysicalEnvironment = PHY_UNSPECIFIED_ENV;
++  osal_nv_read( ZCD_NV_TRANSMIT_POWER, 0, sizeof( zclGenericApp_TransmitPower ), &zclGenericApp_TransmitPower );
+ 
+ #ifdef ZCL_IDENTIFY
+   zclGenericApp_IdentifyTime = 0;
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Common/zcl/zcl.c b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Common/zcl/zcl.c
+index 51902c4..9afcba3 100644
+--- a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Common/zcl/zcl.c
++++ b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Common/zcl/zcl.c
+@@ -47,6 +47,8 @@
+ #include "zcl.h"
+ #include "zcl_general.h"
+ 
++#include "osal_nv.h"
++
+ #if defined ( INTER_PAN ) || defined ( BDB_TL_INITIATOR ) || defined ( BDB_TL_TARGET )
+   #include "stub_aps.h"
+ #endif
+@@ -4675,6 +4677,14 @@ static uint8_t zclProcessInWriteCmd( zclIncoming_t *pInMsg )
+             status = zclWriteAttrData( pInMsg->msg->endPoint, &(pInMsg->msg->srcAddr),
+                                        &attrRec, statusRec );
+           }
++
++          if((pInMsg->msg->clusterId == ZCL_CLUSTER_ID_GENERAL_BASIC) && (statusRec->attrID == ATTRID_BASIC_TRANSMIT_POWER))
++          {
++              int8_t transmitPower;
++              OsalPort_memcpy((int8_t*)&transmitPower,statusRec->attrData,sizeof(int8_t));
++              ZMacSetTransmitPower( (ZMacTransmitPower_t)transmitPower );
++              osal_nv_write( ZCD_NV_TRANSMIT_POWER, sizeof( transmitPower ), &transmitPower );
++          }
+         }
+         else // Use CB
+         {
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/f8wrouter.opts b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/f8wrouter.opts
+index b841d60..ed396c2 100644
+--- a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/f8wrouter.opts
++++ b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/f8wrouter.opts
 @@ -9,3 +9,5 @@
  -DADDRMGR_NV_SINGLES
  -DBINDINGTABLE_NV_SINGLES
@@ -1614,12 +2061,12 @@ index b841d60..3308467 100644
 +
 +-include preinclude.h
 \ No newline at end of file
-diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/Config/preinclude.h b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/Config/preinclude.h
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..8a7300b
+index 0000000..1ce7b56
 --- /dev/null
-+++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/Config/preinclude.h
-@@ -0,0 +1,31 @@
++++ b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h
+@@ -0,0 +1,33 @@
 +// Increase MAC buffers
 +#undef MAC_CFG_TX_DATA_MAX
 +#define MAC_CFG_TX_DATA_MAX 20
@@ -1644,6 +2091,8 @@ index 0000000..8a7300b
 +#define MAX_RTG_ENTRIES         150
 +#define ZDO_API_ADVANCED
 +
++#define ATTRID_BASIC_TRANSMIT_POWER 0x1337
++
 +// From https://www.ti.com/lit/an/swra650b/swra650b.pdf
 +#define LINK_DOWN_TRIGGER 12
 +#define NWK_ROUTE_AGE_LIMIT 5
@@ -1651,10 +2100,24 @@ index 0000000..8a7300b
 +#define DEFAULT_ROUTE_REQUEST_RADIUS 8
 +#define ZDNWKMGR_MIN_TRANSMISSIONS 0
 +#define ROUTE_DISCOVERY_TIME 13
-diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/sys/zglobals.c b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/sys/zglobals.c
-index 706736b..b813ed7 100644
---- a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/sys/zglobals.c
-+++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/sys/zglobals.c
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/sys/zcomdef.h b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/sys/zcomdef.h
+index 26c0b45..8a338c1 100644
+--- a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/sys/zcomdef.h
++++ b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/sys/zcomdef.h
+@@ -123,6 +123,9 @@ extern "C"
+ #define ZCD_NV_STARTUP_OPTION             0x0003
+ #define ZCD_NV_START_DELAY                0x0004
+ 
++// Custom transmit power NV item
++#define ZCD_NV_TRANSMIT_POWER             0x0010
++
+ // NWK Layer NV item IDs
+ #define ZCD_NV_NIB                        0x0021
+ #define ZCD_NV_DEVICE_LIST                0x0022
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/sys/zglobals.c b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/sys/zglobals.c
+index 706736b..b63af7b 100644
+--- a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/sys/zglobals.c
++++ b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/sys/zglobals.c
 @@ -225,7 +225,7 @@ uint8_t zgEndDeviceConfiguration = END_DEV_CONFIGURATION;
  //
  // NOTICE:  Before enabling Child Aging make sure to review all the related
@@ -1664,10 +2127,10 @@ index 706736b..b813ed7 100644
  
  //==========    TouchLink NWK configuration    ===============
  // Values used by Router when starts a network as initiator
-diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_app.c b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_app.c
-index 1f30180..b4481a1 100644
---- a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_app.c
-+++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_app.c
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_app.c b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_app.c
+index 1f30180..0fd57f5 100644
+--- a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_app.c
++++ b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_app.c
 @@ -441,12 +441,11 @@ uint32_t ZDApp_event_loop( uint8_t task_id, uint32_t events )
            ZDApp_ChangeState( DEV_ROUTER );
          }
@@ -1704,41 +2167,28 @@ index 1f30180..b4481a1 100644
      }
      else
      {
-diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/app.cfg b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/app.cfg
-index 5089a84..b515ead 100644
---- a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/app.cfg
-+++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/app.cfg
-@@ -700,7 +700,9 @@ var GateMutexPri = xdc.useModule('ti.sysbios.gates.GateMutexPri');
-  */
- var Memory = xdc.useModule('xdc.runtime.Memory');
- var HEAPMGR_CONFIG = 0;
--var HEAPMGR_SIZE   = 0x1800;
-+// Increase heap to 48kb
-+// https://e2e.ti.com/support/wireless-connectivity/zigbee-thread-group/zigbee-and-thread/f/zigbee-thread-forum/1052120/cc2652r-mac-no-resources-0x1a-errors-complete-crash-with-simplelink-cc13xx-cc26xx-sdk_5-30-00-56/3897554#3897554
-+var HEAPMGR_SIZE   = 0xc000;
- 
- // The following will create the #define HEAPMGR_CONFIG. It can then be used by include  <xdc/cfg/global.h>
- Program.global.HEAPMGR_CONFIG = HEAPMGR_CONFIG;
-diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
-index e138bb4..66b7965 100755
---- a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
-+++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
-@@ -66,9 +66,7 @@
- /* The starting address of the application.  Normally the interrupt vectors  */
- /* must be located at the beginning of the application.                      */
- 
--#ifndef NVOCMP_NVPAGES
--#define NVOCMP_NVPAGES          2
--#endif
-+#define NVOCMP_NVPAGES          3
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
+index da62af1..234ac56 100755
+--- a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
++++ b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
+@@ -71,9 +71,9 @@
+ #endif
  
  #define FLASH_BASE              0x00000000
- #define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
-diff --git a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/zr_genericapp.syscfg b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/zr_genericapp.syscfg
-index b2ee528..023d3c3 100644
---- a/zr_genericapp_LP_CC2652RB_tirtos_ticlang/zr_genericapp.syscfg
-+++ b/zr_genericapp_LP_CC2652RB_tirtos_ticlang/zr_genericapp.syscfg
-@@ -48,6 +48,7 @@ CCFG.enableBootloaderBackdoor = true;
+-#define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+-#define FLASH_NV_BASE           (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+-#define FLASH_NV_SIZE           (NVOCMP_NVPAGES * 0x2000)
++#define FLASH_SIZE              0x50000
++#define FLASH_NV_BASE           0x50000
++#define FLASH_NV_SIZE           0x6000
+ #define FLASH_LAST_BASE         0x56000
+ #define FLASH_LAST_SIZE         0x2000
+ 
+diff --git a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/zr_genericapp.syscfg b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/zr_genericapp.syscfg
+index 94e3ede..3d2f361 100644
+--- a/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/zr_genericapp.syscfg
++++ b/zr_genericapp_LP_CC2652RB_tirtos7_ticlang/zr_genericapp.syscfg
+@@ -63,6 +63,7 @@ CCFG.enableBootloaderBackdoor = true;
  CCFG.dioBootloaderBackdoor    = 13;
  CCFG.levelBootloaderBackdoor  = "Active low";
  CCFG.srcClkLF                 = "Derived from HF XOSC";
@@ -1746,7 +2196,7 @@ index b2ee528..023d3c3 100644
  CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
  
  Display1.$hardware  = system.deviceData.board.components.XDS110UART;
-@@ -68,8 +69,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
+@@ -83,8 +84,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
  
  NVS1.$name                    = "CONFIG_NVSINTERNAL";
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
@@ -1757,7 +2207,7 @@ index b2ee528..023d3c3 100644
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
-@@ -119,6 +120,8 @@ zstack.deviceTypeReadOnly                    = true;
+@@ -173,6 +174,8 @@ zstack.deviceTypeReadOnly                    = true;
  zstack.touchlink.$name                       = "ti_zstack_touchlink_zstack_touchlink0";
  zstack.pm.$name                              = "ti_zstack_pm_zstack_pm0";
  zstack.rf.$name                              = "ti_zstack_rf_zstack_rf0";
