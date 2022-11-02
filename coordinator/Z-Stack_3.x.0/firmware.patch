@@ -1,6 +1,6 @@
-From 7a65d86f7e18ae95b01f4b09c5e1123c928b60d2 Mon Sep 17 00:00:00 2001
+From 464506c324d42f860236c89f822f144ff5f10cb3 Mon Sep 17 00:00:00 2001
 From: Koen Kanters <koenkanters94@gmail.com>
-Date: Sun, 24 Jul 2022 18:20:10 +0200
+Date: Wed, 2 Nov 2022 17:19:59 +0100
 Subject: [PATCH 1/1] Own changes
 
 ---
@@ -17,8 +17,7 @@ Subject: [PATCH 1/1] Own changes
  .../Stack/zdo/zd_object.c                     |  14 +
  .../Stack/zdo/zd_sec_mgr.c                    |  23 ++
  .../Stack/zdo/zd_sec_mgr.h                    |   5 +
- znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg |   4 +-
- .../cc13x2_cc26x2_ticlang.cmd                 |   4 +-
+ .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   4 +-
  .../ti_devices_config.c                       | 108 +++++
  .../ti_drivers_config.h                       | 274 +++++++++++++
  .../ti_radio_config.c                         | 385 ++++++++++++++++++
@@ -37,8 +36,7 @@ Subject: [PATCH 1/1] Own changes
  .../Stack/zdo/zd_object.c                     |  14 +
  .../Stack/zdo/zd_sec_mgr.c                    |  23 ++
  .../Stack/zdo/zd_sec_mgr.h                    |   5 +
- znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg  |   4 +-
- .../cc13x2_cc26x2_ticlang.cmd                 |   4 +-
+ .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   4 +-
  .../znp.syscfg                                |   6 +-
  .../Application/mt/mt.h                       |   4 +
  .../Application/mt/mt_util.c                  | 108 +++++
@@ -46,31 +44,30 @@ Subject: [PATCH 1/1] Own changes
  .../Application/mt/mt_zdo.c                   |   5 +
  .../Stack/Config/preinclude.h                 |  65 +++
  .../Stack/Config/znp_cnf.opts                 |   2 +
- znp_LP_CC2652RB_tirtos_ticlang/Stack/af/af.c  |  18 +-
+ znp_LP_CC2652RB_tirtos7_ticlang/Stack/af/af.c |  18 +-
  .../Stack/nwk/nwk_globals.c                   |   8 +-
  .../Stack/sys/zglobals.c                      |   6 +-
  .../Stack/zdo/zd_app.c                        |  30 +-
  .../Stack/zdo/zd_object.c                     |  14 +
  .../Stack/zdo/zd_sec_mgr.c                    |  23 ++
  .../Stack/zdo/zd_sec_mgr.h                    |   5 +
- znp_LP_CC2652RB_tirtos_ticlang/app.cfg        |   4 +-
- .../cc13x2_cc26x2_ticlang.cmd                 |   4 +-
- znp_LP_CC2652RB_tirtos_ticlang/znp.syscfg     |   6 +-
- 52 files changed, 1715 insertions(+), 87 deletions(-)
- create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
- mode change 100644 => 100755 znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/af/af.c
- mode change 100644 => 100755 znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c
- create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_devices_config.c
- create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_drivers_config.h
- create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.c
- create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.h
- create mode 100644 znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
- create mode 100644 znp_LP_CC2652RB_tirtos_ticlang/Stack/Config/preinclude.h
+ .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   4 +-
+ znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg    |   6 +-
+ 49 files changed, 1706 insertions(+), 84 deletions(-)
+ create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
+ mode change 100644 => 100755 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/af/af.c
+ mode change 100644 => 100755 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_globals.c
+ create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_devices_config.c
+ create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_drivers_config.h
+ create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.c
+ create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.h
+ create mode 100644 znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
+ create mode 100644 znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h
 
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt.h b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt.h
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt.h b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt.h
 index a14a328..5153fa3 100644
---- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt.h
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt.h
+--- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt.h
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt.h
 @@ -441,6 +441,8 @@ extern "C"
  #define MT_UTIL_CALLBACK_SUB_CMD             0x06
  #define MT_UTIL_TIME_ALIVE                   0x09
@@ -89,10 +86,10 @@ index a14a328..5153fa3 100644
  
  #define MT_UTIL_ZCL_KEY_EST_INIT_EST         0x80
  #define MT_UTIL_ZCL_KEY_EST_SIGN             0x81
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt_util.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt_util.c
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
 index 9eb8396..4805fa4 100644
---- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt_util.c
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt_util.c
+--- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
 @@ -79,6 +79,9 @@
  #include "mt_zdo.h"
  #include "ssp.h"
@@ -243,15 +240,15 @@ index 9eb8396..4805fa4 100644
  /***************************************************************************************************
   * @fn      MT_UtilAssocFindDevice
   *
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt_version.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt_version.c
-index 6a9b760..3fd9b12 100644
---- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt_version.c
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt_version.c
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
+index 6a9b760..2b72029 100644
+--- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20220928
++#define CODE_REVISION_NUMBER 20221102
 +
  /******************************************************************************
   * CONSTANTS
@@ -270,10 +267,10 @@ index 6a9b760..3fd9b12 100644
                                   };
  
  /******************************************************************************
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt_zdo.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt_zdo.c
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_zdo.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_zdo.c
 index 7ee216e..2032cc0 100644
---- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt_zdo.c
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Application/mt/mt_zdo.c
+--- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_zdo.c
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_zdo.c
 @@ -1684,6 +1684,11 @@ static void MT_ZdoMgmtPermitJoinRequest(uint8_t *pBuf)
    ignoreIndication = TRUE;
    retValue = (uint8_t)ZDP_MgmtPermitJoinReq( &destAddr, duration, tcSignificance, 0);
@@ -286,11 +283,11 @@ index 7ee216e..2032cc0 100644
  
    MT_BuildAndSendZToolResponse(((uint8_t)MT_RPC_CMD_SRSP | (uint8_t)MT_RPC_SYS_ZDO), cmdId, 1, &retValue);
  }
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
 new file mode 100644
 index 0000000..040c30f
 --- /dev/null
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
 @@ -0,0 +1,83 @@
 +#define MT_SYS_KEY_MANAGEMENT 1
 +#define FEATURE_NVEXID 1
@@ -375,10 +372,10 @@ index 0000000..040c30f
 +#define CONFIG_RF_HIGH_PA                       0x0000005
 +#define SET_CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA  0xfa
 +#endif
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/znp_cnf.opts b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/znp_cnf.opts
-index 6e3cb6a..6c60f91 100644
---- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/znp_cnf.opts
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/Config/znp_cnf.opts
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/znp_cnf.opts b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/znp_cnf.opts
+index 6e3cb6a..3f110e0 100644
+--- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/znp_cnf.opts
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/znp_cnf.opts
 @@ -32,3 +32,5 @@
  -DMT_GP_CB_FUNC
  
@@ -386,12 +383,12 @@ index 6e3cb6a..6c60f91 100644
 +
 +-include preinclude.h
 \ No newline at end of file
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/af/af.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/af/af.c
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/af/af.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/af/af.c
 old mode 100644
 new mode 100755
 index 12512a3..4298e70
---- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/af/af.c
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/af/af.c
+--- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/af/af.c
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/af/af.c
 @@ -433,10 +433,18 @@ void afIncomingData( aps_FrameFormat_t *aff, zAddrType_t *SrcAddress, uint16_t S
  #if !defined ( APS_NO_GROUPS )
      // Find the first endpoint for this group
@@ -425,12 +422,12 @@ index 12512a3..4298e70
      {
        // Save original endpoint
        uint8_t endpoint = aff->DstEndPoint;
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_globals.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_globals.c
 old mode 100644
 new mode 100755
-index a0acd95..4953a48
---- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c
+index a0acd95..7b12a23
+--- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_globals.c
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_globals.c
 @@ -91,10 +91,10 @@
   * CONSTANTS
   */
@@ -446,10 +443,10 @@ index a0acd95..4953a48
  
  // 1-255 (0 -> 256) X RTG_TIMER_INTERVAL
  // A known shortcoming is that when a message is enqueued as "hold" for a
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
 index 706736b..14d5932 100644
---- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
+--- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
 @@ -131,7 +131,7 @@ uint8_t zgSecurePermitJoin = TRUE;
  // TC Link Key. In this scenario, if this flag is TRUE, the Trust Center will
  // encrypt the outgoing NWK Key with the default TC Link Key (ZigbeeAlliance09).
@@ -470,10 +467,10 @@ index 706736b..14d5932 100644
  
  //==========    TouchLink NWK configuration    ===============
  // Values used by Router when starts a network as initiator
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
 index 1f30180..5fc438c 100644
---- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
+--- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
 @@ -441,12 +441,11 @@ uint32_t ZDApp_event_loop( uint8_t task_id, uint32_t events )
            ZDApp_ChangeState( DEV_ROUTER );
          }
@@ -525,10 +522,10 @@ index 1f30180..5fc438c 100644
  }
  
  /******************************************************************************
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_object.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_object.c
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_object.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_object.c
 index 5faa210..6551ff7 100644
---- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_object.c
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_object.c
+--- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_object.c
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_object.c
 @@ -676,6 +676,20 @@ void ZDO_ProcessNodeDescReq( zdoIncomingMsg_t *inMsg )
  
    if ( desc != NULL )
@@ -550,10 +547,10 @@ index 5faa210..6551ff7 100644
      ZDP_NodeDescMsg( inMsg, aoi, desc );
    }
    else
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_sec_mgr.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_sec_mgr.c
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.c
 index d7ca14f..118e963 100644
---- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_sec_mgr.c
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_sec_mgr.c
+--- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.c
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.c
 @@ -88,6 +88,7 @@ extern "C"
  
  #include <ti/drivers/TRNG.h>
@@ -612,10 +609,10 @@ index d7ca14f..118e963 100644
  }
  
  /******************************************************************************
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_sec_mgr.h b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_sec_mgr.h
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.h b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.h
 index 9db9d84..e2a0eb5 100644
---- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_sec_mgr.h
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_sec_mgr.h
+--- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.h
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.h
 @@ -77,6 +77,8 @@ extern "C"
  #include "zcomdef.h"
  #include "zd_app.h"
@@ -635,25 +632,10 @@ index 9db9d84..e2a0eb5 100644
  typedef struct
  {
  uint32_t              FrameCounter;
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg
-index 5089a84..c0a0687 100644
---- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/app.cfg
-@@ -700,7 +700,9 @@ var GateMutexPri = xdc.useModule('ti.sysbios.gates.GateMutexPri');
-  */
- var Memory = xdc.useModule('xdc.runtime.Memory');
- var HEAPMGR_CONFIG = 0;
--var HEAPMGR_SIZE   = 0x1800;
-+// Increase heap to 32kb
-+// https://e2e.ti.com/support/wireless-connectivity/zigbee-thread-group/zigbee-and-thread/f/zigbee-thread-forum/1052120/cc2652r-mac-no-resources-0x1a-errors-complete-crash-with-simplelink-cc13xx-cc26xx-sdk_5-30-00-56/3897554#3897554
-+var HEAPMGR_SIZE   = 0x7D00;
- 
- // The following will create the #define HEAPMGR_CONFIG. It can then be used by include  <xdc/cfg/global.h>
- Program.global.HEAPMGR_CONFIG = HEAPMGR_CONFIG;
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
-index e138bb4..66b7965 100755
---- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
+index da62af1..230fea5 100755
+--- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
 @@ -66,9 +66,7 @@
  /* The starting address of the application.  Normally the interrupt vectors  */
  /* must be located at the beginning of the application.                      */
@@ -665,11 +647,11 @@ index e138bb4..66b7965 100755
  
  #define FLASH_BASE              0x00000000
  #define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_devices_config.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_devices_config.c
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_devices_config.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_devices_config.c
 new file mode 100644
 index 0000000..c80aafd
 --- /dev/null
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_devices_config.c
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_devices_config.c
 @@ -0,0 +1,108 @@
 +/*
 + *  ======== ti_devices_config.c ========
@@ -779,11 +761,11 @@ index 0000000..c80aafd
 +
 +#include <ti/devices/DeviceFamily.h>
 +#include DeviceFamily_constructPath(startup_files/ccfg.c)
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_drivers_config.h b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_drivers_config.h
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_drivers_config.h b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_drivers_config.h
 new file mode 100644
-index 0000000..349c5d4
+index 0000000..6a57a31
 --- /dev/null
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_drivers_config.h
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_drivers_config.h
 @@ -0,0 +1,274 @@
 +/*
 + *  ======== ti_drivers_config.h ========
@@ -997,7 +979,7 @@ index 0000000..349c5d4
 +
 +
 +/*
-+ *  ======== UART ========
++ *  ======== UART2 ========
 + */
 +
 +/*
@@ -1005,9 +987,9 @@ index 0000000..349c5d4
 + *  RX: DIO12
 + *  XDS110 UART
 + */
-+extern const uint_least8_t              CONFIG_DISPLAY_UART_CONST;
-+#define CONFIG_DISPLAY_UART             0
-+#define CONFIG_TI_DRIVERS_UART_COUNT    1
++extern const uint_least8_t                  CONFIG_DISPLAY_UART_CONST;
++#define CONFIG_DISPLAY_UART                 0
++#define CONFIG_TI_DRIVERS_UART2_COUNT       1
 +
 +
 +/*
@@ -1059,11 +1041,11 @@ index 0000000..349c5d4
 +#endif
 +
 +#endif /* include guard */
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.c b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.c
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.c
 new file mode 100644
-index 0000000..6095b19
+index 0000000..229cea7
 --- /dev/null
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.c
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.c
 @@ -0,0 +1,385 @@
 +/*
 + *  ======== ti_radio_config.c ========
@@ -1073,7 +1055,7 @@ index 0000000..6095b19
 + *  by the SysConfig tool.
 + *
 + *  Radio Config module version : 1.14
-+ *  SmartRF Studio data version : 2.26.0
++ *  SmartRF Studio data version : 2.27.0
 + */
 +
 +#include "ti_radio_config.h"
@@ -1083,7 +1065,7 @@ index 0000000..6095b19
 +// *********************************************************************************
 +//   RF Frontend configuration
 +// *********************************************************************************
-+// RF design based on: LAUNCHXL-CC1352P-2 (LAUNCHXL-CC1352P2_20dBm)
++// RF design based on: LAUNCHXL-CC1352P-2
 +
 +// TX Power tables
 +// The RF_TxPowerTable_DEFAULT_PA_ENTRY and RF_TxPowerTable_HIGH_PA_ENTRY macros are defined in RF.h.
@@ -1450,11 +1432,11 @@ index 0000000..6095b19
 +};
 +
 +
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.h b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.h
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.h b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.h
 new file mode 100644
-index 0000000..940d2a5
+index 0000000..870127b
 --- /dev/null
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/ti_radio_config.h
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.h
 @@ -0,0 +1,83 @@
 +/*
 + *  ======== ti_radio_config.h ========
@@ -1464,7 +1446,7 @@ index 0000000..940d2a5
 + *  by the SysConfig tool.
 + *
 + *  Radio Config module version : 1.14
-+ *  SmartRF Studio data version : 2.26.0
++ *  SmartRF Studio data version : 2.27.0
 + */
 +#ifndef _TI_RADIO_CONFIG_H_
 +#define _TI_RADIO_CONFIG_H_
@@ -1476,12 +1458,12 @@ index 0000000..940d2a5
 +#include <ti/drivers/rf/RF.h>
 +
 +/* SmartRF Studio version that the RF data is fetched from */
-+#define SMARTRF_STUDIO_VERSION "2.26.0"
++#define SMARTRF_STUDIO_VERSION "2.27.0"
 +
 +// *********************************************************************************
 +//   RF Frontend configuration
 +// *********************************************************************************
-+// RF design based on: LAUNCHXL-CC1352P-2 (LAUNCHXL-CC1352P2_20dBm)
++// RF design based on: LAUNCHXL-CC1352P-2
 +#define LAUNCHXL_CC1352P_2
 +
 +// High-Power Amplifier supported
@@ -1539,13 +1521,13 @@ index 0000000..940d2a5
 +extern uint32_t pOverrides_ieee154Tx20[];
 +
 +#endif // _TI_RADIO_CONFIG_H_
-diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/znp.syscfg b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/znp.syscfg
-index 5669ac3..0324235 100644
---- a/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/znp.syscfg
-+++ b/znp_CC1352P_2_LAUNCHXL_tirtos_ticlang/znp.syscfg
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/znp.syscfg b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/znp.syscfg
+index 56b8f45..9b5109f 100644
+--- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/znp.syscfg
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/znp.syscfg
 @@ -4,6 +4,10 @@
-  * @cliArgs --board "/ti/boards/CC1352P_2_LAUNCHXL" --rtos "tirtos" --product "simplelink_cc13xx_cc26xx_sdk@6.20.00.29"
-  * @versions {"tool":"1.13.0+2553"}
+  * @cliArgs --board "/ti/boards/CC1352P_2_LAUNCHXL" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@6.30.00.84"
+  * @versions {"tool":"1.14.0+2667"}
   */
 +scripting.excludeFromBuild("ti_devices_config.c");
 +scripting.excludeFromBuild("ti_radio_config.c");
@@ -1554,7 +1536,7 @@ index 5669ac3..0324235 100644
  
  /**
   * Import the modules used in this configuration.
-@@ -50,6 +54,7 @@ CCFG.enableBootloaderBackdoor = true;
+@@ -65,6 +69,7 @@ CCFG.enableBootloaderBackdoor = true;
  CCFG.dioBootloaderBackdoor    = 15;
  CCFG.levelBootloaderBackdoor  = "Active low";
  CCFG.forceVddr                = true;
@@ -1562,7 +1544,7 @@ index 5669ac3..0324235 100644
  CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
  
  rfdesign.rfDesign = "LAUNCHXL-CC1352P-2";
-@@ -72,8 +77,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
+@@ -87,8 +92,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
  
  NVS1.$name                    = "CONFIG_NVSINTERNAL";
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
@@ -1573,7 +1555,7 @@ index 5669ac3..0324235 100644
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
-@@ -125,6 +130,7 @@ zstack.deviceTypeReadOnly                    = true;
+@@ -179,6 +184,7 @@ zstack.deviceTypeReadOnly                    = true;
  zstack.touchlink.$name                       = "ti_zstack_touchlink_zstack_touchlink0";
  zstack.pm.$name                              = "ti_zstack_pm_zstack_pm0";
  zstack.rf.$name                              = "ti_zstack_rf_zstack_rf0";
@@ -1581,10 +1563,10 @@ index 5669ac3..0324235 100644
  zstack.rf.radioConfig.$name                  = "ti_devices_radioconfig_settings_ieee_15_40";
  zstack.rf.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
  zstack.rf.coexSettings.$name                 = "ti_zstack_rf_zstack_coex_mod0";
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt.h b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt.h
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt.h b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt.h
 index a14a328..5153fa3 100644
---- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt.h
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt.h
+--- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt.h
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt.h
 @@ -441,6 +441,8 @@ extern "C"
  #define MT_UTIL_CALLBACK_SUB_CMD             0x06
  #define MT_UTIL_TIME_ALIVE                   0x09
@@ -1603,10 +1585,10 @@ index a14a328..5153fa3 100644
  
  #define MT_UTIL_ZCL_KEY_EST_INIT_EST         0x80
  #define MT_UTIL_ZCL_KEY_EST_SIGN             0x81
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt_util.c b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt_util.c
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
 index 9eb8396..4805fa4 100644
---- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt_util.c
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt_util.c
+--- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
 @@ -79,6 +79,9 @@
  #include "mt_zdo.h"
  #include "ssp.h"
@@ -1757,15 +1739,15 @@ index 9eb8396..4805fa4 100644
  /***************************************************************************************************
   * @fn      MT_UtilAssocFindDevice
   *
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt_version.c b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt_version.c
-index 6a9b760..3fd9b12 100644
---- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt_version.c
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt_version.c
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
+index 6a9b760..2b72029 100644
+--- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20220928
++#define CODE_REVISION_NUMBER 20221102
 +
  /******************************************************************************
   * CONSTANTS
@@ -1784,10 +1766,10 @@ index 6a9b760..3fd9b12 100644
                                   };
  
  /******************************************************************************
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt_zdo.c b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt_zdo.c
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_zdo.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_zdo.c
 index 7ee216e..1f884ca 100644
---- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt_zdo.c
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Application/mt/mt_zdo.c
+--- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_zdo.c
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_zdo.c
 @@ -1685,6 +1685,11 @@ static void MT_ZdoMgmtPermitJoinRequest(uint8_t *pBuf)
    retValue = (uint8_t)ZDP_MgmtPermitJoinReq( &destAddr, duration, tcSignificance, 0);
    ignoreIndication = FALSE;
@@ -1800,11 +1782,11 @@ index 7ee216e..1f884ca 100644
    MT_BuildAndSendZToolResponse(((uint8_t)MT_RPC_CMD_SRSP | (uint8_t)MT_RPC_SYS_ZDO), cmdId, 1, &retValue);
  }
  
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
 new file mode 100644
 index 0000000..3aeafda
 --- /dev/null
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/preinclude.h
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
 @@ -0,0 +1,65 @@
 +#define MT_SYS_KEY_MANAGEMENT 1
 +#define FEATURE_NVEXID 1
@@ -1871,10 +1853,10 @@ index 0000000..3aeafda
 +#define ZDNWKMGR_MIN_TRANSMISSIONS 0
 +#define ROUTE_DISCOVERY_TIME 13
 +#define MTO_RREQ_LIMIT_TIME 5000
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/znp_cnf.opts b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/znp_cnf.opts
-index 6e3cb6a..6c60f91 100644
---- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/znp_cnf.opts
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/Config/znp_cnf.opts
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/znp_cnf.opts b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/znp_cnf.opts
+index 6e3cb6a..3f110e0 100644
+--- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/znp_cnf.opts
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/znp_cnf.opts
 @@ -32,3 +32,5 @@
  -DMT_GP_CB_FUNC
  
@@ -1882,10 +1864,10 @@ index 6e3cb6a..6c60f91 100644
 +
 +-include preinclude.h
 \ No newline at end of file
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/af/af.c b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/af/af.c
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/af/af.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/af/af.c
 index 12512a3..4298e70 100644
---- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/af/af.c
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/af/af.c
+--- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/af/af.c
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/af/af.c
 @@ -433,10 +433,18 @@ void afIncomingData( aps_FrameFormat_t *aff, zAddrType_t *SrcAddress, uint16_t S
  #if !defined ( APS_NO_GROUPS )
      // Find the first endpoint for this group
@@ -1919,10 +1901,10 @@ index 12512a3..4298e70 100644
      {
        // Save original endpoint
        uint8_t endpoint = aff->DstEndPoint;
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c
-index a0acd95..4953a48 100644
---- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/nwk/nwk_globals.c
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_globals.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_globals.c
+index a0acd95..7b12a23 100644
+--- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_globals.c
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_globals.c
 @@ -91,10 +91,10 @@
   * CONSTANTS
   */
@@ -1938,10 +1920,10 @@ index a0acd95..4953a48 100644
  
  // 1-255 (0 -> 256) X RTG_TIMER_INTERVAL
  // A known shortcoming is that when a message is enqueued as "hold" for a
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
 index 706736b..14d5932 100644
---- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/sys/zglobals.c
+--- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
 @@ -131,7 +131,7 @@ uint8_t zgSecurePermitJoin = TRUE;
  // TC Link Key. In this scenario, if this flag is TRUE, the Trust Center will
  // encrypt the outgoing NWK Key with the default TC Link Key (ZigbeeAlliance09).
@@ -1962,10 +1944,10 @@ index 706736b..14d5932 100644
  
  //==========    TouchLink NWK configuration    ===============
  // Values used by Router when starts a network as initiator
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
 index 1f30180..5fc438c 100644
---- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_app.c
+--- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
 @@ -441,12 +441,11 @@ uint32_t ZDApp_event_loop( uint8_t task_id, uint32_t events )
            ZDApp_ChangeState( DEV_ROUTER );
          }
@@ -2017,10 +1999,10 @@ index 1f30180..5fc438c 100644
  }
  
  /******************************************************************************
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_object.c b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_object.c
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_object.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_object.c
 index 5faa210..6551ff7 100644
---- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_object.c
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_object.c
+--- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_object.c
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_object.c
 @@ -676,6 +676,20 @@ void ZDO_ProcessNodeDescReq( zdoIncomingMsg_t *inMsg )
  
    if ( desc != NULL )
@@ -2042,10 +2024,10 @@ index 5faa210..6551ff7 100644
      ZDP_NodeDescMsg( inMsg, aoi, desc );
    }
    else
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_sec_mgr.c b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_sec_mgr.c
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.c
 index d7ca14f..118e963 100644
---- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_sec_mgr.c
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_sec_mgr.c
+--- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.c
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.c
 @@ -88,6 +88,7 @@ extern "C"
  
  #include <ti/drivers/TRNG.h>
@@ -2104,10 +2086,10 @@ index d7ca14f..118e963 100644
  }
  
  /******************************************************************************
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_sec_mgr.h b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_sec_mgr.h
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.h b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.h
 index 9db9d84..e2a0eb5 100644
---- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_sec_mgr.h
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/Stack/zdo/zd_sec_mgr.h
+--- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.h
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.h
 @@ -77,6 +77,8 @@ extern "C"
  #include "zcomdef.h"
  #include "zd_app.h"
@@ -2127,25 +2109,10 @@ index 9db9d84..e2a0eb5 100644
  typedef struct
  {
  uint32_t              FrameCounter;
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg
-index 5089a84..c0a0687 100644
---- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/app.cfg
-@@ -700,7 +700,9 @@ var GateMutexPri = xdc.useModule('ti.sysbios.gates.GateMutexPri');
-  */
- var Memory = xdc.useModule('xdc.runtime.Memory');
- var HEAPMGR_CONFIG = 0;
--var HEAPMGR_SIZE   = 0x1800;
-+// Increase heap to 32kb
-+// https://e2e.ti.com/support/wireless-connectivity/zigbee-thread-group/zigbee-and-thread/f/zigbee-thread-forum/1052120/cc2652r-mac-no-resources-0x1a-errors-complete-crash-with-simplelink-cc13xx-cc26xx-sdk_5-30-00-56/3897554#3897554
-+var HEAPMGR_SIZE   = 0x7D00;
- 
- // The following will create the #define HEAPMGR_CONFIG. It can then be used by include  <xdc/cfg/global.h>
- Program.global.HEAPMGR_CONFIG = HEAPMGR_CONFIG;
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
-index e138bb4..66b7965 100755
---- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
+index da62af1..230fea5 100755
+--- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
 @@ -66,9 +66,7 @@
  /* The starting address of the application.  Normally the interrupt vectors  */
  /* must be located at the beginning of the application.                      */
@@ -2157,11 +2124,11 @@ index e138bb4..66b7965 100755
  
  #define FLASH_BASE              0x00000000
  #define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
-diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/znp.syscfg b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/znp.syscfg
-index f3fbe5b..d074291 100644
---- a/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/znp.syscfg
-+++ b/znp_CC26X2R1_LAUNCHXL_tirtos_ticlang/znp.syscfg
-@@ -47,6 +47,7 @@ CCFG.enableBootloader         = true;
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/znp.syscfg b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/znp.syscfg
+index 1b75edb..187e2e1 100644
+--- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/znp.syscfg
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/znp.syscfg
+@@ -62,6 +62,7 @@ CCFG.enableBootloader         = true;
  CCFG.enableBootloaderBackdoor = true;
  CCFG.dioBootloaderBackdoor    = 13;
  CCFG.levelBootloaderBackdoor  = "Active low";
@@ -2169,7 +2136,7 @@ index f3fbe5b..d074291 100644
  CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
  
  Display1.$hardware  = system.deviceData.board.components.XDS110UART;
-@@ -67,8 +68,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
+@@ -82,8 +83,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
  
  NVS1.$name                    = "CONFIG_NVSINTERNAL";
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
@@ -2180,7 +2147,7 @@ index f3fbe5b..d074291 100644
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
-@@ -118,6 +119,7 @@ zstack.deviceTypeReadOnly                    = true;
+@@ -172,6 +173,7 @@ zstack.deviceTypeReadOnly                    = true;
  zstack.touchlink.$name                       = "ti_zstack_touchlink_zstack_touchlink0";
  zstack.pm.$name                              = "ti_zstack_pm_zstack_pm0";
  zstack.rf.$name                              = "ti_zstack_rf_zstack_rf0";
@@ -2188,10 +2155,10 @@ index f3fbe5b..d074291 100644
  zstack.rf.radioConfig.$name                  = "ti_devices_radioconfig_settings_ieee_15_40";
  zstack.rf.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
  zstack.rf.coexSettings.$name                 = "ti_zstack_rf_zstack_coex_mod0";
-diff --git a/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt.h b/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt.h
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt.h b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt.h
 index a14a328..5153fa3 100644
---- a/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt.h
-+++ b/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt.h
+--- a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt.h
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt.h
 @@ -441,6 +441,8 @@ extern "C"
  #define MT_UTIL_CALLBACK_SUB_CMD             0x06
  #define MT_UTIL_TIME_ALIVE                   0x09
@@ -2210,10 +2177,10 @@ index a14a328..5153fa3 100644
  
  #define MT_UTIL_ZCL_KEY_EST_INIT_EST         0x80
  #define MT_UTIL_ZCL_KEY_EST_SIGN             0x81
-diff --git a/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt_util.c b/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt_util.c
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_util.c b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_util.c
 index 9eb8396..4805fa4 100644
---- a/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt_util.c
-+++ b/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt_util.c
+--- a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_util.c
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_util.c
 @@ -79,6 +79,9 @@
  #include "mt_zdo.h"
  #include "ssp.h"
@@ -2364,15 +2331,15 @@ index 9eb8396..4805fa4 100644
  /***************************************************************************************************
   * @fn      MT_UtilAssocFindDevice
   *
-diff --git a/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt_version.c b/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt_version.c
-index 6a9b760..3fd9b12 100644
---- a/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt_version.c
-+++ b/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt_version.c
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_version.c b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_version.c
+index 6a9b760..2b72029 100644
+--- a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_version.c
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20220928
++#define CODE_REVISION_NUMBER 20221102
 +
  /******************************************************************************
   * CONSTANTS
@@ -2391,10 +2358,10 @@ index 6a9b760..3fd9b12 100644
                                   };
  
  /******************************************************************************
-diff --git a/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt_zdo.c b/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt_zdo.c
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_zdo.c b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_zdo.c
 index 7ee216e..1f884ca 100644
---- a/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt_zdo.c
-+++ b/znp_LP_CC2652RB_tirtos_ticlang/Application/mt/mt_zdo.c
+--- a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_zdo.c
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_zdo.c
 @@ -1685,6 +1685,11 @@ static void MT_ZdoMgmtPermitJoinRequest(uint8_t *pBuf)
    retValue = (uint8_t)ZDP_MgmtPermitJoinReq( &destAddr, duration, tcSignificance, 0);
    ignoreIndication = FALSE;
@@ -2407,11 +2374,11 @@ index 7ee216e..1f884ca 100644
    MT_BuildAndSendZToolResponse(((uint8_t)MT_RPC_CMD_SRSP | (uint8_t)MT_RPC_SYS_ZDO), cmdId, 1, &retValue);
  }
  
-diff --git a/znp_LP_CC2652RB_tirtos_ticlang/Stack/Config/preinclude.h b/znp_LP_CC2652RB_tirtos_ticlang/Stack/Config/preinclude.h
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h
 new file mode 100644
 index 0000000..3aeafda
 --- /dev/null
-+++ b/znp_LP_CC2652RB_tirtos_ticlang/Stack/Config/preinclude.h
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h
 @@ -0,0 +1,65 @@
 +#define MT_SYS_KEY_MANAGEMENT 1
 +#define FEATURE_NVEXID 1
@@ -2478,10 +2445,10 @@ index 0000000..3aeafda
 +#define ZDNWKMGR_MIN_TRANSMISSIONS 0
 +#define ROUTE_DISCOVERY_TIME 13
 +#define MTO_RREQ_LIMIT_TIME 5000
-diff --git a/znp_LP_CC2652RB_tirtos_ticlang/Stack/Config/znp_cnf.opts b/znp_LP_CC2652RB_tirtos_ticlang/Stack/Config/znp_cnf.opts
-index 6e3cb6a..6c60f91 100644
---- a/znp_LP_CC2652RB_tirtos_ticlang/Stack/Config/znp_cnf.opts
-+++ b/znp_LP_CC2652RB_tirtos_ticlang/Stack/Config/znp_cnf.opts
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/znp_cnf.opts b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/znp_cnf.opts
+index 6e3cb6a..3f110e0 100644
+--- a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/znp_cnf.opts
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/znp_cnf.opts
 @@ -32,3 +32,5 @@
  -DMT_GP_CB_FUNC
  
@@ -2489,10 +2456,10 @@ index 6e3cb6a..6c60f91 100644
 +
 +-include preinclude.h
 \ No newline at end of file
-diff --git a/znp_LP_CC2652RB_tirtos_ticlang/Stack/af/af.c b/znp_LP_CC2652RB_tirtos_ticlang/Stack/af/af.c
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/af/af.c b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/af/af.c
 index 12512a3..4298e70 100644
---- a/znp_LP_CC2652RB_tirtos_ticlang/Stack/af/af.c
-+++ b/znp_LP_CC2652RB_tirtos_ticlang/Stack/af/af.c
+--- a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/af/af.c
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/af/af.c
 @@ -433,10 +433,18 @@ void afIncomingData( aps_FrameFormat_t *aff, zAddrType_t *SrcAddress, uint16_t S
  #if !defined ( APS_NO_GROUPS )
      // Find the first endpoint for this group
@@ -2526,10 +2493,10 @@ index 12512a3..4298e70 100644
      {
        // Save original endpoint
        uint8_t endpoint = aff->DstEndPoint;
-diff --git a/znp_LP_CC2652RB_tirtos_ticlang/Stack/nwk/nwk_globals.c b/znp_LP_CC2652RB_tirtos_ticlang/Stack/nwk/nwk_globals.c
-index a0acd95..4953a48 100644
---- a/znp_LP_CC2652RB_tirtos_ticlang/Stack/nwk/nwk_globals.c
-+++ b/znp_LP_CC2652RB_tirtos_ticlang/Stack/nwk/nwk_globals.c
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/nwk/nwk_globals.c b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/nwk/nwk_globals.c
+index a0acd95..7b12a23 100644
+--- a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/nwk/nwk_globals.c
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/nwk/nwk_globals.c
 @@ -91,10 +91,10 @@
   * CONSTANTS
   */
@@ -2545,10 +2512,10 @@ index a0acd95..4953a48 100644
  
  // 1-255 (0 -> 256) X RTG_TIMER_INTERVAL
  // A known shortcoming is that when a message is enqueued as "hold" for a
-diff --git a/znp_LP_CC2652RB_tirtos_ticlang/Stack/sys/zglobals.c b/znp_LP_CC2652RB_tirtos_ticlang/Stack/sys/zglobals.c
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/sys/zglobals.c b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/sys/zglobals.c
 index 706736b..14d5932 100644
---- a/znp_LP_CC2652RB_tirtos_ticlang/Stack/sys/zglobals.c
-+++ b/znp_LP_CC2652RB_tirtos_ticlang/Stack/sys/zglobals.c
+--- a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/sys/zglobals.c
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/sys/zglobals.c
 @@ -131,7 +131,7 @@ uint8_t zgSecurePermitJoin = TRUE;
  // TC Link Key. In this scenario, if this flag is TRUE, the Trust Center will
  // encrypt the outgoing NWK Key with the default TC Link Key (ZigbeeAlliance09).
@@ -2569,10 +2536,10 @@ index 706736b..14d5932 100644
  
  //==========    TouchLink NWK configuration    ===============
  // Values used by Router when starts a network as initiator
-diff --git a/znp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_app.c b/znp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_app.c
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_app.c b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_app.c
 index 1f30180..5fc438c 100644
---- a/znp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_app.c
-+++ b/znp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_app.c
+--- a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_app.c
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_app.c
 @@ -441,12 +441,11 @@ uint32_t ZDApp_event_loop( uint8_t task_id, uint32_t events )
            ZDApp_ChangeState( DEV_ROUTER );
          }
@@ -2624,10 +2591,10 @@ index 1f30180..5fc438c 100644
  }
  
  /******************************************************************************
-diff --git a/znp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_object.c b/znp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_object.c
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_object.c b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_object.c
 index 5faa210..6551ff7 100644
---- a/znp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_object.c
-+++ b/znp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_object.c
+--- a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_object.c
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_object.c
 @@ -676,6 +676,20 @@ void ZDO_ProcessNodeDescReq( zdoIncomingMsg_t *inMsg )
  
    if ( desc != NULL )
@@ -2649,10 +2616,10 @@ index 5faa210..6551ff7 100644
      ZDP_NodeDescMsg( inMsg, aoi, desc );
    }
    else
-diff --git a/znp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_sec_mgr.c b/znp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_sec_mgr.c
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.c b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.c
 index d7ca14f..118e963 100644
---- a/znp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_sec_mgr.c
-+++ b/znp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_sec_mgr.c
+--- a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.c
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.c
 @@ -88,6 +88,7 @@ extern "C"
  
  #include <ti/drivers/TRNG.h>
@@ -2711,10 +2678,10 @@ index d7ca14f..118e963 100644
  }
  
  /******************************************************************************
-diff --git a/znp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_sec_mgr.h b/znp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_sec_mgr.h
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.h b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.h
 index 9db9d84..e2a0eb5 100644
---- a/znp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_sec_mgr.h
-+++ b/znp_LP_CC2652RB_tirtos_ticlang/Stack/zdo/zd_sec_mgr.h
+--- a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.h
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_sec_mgr.h
 @@ -77,6 +77,8 @@ extern "C"
  #include "zcomdef.h"
  #include "zd_app.h"
@@ -2734,25 +2701,10 @@ index 9db9d84..e2a0eb5 100644
  typedef struct
  {
  uint32_t              FrameCounter;
-diff --git a/znp_LP_CC2652RB_tirtos_ticlang/app.cfg b/znp_LP_CC2652RB_tirtos_ticlang/app.cfg
-index 5089a84..c0a0687 100644
---- a/znp_LP_CC2652RB_tirtos_ticlang/app.cfg
-+++ b/znp_LP_CC2652RB_tirtos_ticlang/app.cfg
-@@ -700,7 +700,9 @@ var GateMutexPri = xdc.useModule('ti.sysbios.gates.GateMutexPri');
-  */
- var Memory = xdc.useModule('xdc.runtime.Memory');
- var HEAPMGR_CONFIG = 0;
--var HEAPMGR_SIZE   = 0x1800;
-+// Increase heap to 32kb
-+// https://e2e.ti.com/support/wireless-connectivity/zigbee-thread-group/zigbee-and-thread/f/zigbee-thread-forum/1052120/cc2652r-mac-no-resources-0x1a-errors-complete-crash-with-simplelink-cc13xx-cc26xx-sdk_5-30-00-56/3897554#3897554
-+var HEAPMGR_SIZE   = 0x7D00;
- 
- // The following will create the #define HEAPMGR_CONFIG. It can then be used by include  <xdc/cfg/global.h>
- Program.global.HEAPMGR_CONFIG = HEAPMGR_CONFIG;
-diff --git a/znp_LP_CC2652RB_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd b/znp_LP_CC2652RB_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
-index e138bb4..66b7965 100755
---- a/znp_LP_CC2652RB_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
-+++ b/znp_LP_CC2652RB_tirtos_ticlang/cc13x2_cc26x2_ticlang.cmd
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd b/znp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
+index da62af1..230fea5 100755
+--- a/znp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
 @@ -66,9 +66,7 @@
  /* The starting address of the application.  Normally the interrupt vectors  */
  /* must be located at the beginning of the application.                      */
@@ -2764,11 +2716,11 @@ index e138bb4..66b7965 100755
  
  #define FLASH_BASE              0x00000000
  #define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
-diff --git a/znp_LP_CC2652RB_tirtos_ticlang/znp.syscfg b/znp_LP_CC2652RB_tirtos_ticlang/znp.syscfg
-index 541e998..7a57f09 100644
---- a/znp_LP_CC2652RB_tirtos_ticlang/znp.syscfg
-+++ b/znp_LP_CC2652RB_tirtos_ticlang/znp.syscfg
-@@ -48,6 +48,7 @@ CCFG.enableBootloaderBackdoor = true;
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg b/znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg
+index 4c6ebc7..0dc3e0b 100644
+--- a/znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg
+@@ -63,6 +63,7 @@ CCFG.enableBootloaderBackdoor = true;
  CCFG.dioBootloaderBackdoor    = 13;
  CCFG.levelBootloaderBackdoor  = "Active low";
  CCFG.srcClkLF                 = "Derived from HF XOSC";
@@ -2776,7 +2728,7 @@ index 541e998..7a57f09 100644
  CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
  
  Display1.$hardware  = system.deviceData.board.components.XDS110UART;
-@@ -68,8 +69,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
+@@ -83,8 +84,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
  
  NVS1.$name                    = "CONFIG_NVSINTERNAL";
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
@@ -2787,7 +2739,7 @@ index 541e998..7a57f09 100644
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
-@@ -119,6 +120,7 @@ zstack.deviceTypeReadOnly                    = true;
+@@ -173,6 +174,7 @@ zstack.deviceTypeReadOnly                    = true;
  zstack.touchlink.$name                       = "ti_zstack_touchlink_zstack_touchlink0";
  zstack.pm.$name                              = "ti_zstack_pm_zstack_pm0";
  zstack.rf.$name                              = "ti_zstack_rf_zstack_rf0";
