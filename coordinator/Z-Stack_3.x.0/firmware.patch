@@ -1,14 +1,14 @@
-From 464506c324d42f860236c89f822f144ff5f10cb3 Mon Sep 17 00:00:00 2001
+From 1b61b237f69ebb5aac4beea318767fc526fefc81 Mon Sep 17 00:00:00 2001
 From: Koen Kanters <koenkanters94@gmail.com>
-Date: Wed, 2 Nov 2022 17:19:59 +0100
+Date: Sat, 1 Apr 2023 09:52:27 +0200
 Subject: [PATCH 1/1] Own changes
 
 ---
  .../Application/mt/mt.h                       |   4 +
- .../Application/mt/mt_util.c                  | 108 +++++
+ .../Application/mt/mt_util.c                  | 107 +++++
  .../Application/mt/mt_version.c               |   8 +-
  .../Application/mt/mt_zdo.c                   |   5 +
- .../Stack/Config/preinclude.h                 |  83 ++++
+ .../Stack/Config/preinclude.h                 |  90 ++++
  .../Stack/Config/znp_cnf.opts                 |   2 +
  .../Stack/af/af.c                             |  18 +-
  .../Stack/nwk/nwk_globals.c                   |   8 +-
@@ -17,17 +17,17 @@ Subject: [PATCH 1/1] Own changes
  .../Stack/zdo/zd_object.c                     |  14 +
  .../Stack/zdo/zd_sec_mgr.c                    |  23 ++
  .../Stack/zdo/zd_sec_mgr.h                    |   5 +
- .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   4 +-
+ .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   6 +-
  .../ti_devices_config.c                       | 108 +++++
  .../ti_drivers_config.h                       | 274 +++++++++++++
  .../ti_radio_config.c                         | 385 ++++++++++++++++++
  .../ti_radio_config.h                         |  83 ++++
  .../znp.syscfg                                |  10 +-
  .../Application/mt/mt.h                       |   4 +
- .../Application/mt/mt_util.c                  | 108 +++++
+ .../Application/mt/mt_util.c                  | 107 +++++
  .../Application/mt/mt_version.c               |   8 +-
  .../Application/mt/mt_zdo.c                   |   5 +
- .../Stack/Config/preinclude.h                 |  65 +++
+ .../Stack/Config/preinclude.h                 |  72 ++++
  .../Stack/Config/znp_cnf.opts                 |   2 +
  .../Stack/af/af.c                             |  18 +-
  .../Stack/nwk/nwk_globals.c                   |   8 +-
@@ -36,13 +36,13 @@ Subject: [PATCH 1/1] Own changes
  .../Stack/zdo/zd_object.c                     |  14 +
  .../Stack/zdo/zd_sec_mgr.c                    |  23 ++
  .../Stack/zdo/zd_sec_mgr.h                    |   5 +
- .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   4 +-
+ .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   6 +-
  .../znp.syscfg                                |   6 +-
  .../Application/mt/mt.h                       |   4 +
- .../Application/mt/mt_util.c                  | 108 +++++
+ .../Application/mt/mt_util.c                  | 107 +++++
  .../Application/mt/mt_version.c               |   8 +-
  .../Application/mt/mt_zdo.c                   |   5 +
- .../Stack/Config/preinclude.h                 |  65 +++
+ .../Stack/Config/preinclude.h                 |  72 ++++
  .../Stack/Config/znp_cnf.opts                 |   2 +
  znp_LP_CC2652RB_tirtos7_ticlang/Stack/af/af.c |  18 +-
  .../Stack/nwk/nwk_globals.c                   |   8 +-
@@ -51,9 +51,9 @@ Subject: [PATCH 1/1] Own changes
  .../Stack/zdo/zd_object.c                     |  14 +
  .../Stack/zdo/zd_sec_mgr.c                    |  23 ++
  .../Stack/zdo/zd_sec_mgr.h                    |   5 +
- .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   4 +-
+ .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   6 +-
  znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg    |   6 +-
- 49 files changed, 1706 insertions(+), 84 deletions(-)
+ 49 files changed, 1730 insertions(+), 84 deletions(-)
  create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
  mode change 100644 => 100755 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/af/af.c
  mode change 100644 => 100755 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_globals.c
@@ -87,7 +87,7 @@ index a14a328..5153fa3 100644
  #define MT_UTIL_ZCL_KEY_EST_INIT_EST         0x80
  #define MT_UTIL_ZCL_KEY_EST_SIGN             0x81
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
-index 9eb8396..4805fa4 100644
+index 9eb8396..02006b4 100644
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
 @@ -79,6 +79,9 @@
@@ -100,15 +100,7 @@ index 9eb8396..4805fa4 100644
  #if !defined NONWK
  
  #include "mt_nwk.h"
-@@ -121,6 +124,7 @@ static void MT_UtilSpi2Addr( zAddrType_t *pDst, uint8_t *pSrc );
- #endif
- 
- #if defined (MT_UTIL_FUNC)
-+
- static void MT_UtilGetDeviceInfo(void);
- static void MT_UtilGetNvInfo(void);
- static void MT_UtilSetPanID(uint8_t *pBuf);
-@@ -154,6 +158,9 @@ static void MT_UtilAPSME_LinkKeyNvIdGet(uint8_t *pBuf);
+@@ -154,6 +157,9 @@ static void MT_UtilAPSME_LinkKeyNvIdGet(uint8_t *pBuf);
  #endif //MT_SYS_KEY_MANAGEMENT
  static void MT_UtilAPSME_RequestKeyCmd(uint8_t *pBuf);
  static void MT_UtilAssocCount(uint8_t *pBuf);
@@ -118,7 +110,7 @@ index 9eb8396..4805fa4 100644
  static void MT_UtilAssocFindDevice(uint8_t *pBuf);
  static void MT_UtilAssocGetWithAddress(uint8_t *pBuf);
  static void MT_UtilBindAddEntry(uint8_t *pBuf);
-@@ -286,6 +293,10 @@ uint8_t MT_UtilCommandProcessing(uint8_t *pBuf)
+@@ -286,6 +292,10 @@ uint8_t MT_UtilCommandProcessing(uint8_t *pBuf)
      MT_UtilAssocCount(pBuf);
      break;
  
@@ -129,7 +121,7 @@ index 9eb8396..4805fa4 100644
    case MT_UTIL_ASSOC_FIND_DEVICE:
      MT_UtilAssocFindDevice(pBuf);
      break;
-@@ -298,6 +309,14 @@ uint8_t MT_UtilCommandProcessing(uint8_t *pBuf)
+@@ -298,6 +308,14 @@ uint8_t MT_UtilCommandProcessing(uint8_t *pBuf)
      MT_UtilBindAddEntry(pBuf);
      break;
  
@@ -144,7 +136,7 @@ index 9eb8396..4805fa4 100644
    case MT_UTIL_SYNC_REQ:
      MT_UtilSync();
      break;
-@@ -1401,6 +1420,95 @@ static void MT_UtilAssocCount(uint8_t *pBuf)
+@@ -1401,6 +1419,95 @@ static void MT_UtilAssocCount(uint8_t *pBuf)
    MT_BuildAndSendZToolResponse(((uint8_t)MT_RPC_CMD_SRSP | (uint8_t)MT_RPC_SYS_UTIL), cmdId, 2, pBuf);
  }
  
@@ -241,14 +233,14 @@ index 9eb8396..4805fa4 100644
   * @fn      MT_UtilAssocFindDevice
   *
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
-index 6a9b760..2b72029 100644
+index 6a9b760..05b6c15 100644
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20221102
++#define CODE_REVISION_NUMBER 20230401
 +
  /******************************************************************************
   * CONSTANTS
@@ -285,10 +277,10 @@ index 7ee216e..2032cc0 100644
  }
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..040c30f
+index 0000000..e47fbc4
 --- /dev/null
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
-@@ -0,0 +1,83 @@
+@@ -0,0 +1,90 @@
 +#define MT_SYS_KEY_MANAGEMENT 1
 +#define FEATURE_NVEXID 1
 +
@@ -310,9 +302,16 @@ index 0000000..040c30f
 +#undef APS_MAX_GROUPS
 +#define APS_MAX_GROUPS 1
 +
-+// Increase NV pages to 3 to allow for bigger device tables
++// Heap config, use a static heap
++// https://software-dl.ti.com/simplelink/esd/simplelink_cc13x2_26x2_sdk/4.40.00.44/exports/docs/zigbee/html/memory/memory_management.html#configuring-the-heap
++#undef HEAPMGR_CONFIG
++#undef HEAPMGR_SIZE
++#define HEAPMGR_CONFIG 0x0
++#define HEAPMGR_SIZE 0x7D00
++
++// Increase NV pages to 4 to allow for bigger device tables
 +#undef NVOCMP_NVPAGES
-+#define NVOCMP_NVPAGES 3
++#define NVOCMP_NVPAGES 4
 +
 +// Disabling MULTICAST is required in order for proper group support.
 +// If MULTICAST is not disabled, the group adress is not included in the APS header
@@ -328,9 +327,9 @@ index 0000000..040c30f
 +#define CONCENTRATOR_ENABLE TRUE
 +#define CONCENTRATOR_DISCOVERY_TIME 60
 +#define CONCENTRATOR_ROUTE_CACHE TRUE
-+#define MAX_RTG_SRC_ENTRIES 500
-+#define SRC_RTG_EXPIRY_TIME 254
-+#define ROUTE_EXPIRY_TIME 254
++#define MAX_RTG_SRC_ENTRIES 1000
++#define SRC_RTG_EXPIRY_TIME 255
++#define ROUTE_EXPIRY_TIME 60
 +
 +/**
 + * Set default transmit power to 9
@@ -633,20 +632,22 @@ index 9db9d84..e2a0eb5 100644
  {
  uint32_t              FrameCounter;
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
-index da62af1..230fea5 100755
+index da62af1..e3f7d95 100755
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
-@@ -66,9 +66,7 @@
- /* The starting address of the application.  Normally the interrupt vectors  */
- /* must be located at the beginning of the application.                      */
- 
--#ifndef NVOCMP_NVPAGES
--#define NVOCMP_NVPAGES          2
--#endif
-+#define NVOCMP_NVPAGES          3
+@@ -71,9 +71,9 @@
+ #endif
  
  #define FLASH_BASE              0x00000000
- #define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+-#define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+-#define FLASH_NV_BASE           (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+-#define FLASH_NV_SIZE           (NVOCMP_NVPAGES * 0x2000)
++#define FLASH_SIZE              0x48000
++#define FLASH_NV_BASE           0x48000
++#define FLASH_NV_SIZE           0x8000
+ #define FLASH_LAST_BASE         0x56000
+ #define FLASH_LAST_SIZE         0x2000
+ 
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_devices_config.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_devices_config.c
 new file mode 100644
 index 0000000..c80aafd
@@ -1043,7 +1044,7 @@ index 0000000..6a57a31
 +#endif /* include guard */
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.c
 new file mode 100644
-index 0000000..229cea7
+index 0000000..0ee1076
 --- /dev/null
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.c
 @@ -0,0 +1,385 @@
@@ -1054,8 +1055,8 @@ index 0000000..229cea7
 + *  DO NOT EDIT - This file is generated for the CC1352P1F3RGZ
 + *  by the SysConfig tool.
 + *
-+ *  Radio Config module version : 1.14
-+ *  SmartRF Studio data version : 2.27.0
++ *  Radio Config module version : 1.16
++ *  SmartRF Studio data version : 2.28.0
 + */
 +
 +#include "ti_radio_config.h"
@@ -1434,7 +1435,7 @@ index 0000000..229cea7
 +
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.h b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.h
 new file mode 100644
-index 0000000..870127b
+index 0000000..1705fe7
 --- /dev/null
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.h
 @@ -0,0 +1,83 @@
@@ -1445,8 +1446,8 @@ index 0000000..870127b
 + *  DO NOT EDIT - This file is generated for the CC1352P1F3RGZ
 + *  by the SysConfig tool.
 + *
-+ *  Radio Config module version : 1.14
-+ *  SmartRF Studio data version : 2.27.0
++ *  Radio Config module version : 1.16
++ *  SmartRF Studio data version : 2.28.0
 + */
 +#ifndef _TI_RADIO_CONFIG_H_
 +#define _TI_RADIO_CONFIG_H_
@@ -1458,7 +1459,7 @@ index 0000000..870127b
 +#include <ti/drivers/rf/RF.h>
 +
 +/* SmartRF Studio version that the RF data is fetched from */
-+#define SMARTRF_STUDIO_VERSION "2.27.0"
++#define SMARTRF_STUDIO_VERSION "2.28.0"
 +
 +// *********************************************************************************
 +//   RF Frontend configuration
@@ -1522,12 +1523,12 @@ index 0000000..870127b
 +
 +#endif // _TI_RADIO_CONFIG_H_
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/znp.syscfg b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/znp.syscfg
-index 56b8f45..9b5109f 100644
+index d51ee59..8215580 100644
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/znp.syscfg
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/znp.syscfg
 @@ -4,6 +4,10 @@
-  * @cliArgs --board "/ti/boards/CC1352P_2_LAUNCHXL" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@6.30.00.84"
-  * @versions {"tool":"1.14.0+2667"}
+  * @cliArgs --board "/ti/boards/CC1352P_2_LAUNCHXL" --rtos "tirtos7" --product "simplelink_cc13xx_cc26xx_sdk@6.41.00.17"
+  * @versions {"tool":"1.15.0+2826"}
   */
 +scripting.excludeFromBuild("ti_devices_config.c");
 +scripting.excludeFromBuild("ti_radio_config.c");
@@ -1550,8 +1551,8 @@ index 56b8f45..9b5109f 100644
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
 -NVS1.internalFlash.regionSize = 0x4000;
 -NVS1.internalFlash.regionBase = 0x52000;
-+NVS1.internalFlash.regionBase = 0x50000;
-+NVS1.internalFlash.regionSize = 0x6000;
++NVS1.internalFlash.regionSize = 0x8000;
++NVS1.internalFlash.regionBase = 0x48000;
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
@@ -1586,7 +1587,7 @@ index a14a328..5153fa3 100644
  #define MT_UTIL_ZCL_KEY_EST_INIT_EST         0x80
  #define MT_UTIL_ZCL_KEY_EST_SIGN             0x81
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
-index 9eb8396..4805fa4 100644
+index 9eb8396..02006b4 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
 @@ -79,6 +79,9 @@
@@ -1599,15 +1600,7 @@ index 9eb8396..4805fa4 100644
  #if !defined NONWK
  
  #include "mt_nwk.h"
-@@ -121,6 +124,7 @@ static void MT_UtilSpi2Addr( zAddrType_t *pDst, uint8_t *pSrc );
- #endif
- 
- #if defined (MT_UTIL_FUNC)
-+
- static void MT_UtilGetDeviceInfo(void);
- static void MT_UtilGetNvInfo(void);
- static void MT_UtilSetPanID(uint8_t *pBuf);
-@@ -154,6 +158,9 @@ static void MT_UtilAPSME_LinkKeyNvIdGet(uint8_t *pBuf);
+@@ -154,6 +157,9 @@ static void MT_UtilAPSME_LinkKeyNvIdGet(uint8_t *pBuf);
  #endif //MT_SYS_KEY_MANAGEMENT
  static void MT_UtilAPSME_RequestKeyCmd(uint8_t *pBuf);
  static void MT_UtilAssocCount(uint8_t *pBuf);
@@ -1617,7 +1610,7 @@ index 9eb8396..4805fa4 100644
  static void MT_UtilAssocFindDevice(uint8_t *pBuf);
  static void MT_UtilAssocGetWithAddress(uint8_t *pBuf);
  static void MT_UtilBindAddEntry(uint8_t *pBuf);
-@@ -286,6 +293,10 @@ uint8_t MT_UtilCommandProcessing(uint8_t *pBuf)
+@@ -286,6 +292,10 @@ uint8_t MT_UtilCommandProcessing(uint8_t *pBuf)
      MT_UtilAssocCount(pBuf);
      break;
  
@@ -1628,7 +1621,7 @@ index 9eb8396..4805fa4 100644
    case MT_UTIL_ASSOC_FIND_DEVICE:
      MT_UtilAssocFindDevice(pBuf);
      break;
-@@ -298,6 +309,14 @@ uint8_t MT_UtilCommandProcessing(uint8_t *pBuf)
+@@ -298,6 +308,14 @@ uint8_t MT_UtilCommandProcessing(uint8_t *pBuf)
      MT_UtilBindAddEntry(pBuf);
      break;
  
@@ -1643,7 +1636,7 @@ index 9eb8396..4805fa4 100644
    case MT_UTIL_SYNC_REQ:
      MT_UtilSync();
      break;
-@@ -1401,6 +1420,95 @@ static void MT_UtilAssocCount(uint8_t *pBuf)
+@@ -1401,6 +1419,95 @@ static void MT_UtilAssocCount(uint8_t *pBuf)
    MT_BuildAndSendZToolResponse(((uint8_t)MT_RPC_CMD_SRSP | (uint8_t)MT_RPC_SYS_UTIL), cmdId, 2, pBuf);
  }
  
@@ -1740,14 +1733,14 @@ index 9eb8396..4805fa4 100644
   * @fn      MT_UtilAssocFindDevice
   *
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
-index 6a9b760..2b72029 100644
+index 6a9b760..05b6c15 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20221102
++#define CODE_REVISION_NUMBER 20230401
 +
  /******************************************************************************
   * CONSTANTS
@@ -1784,10 +1777,10 @@ index 7ee216e..1f884ca 100644
  
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..3aeafda
+index 0000000..531a390
 --- /dev/null
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
-@@ -0,0 +1,65 @@
+@@ -0,0 +1,72 @@
 +#define MT_SYS_KEY_MANAGEMENT 1
 +#define FEATURE_NVEXID 1
 +
@@ -1809,9 +1802,16 @@ index 0000000..3aeafda
 +#undef APS_MAX_GROUPS
 +#define APS_MAX_GROUPS 1
 +
-+// Increase NV pages to 3 to allow for bigger device tables
++// Heap config, use a static heap
++// https://software-dl.ti.com/simplelink/esd/simplelink_cc13x2_26x2_sdk/4.40.00.44/exports/docs/zigbee/html/memory/memory_management.html#configuring-the-heap
++#undef HEAPMGR_CONFIG
++#undef HEAPMGR_SIZE
++#define HEAPMGR_CONFIG 0x0
++#define HEAPMGR_SIZE 0x7D00
++
++// Increase NV pages to 4 to allow for bigger device tables
 +#undef NVOCMP_NVPAGES
-+#define NVOCMP_NVPAGES 3
++#define NVOCMP_NVPAGES 4
 +
 +// Disabling MULTICAST is required in order for proper group support.
 +// If MULTICAST is not disabled, the group adress is not included in the APS header
@@ -1827,9 +1827,9 @@ index 0000000..3aeafda
 +#define CONCENTRATOR_ENABLE TRUE
 +#define CONCENTRATOR_DISCOVERY_TIME 60
 +#define CONCENTRATOR_ROUTE_CACHE TRUE
-+#define MAX_RTG_SRC_ENTRIES 500
-+#define SRC_RTG_EXPIRY_TIME 254
-+#define ROUTE_EXPIRY_TIME 254
++#define MAX_RTG_SRC_ENTRIES 1000
++#define SRC_RTG_EXPIRY_TIME 255
++#define ROUTE_EXPIRY_TIME 60
 +
 +/**
 + * Scale other device tables appropriately
@@ -2110,22 +2110,24 @@ index 9db9d84..e2a0eb5 100644
  {
  uint32_t              FrameCounter;
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
-index da62af1..230fea5 100755
+index da62af1..e3f7d95 100755
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
-@@ -66,9 +66,7 @@
- /* The starting address of the application.  Normally the interrupt vectors  */
- /* must be located at the beginning of the application.                      */
- 
--#ifndef NVOCMP_NVPAGES
--#define NVOCMP_NVPAGES          2
--#endif
-+#define NVOCMP_NVPAGES          3
+@@ -71,9 +71,9 @@
+ #endif
  
  #define FLASH_BASE              0x00000000
- #define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+-#define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+-#define FLASH_NV_BASE           (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+-#define FLASH_NV_SIZE           (NVOCMP_NVPAGES * 0x2000)
++#define FLASH_SIZE              0x48000
++#define FLASH_NV_BASE           0x48000
++#define FLASH_NV_SIZE           0x8000
+ #define FLASH_LAST_BASE         0x56000
+ #define FLASH_LAST_SIZE         0x2000
+ 
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/znp.syscfg b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/znp.syscfg
-index 1b75edb..187e2e1 100644
+index 14c5212..e9d1440 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/znp.syscfg
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/znp.syscfg
 @@ -62,6 +62,7 @@ CCFG.enableBootloader         = true;
@@ -2142,8 +2144,8 @@ index 1b75edb..187e2e1 100644
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
 -NVS1.internalFlash.regionSize = 0x4000;
 -NVS1.internalFlash.regionBase = 0x52000;
-+NVS1.internalFlash.regionSize = 0x6000;
-+NVS1.internalFlash.regionBase = 0x50000;
++NVS1.internalFlash.regionSize = 0x8000;
++NVS1.internalFlash.regionBase = 0x48000;
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
@@ -2178,7 +2180,7 @@ index a14a328..5153fa3 100644
  #define MT_UTIL_ZCL_KEY_EST_INIT_EST         0x80
  #define MT_UTIL_ZCL_KEY_EST_SIGN             0x81
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_util.c b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_util.c
-index 9eb8396..4805fa4 100644
+index 9eb8396..02006b4 100644
 --- a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_util.c
 +++ b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_util.c
 @@ -79,6 +79,9 @@
@@ -2191,15 +2193,7 @@ index 9eb8396..4805fa4 100644
  #if !defined NONWK
  
  #include "mt_nwk.h"
-@@ -121,6 +124,7 @@ static void MT_UtilSpi2Addr( zAddrType_t *pDst, uint8_t *pSrc );
- #endif
- 
- #if defined (MT_UTIL_FUNC)
-+
- static void MT_UtilGetDeviceInfo(void);
- static void MT_UtilGetNvInfo(void);
- static void MT_UtilSetPanID(uint8_t *pBuf);
-@@ -154,6 +158,9 @@ static void MT_UtilAPSME_LinkKeyNvIdGet(uint8_t *pBuf);
+@@ -154,6 +157,9 @@ static void MT_UtilAPSME_LinkKeyNvIdGet(uint8_t *pBuf);
  #endif //MT_SYS_KEY_MANAGEMENT
  static void MT_UtilAPSME_RequestKeyCmd(uint8_t *pBuf);
  static void MT_UtilAssocCount(uint8_t *pBuf);
@@ -2209,7 +2203,7 @@ index 9eb8396..4805fa4 100644
  static void MT_UtilAssocFindDevice(uint8_t *pBuf);
  static void MT_UtilAssocGetWithAddress(uint8_t *pBuf);
  static void MT_UtilBindAddEntry(uint8_t *pBuf);
-@@ -286,6 +293,10 @@ uint8_t MT_UtilCommandProcessing(uint8_t *pBuf)
+@@ -286,6 +292,10 @@ uint8_t MT_UtilCommandProcessing(uint8_t *pBuf)
      MT_UtilAssocCount(pBuf);
      break;
  
@@ -2220,7 +2214,7 @@ index 9eb8396..4805fa4 100644
    case MT_UTIL_ASSOC_FIND_DEVICE:
      MT_UtilAssocFindDevice(pBuf);
      break;
-@@ -298,6 +309,14 @@ uint8_t MT_UtilCommandProcessing(uint8_t *pBuf)
+@@ -298,6 +308,14 @@ uint8_t MT_UtilCommandProcessing(uint8_t *pBuf)
      MT_UtilBindAddEntry(pBuf);
      break;
  
@@ -2235,7 +2229,7 @@ index 9eb8396..4805fa4 100644
    case MT_UTIL_SYNC_REQ:
      MT_UtilSync();
      break;
-@@ -1401,6 +1420,95 @@ static void MT_UtilAssocCount(uint8_t *pBuf)
+@@ -1401,6 +1419,95 @@ static void MT_UtilAssocCount(uint8_t *pBuf)
    MT_BuildAndSendZToolResponse(((uint8_t)MT_RPC_CMD_SRSP | (uint8_t)MT_RPC_SYS_UTIL), cmdId, 2, pBuf);
  }
  
@@ -2332,14 +2326,14 @@ index 9eb8396..4805fa4 100644
   * @fn      MT_UtilAssocFindDevice
   *
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_version.c b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_version.c
-index 6a9b760..2b72029 100644
+index 6a9b760..05b6c15 100644
 --- a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_version.c
 +++ b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20221102
++#define CODE_REVISION_NUMBER 20230401
 +
  /******************************************************************************
   * CONSTANTS
@@ -2376,10 +2370,10 @@ index 7ee216e..1f884ca 100644
  
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..3aeafda
+index 0000000..531a390
 --- /dev/null
 +++ b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h
-@@ -0,0 +1,65 @@
+@@ -0,0 +1,72 @@
 +#define MT_SYS_KEY_MANAGEMENT 1
 +#define FEATURE_NVEXID 1
 +
@@ -2401,9 +2395,16 @@ index 0000000..3aeafda
 +#undef APS_MAX_GROUPS
 +#define APS_MAX_GROUPS 1
 +
-+// Increase NV pages to 3 to allow for bigger device tables
++// Heap config, use a static heap
++// https://software-dl.ti.com/simplelink/esd/simplelink_cc13x2_26x2_sdk/4.40.00.44/exports/docs/zigbee/html/memory/memory_management.html#configuring-the-heap
++#undef HEAPMGR_CONFIG
++#undef HEAPMGR_SIZE
++#define HEAPMGR_CONFIG 0x0
++#define HEAPMGR_SIZE 0x7D00
++
++// Increase NV pages to 4 to allow for bigger device tables
 +#undef NVOCMP_NVPAGES
-+#define NVOCMP_NVPAGES 3
++#define NVOCMP_NVPAGES 4
 +
 +// Disabling MULTICAST is required in order for proper group support.
 +// If MULTICAST is not disabled, the group adress is not included in the APS header
@@ -2419,9 +2420,9 @@ index 0000000..3aeafda
 +#define CONCENTRATOR_ENABLE TRUE
 +#define CONCENTRATOR_DISCOVERY_TIME 60
 +#define CONCENTRATOR_ROUTE_CACHE TRUE
-+#define MAX_RTG_SRC_ENTRIES 500
-+#define SRC_RTG_EXPIRY_TIME 254
-+#define ROUTE_EXPIRY_TIME 254
++#define MAX_RTG_SRC_ENTRIES 1000
++#define SRC_RTG_EXPIRY_TIME 255
++#define ROUTE_EXPIRY_TIME 60
 +
 +/**
 + * Scale other device tables appropriately
@@ -2702,22 +2703,24 @@ index 9db9d84..e2a0eb5 100644
  {
  uint32_t              FrameCounter;
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd b/znp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
-index da62af1..230fea5 100755
+index da62af1..e3f7d95 100755
 --- a/znp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
 +++ b/znp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
-@@ -66,9 +66,7 @@
- /* The starting address of the application.  Normally the interrupt vectors  */
- /* must be located at the beginning of the application.                      */
- 
--#ifndef NVOCMP_NVPAGES
--#define NVOCMP_NVPAGES          2
--#endif
-+#define NVOCMP_NVPAGES          3
+@@ -71,9 +71,9 @@
+ #endif
  
  #define FLASH_BASE              0x00000000
- #define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+-#define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+-#define FLASH_NV_BASE           (0x56000 - (NVOCMP_NVPAGES * 0x2000))
+-#define FLASH_NV_SIZE           (NVOCMP_NVPAGES * 0x2000)
++#define FLASH_SIZE              0x48000
++#define FLASH_NV_BASE           0x48000
++#define FLASH_NV_SIZE           0x8000
+ #define FLASH_LAST_BASE         0x56000
+ #define FLASH_LAST_SIZE         0x2000
+ 
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg b/znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg
-index 4c6ebc7..0dc3e0b 100644
+index ae8ef2a..2c255b4 100644
 --- a/znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg
 +++ b/znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg
 @@ -63,6 +63,7 @@ CCFG.enableBootloaderBackdoor = true;
@@ -2734,8 +2737,8 @@ index 4c6ebc7..0dc3e0b 100644
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
 -NVS1.internalFlash.regionSize = 0x4000;
 -NVS1.internalFlash.regionBase = 0x52000;
-+NVS1.internalFlash.regionSize = 0x6000;
-+NVS1.internalFlash.regionBase = 0x50000;
++NVS1.internalFlash.regionSize = 0x8000;
++NVS1.internalFlash.regionBase = 0x48000;
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
@@ -2748,5 +2751,5 @@ index 4c6ebc7..0dc3e0b 100644
  zstack.rf.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
  zstack.rf.coexSettings.$name                 = "ti_zstack_rf_zstack_coex_mod0";
 -- 
-2.37.0
+2.38.1
 

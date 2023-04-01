@@ -1,8 +1,12 @@
-# 20221102
+# 20230401
+- Attempt to improve routing tables
+- SimpleLink SDK 6.41.00.17 ([changelog](https://software-dl.ti.com/simplelink/esd/simplelink_cc13xx_cc26xx_sdk/6.41.00.17/exports/changelog.html))
+
+# 20221226
 - Improve performance/reliability for larger network (100+ devices)
 - Increase request retry attempts
 - Increase routing table sizes
-- SimpleLink SDK 6.10.00.29 ([changelog](https://software-dl.ti.com/simplelink/esd/simplelink_cc13xx_cc26xx_sdk/6.10.00.29/exports/changelog.html)), SimpleLink SDK 6.20.00.29 ([changelog](https://software-dl.ti.com/simplelink/esd/simplelink_cc13xx_cc26xx_sdk/6.20.00.29/exports/changelog.html)) and SimpleLink SDK 6.30.00.84 ([changelog](https://software-dl.ti.com/simplelink/esd/simplelink_cc13xx_cc26xx_sdk/6.30.00.84/exports/changelog.html))
+- SimpleLink SDK 6.10.01.01 ([changelog](https://software-dl.ti.com/simplelink/esd/simplelink_cc13xx_cc26xx_sdk/6.10.01.01/exports/changelog.html))
 
 # 20220219
 - Fix Touchlink crash
