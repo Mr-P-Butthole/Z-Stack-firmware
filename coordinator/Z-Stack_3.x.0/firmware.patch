@@ -1,4 +1,4 @@
-From 1b61b237f69ebb5aac4beea318767fc526fefc81 Mon Sep 17 00:00:00 2001
+From 7874a1c697c841b3e91a1554074b82e53177caf9 Mon Sep 17 00:00:00 2001
 From: Koen Kanters <koenkanters94@gmail.com>
 Date: Sat, 1 Apr 2023 09:52:27 +0200
 Subject: [PATCH 1/1] Own changes
@@ -233,14 +233,14 @@ index 9eb8396..02006b4 100644
   * @fn      MT_UtilAssocFindDevice
   *
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
-index 6a9b760..05b6c15 100644
+index 6a9b760..7c1e9ab 100644
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20230401
++#define CODE_REVISION_NUMBER 20230405
 +
  /******************************************************************************
   * CONSTANTS
@@ -277,7 +277,7 @@ index 7ee216e..2032cc0 100644
  }
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..e47fbc4
+index 0000000..6908190
 --- /dev/null
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
 @@ -0,0 +1,90 @@
@@ -309,9 +309,9 @@ index 0000000..e47fbc4
 +#define HEAPMGR_CONFIG 0x0
 +#define HEAPMGR_SIZE 0x7D00
 +
-+// Increase NV pages to 4 to allow for bigger device tables
++// Increase NV pages to 3 to allow for bigger device tables
 +#undef NVOCMP_NVPAGES
-+#define NVOCMP_NVPAGES 4
++#define NVOCMP_NVPAGES 3
 +
 +// Disabling MULTICAST is required in order for proper group support.
 +// If MULTICAST is not disabled, the group adress is not included in the APS header
@@ -632,7 +632,7 @@ index 9db9d84..e2a0eb5 100644
  {
  uint32_t              FrameCounter;
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
-index da62af1..e3f7d95 100755
+index da62af1..234ac56 100755
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
 @@ -71,9 +71,9 @@
@@ -642,9 +642,9 @@ index da62af1..e3f7d95 100755
 -#define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
 -#define FLASH_NV_BASE           (0x56000 - (NVOCMP_NVPAGES * 0x2000))
 -#define FLASH_NV_SIZE           (NVOCMP_NVPAGES * 0x2000)
-+#define FLASH_SIZE              0x48000
-+#define FLASH_NV_BASE           0x48000
-+#define FLASH_NV_SIZE           0x8000
++#define FLASH_SIZE              0x50000
++#define FLASH_NV_BASE           0x50000
++#define FLASH_NV_SIZE           0x6000
  #define FLASH_LAST_BASE         0x56000
  #define FLASH_LAST_SIZE         0x2000
  
@@ -1523,7 +1523,7 @@ index 0000000..1705fe7
 +
 +#endif // _TI_RADIO_CONFIG_H_
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/znp.syscfg b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/znp.syscfg
-index d51ee59..8215580 100644
+index d51ee59..190c770 100644
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/znp.syscfg
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/znp.syscfg
 @@ -4,6 +4,10 @@
@@ -1551,8 +1551,8 @@ index d51ee59..8215580 100644
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
 -NVS1.internalFlash.regionSize = 0x4000;
 -NVS1.internalFlash.regionBase = 0x52000;
-+NVS1.internalFlash.regionSize = 0x8000;
-+NVS1.internalFlash.regionBase = 0x48000;
++NVS1.internalFlash.regionSize = 0x6000;
++NVS1.internalFlash.regionBase = 0x50000;
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
@@ -1733,14 +1733,14 @@ index 9eb8396..02006b4 100644
   * @fn      MT_UtilAssocFindDevice
   *
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
-index 6a9b760..05b6c15 100644
+index 6a9b760..7c1e9ab 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20230401
++#define CODE_REVISION_NUMBER 20230405
 +
  /******************************************************************************
   * CONSTANTS
@@ -1777,7 +1777,7 @@ index 7ee216e..1f884ca 100644
  
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..531a390
+index 0000000..cf320f2
 --- /dev/null
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
 @@ -0,0 +1,72 @@
@@ -1809,9 +1809,9 @@ index 0000000..531a390
 +#define HEAPMGR_CONFIG 0x0
 +#define HEAPMGR_SIZE 0x7D00
 +
-+// Increase NV pages to 4 to allow for bigger device tables
++// Increase NV pages to 3 to allow for bigger device tables
 +#undef NVOCMP_NVPAGES
-+#define NVOCMP_NVPAGES 4
++#define NVOCMP_NVPAGES 3
 +
 +// Disabling MULTICAST is required in order for proper group support.
 +// If MULTICAST is not disabled, the group adress is not included in the APS header
@@ -2110,7 +2110,7 @@ index 9db9d84..e2a0eb5 100644
  {
  uint32_t              FrameCounter;
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
-index da62af1..e3f7d95 100755
+index da62af1..234ac56 100755
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
 @@ -71,9 +71,9 @@
@@ -2120,14 +2120,14 @@ index da62af1..e3f7d95 100755
 -#define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
 -#define FLASH_NV_BASE           (0x56000 - (NVOCMP_NVPAGES * 0x2000))
 -#define FLASH_NV_SIZE           (NVOCMP_NVPAGES * 0x2000)
-+#define FLASH_SIZE              0x48000
-+#define FLASH_NV_BASE           0x48000
-+#define FLASH_NV_SIZE           0x8000
++#define FLASH_SIZE              0x50000
++#define FLASH_NV_BASE           0x50000
++#define FLASH_NV_SIZE           0x6000
  #define FLASH_LAST_BASE         0x56000
  #define FLASH_LAST_SIZE         0x2000
  
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/znp.syscfg b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/znp.syscfg
-index 14c5212..e9d1440 100644
+index 14c5212..e07512b 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/znp.syscfg
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/znp.syscfg
 @@ -62,6 +62,7 @@ CCFG.enableBootloader         = true;
@@ -2144,8 +2144,8 @@ index 14c5212..e9d1440 100644
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
 -NVS1.internalFlash.regionSize = 0x4000;
 -NVS1.internalFlash.regionBase = 0x52000;
-+NVS1.internalFlash.regionSize = 0x8000;
-+NVS1.internalFlash.regionBase = 0x48000;
++NVS1.internalFlash.regionSize = 0x6000;
++NVS1.internalFlash.regionBase = 0x50000;
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
@@ -2326,14 +2326,14 @@ index 9eb8396..02006b4 100644
   * @fn      MT_UtilAssocFindDevice
   *
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_version.c b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_version.c
-index 6a9b760..05b6c15 100644
+index 6a9b760..7c1e9ab 100644
 --- a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_version.c
 +++ b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20230401
++#define CODE_REVISION_NUMBER 20230405
 +
  /******************************************************************************
   * CONSTANTS
@@ -2370,7 +2370,7 @@ index 7ee216e..1f884ca 100644
  
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..531a390
+index 0000000..cf320f2
 --- /dev/null
 +++ b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h
 @@ -0,0 +1,72 @@
@@ -2402,9 +2402,9 @@ index 0000000..531a390
 +#define HEAPMGR_CONFIG 0x0
 +#define HEAPMGR_SIZE 0x7D00
 +
-+// Increase NV pages to 4 to allow for bigger device tables
++// Increase NV pages to 3 to allow for bigger device tables
 +#undef NVOCMP_NVPAGES
-+#define NVOCMP_NVPAGES 4
++#define NVOCMP_NVPAGES 3
 +
 +// Disabling MULTICAST is required in order for proper group support.
 +// If MULTICAST is not disabled, the group adress is not included in the APS header
@@ -2703,7 +2703,7 @@ index 9db9d84..e2a0eb5 100644
  {
  uint32_t              FrameCounter;
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd b/znp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
-index da62af1..e3f7d95 100755
+index da62af1..234ac56 100755
 --- a/znp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
 +++ b/znp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
 @@ -71,9 +71,9 @@
@@ -2713,14 +2713,14 @@ index da62af1..e3f7d95 100755
 -#define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
 -#define FLASH_NV_BASE           (0x56000 - (NVOCMP_NVPAGES * 0x2000))
 -#define FLASH_NV_SIZE           (NVOCMP_NVPAGES * 0x2000)
-+#define FLASH_SIZE              0x48000
-+#define FLASH_NV_BASE           0x48000
-+#define FLASH_NV_SIZE           0x8000
++#define FLASH_SIZE              0x50000
++#define FLASH_NV_BASE           0x50000
++#define FLASH_NV_SIZE           0x6000
  #define FLASH_LAST_BASE         0x56000
  #define FLASH_LAST_SIZE         0x2000
  
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg b/znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg
-index ae8ef2a..2c255b4 100644
+index ae8ef2a..d35c44a 100644
 --- a/znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg
 +++ b/znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg
 @@ -63,6 +63,7 @@ CCFG.enableBootloaderBackdoor = true;
@@ -2737,8 +2737,8 @@ index ae8ef2a..2c255b4 100644
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
 -NVS1.internalFlash.regionSize = 0x4000;
 -NVS1.internalFlash.regionBase = 0x52000;
-+NVS1.internalFlash.regionSize = 0x8000;
-+NVS1.internalFlash.regionBase = 0x48000;
++NVS1.internalFlash.regionSize = 0x6000;
++NVS1.internalFlash.regionBase = 0x50000;
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";

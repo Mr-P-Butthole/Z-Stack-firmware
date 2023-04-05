@@ -1,4 +1,4 @@
-# 20230401
+# 20230405
 - Attempt to improve routing tables
 - SimpleLink SDK 6.41.00.17 ([changelog](https://software-dl.ti.com/simplelink/esd/simplelink_cc13xx_cc26xx_sdk/6.41.00.17/exports/changelog.html))
 
