@@ -1,69 +1,100 @@
-From 7874a1c697c841b3e91a1554074b82e53177caf9 Mon Sep 17 00:00:00 2001
+From 3c3295f988064fe8a5ee14e43416cbd9e09bfe99 Mon Sep 17 00:00:00 2001
 From: Koen Kanters <koenkanters94@gmail.com>
-Date: Sat, 1 Apr 2023 09:52:27 +0200
+Date: Sun, 9 Apr 2023 12:38:15 +0200
 Subject: [PATCH 1/1] Own changes
 
 ---
+ .../Application/StartUp/zstackstartup.c       |   8 +
  .../Application/mt/mt.h                       |   4 +
- .../Application/mt/mt_util.c                  | 107 +++++
+ .../Application/mt/mt_util.c                  | 119 +++++-
  .../Application/mt/mt_version.c               |   8 +-
  .../Application/mt/mt_zdo.c                   |   5 +
- .../Stack/Config/preinclude.h                 |  90 ++++
+ .../Stack/Config/preinclude.h                 |  93 +++++
  .../Stack/Config/znp_cnf.opts                 |   2 +
  .../Stack/af/af.c                             |  18 +-
  .../Stack/nwk/nwk_globals.c                   |   8 +-
- .../Stack/sys/zglobals.c                      |   6 +-
- .../Stack/zdo/zd_app.c                        |  30 +-
+ .../Stack/nwk/nwk_util.c                      |  49 +++
+ .../Stack/nwk/nwk_util.h                      |   4 +
+ .../Stack/sys/zglobals.c                      |   2 +-
+ .../Stack/zdo/zd_app.c                        |   8 +
  .../Stack/zdo/zd_object.c                     |  14 +
  .../Stack/zdo/zd_sec_mgr.c                    |  23 ++
  .../Stack/zdo/zd_sec_mgr.h                    |   5 +
- .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   6 +-
+ .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   8 +-
  .../ti_devices_config.c                       | 108 +++++
  .../ti_drivers_config.h                       | 274 +++++++++++++
  .../ti_radio_config.c                         | 385 ++++++++++++++++++
  .../ti_radio_config.h                         |  83 ++++
  .../znp.syscfg                                |  10 +-
+ .../Application/StartUp/zstackstartup.c       |   8 +
  .../Application/mt/mt.h                       |   4 +
- .../Application/mt/mt_util.c                  | 107 +++++
+ .../Application/mt/mt_util.c                  | 119 +++++-
  .../Application/mt/mt_version.c               |   8 +-
  .../Application/mt/mt_zdo.c                   |   5 +
- .../Stack/Config/preinclude.h                 |  72 ++++
+ .../Stack/Config/preinclude.h                 |  75 ++++
  .../Stack/Config/znp_cnf.opts                 |   2 +
  .../Stack/af/af.c                             |  18 +-
  .../Stack/nwk/nwk_globals.c                   |   8 +-
- .../Stack/sys/zglobals.c                      |   6 +-
- .../Stack/zdo/zd_app.c                        |  30 +-
+ .../Stack/nwk/nwk_util.c                      |  49 +++
+ .../Stack/nwk/nwk_util.h                      |   4 +
+ .../Stack/sys/zglobals.c                      |   2 +-
+ .../Stack/zdo/zd_app.c                        |   8 +
  .../Stack/zdo/zd_object.c                     |  14 +
  .../Stack/zdo/zd_sec_mgr.c                    |  23 ++
  .../Stack/zdo/zd_sec_mgr.h                    |   5 +
- .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   6 +-
+ .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   8 +-
  .../znp.syscfg                                |   6 +-
+ .../Application/StartUp/zstackstartup.c       |   8 +
  .../Application/mt/mt.h                       |   4 +
- .../Application/mt/mt_util.c                  | 107 +++++
+ .../Application/mt/mt_util.c                  | 119 +++++-
  .../Application/mt/mt_version.c               |   8 +-
  .../Application/mt/mt_zdo.c                   |   5 +
- .../Stack/Config/preinclude.h                 |  72 ++++
+ .../Stack/Config/preinclude.h                 |  75 ++++
  .../Stack/Config/znp_cnf.opts                 |   2 +
  znp_LP_CC2652RB_tirtos7_ticlang/Stack/af/af.c |  18 +-
  .../Stack/nwk/nwk_globals.c                   |   8 +-
- .../Stack/sys/zglobals.c                      |   6 +-
- .../Stack/zdo/zd_app.c                        |  30 +-
+ .../Stack/nwk/nwk_util.c                      |  49 +++
+ .../Stack/nwk/nwk_util.h                      |   4 +
+ .../Stack/sys/zglobals.c                      |   2 +-
+ .../Stack/zdo/zd_app.c                        |   8 +
  .../Stack/zdo/zd_object.c                     |  14 +
  .../Stack/zdo/zd_sec_mgr.c                    |  23 ++
  .../Stack/zdo/zd_sec_mgr.h                    |   5 +
- .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   6 +-
+ .../cc13x2_cc26x2_tirtos7_ticlang.cmd         |   8 +-
  znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg    |   6 +-
- 49 files changed, 1730 insertions(+), 84 deletions(-)
+ 58 files changed, 1919 insertions(+), 51 deletions(-)
  create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
  mode change 100644 => 100755 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/af/af.c
  mode change 100644 => 100755 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_globals.c
+ create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_util.c
  create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_devices_config.c
  create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_drivers_config.h
  create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.c
  create mode 100644 znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/ti_radio_config.h
  create mode 100644 znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
+ create mode 100644 znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_util.c
  create mode 100644 znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h
+ create mode 100644 znp_LP_CC2652RB_tirtos7_ticlang/Stack/nwk/nwk_util.c
 
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/StartUp/zstackstartup.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/StartUp/zstackstartup.c
+index 88acb5b..3b601d9 100644
+--- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/StartUp/zstackstartup.c
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/StartUp/zstackstartup.c
+@@ -701,6 +701,14 @@ static void stackInit(void)
+     //Initialize default poll rates
+     nwk_InitializeDefaultPollRates();
+ 
++    // Use custom function for child aging leave requests
++    pNwkNotMyChildSendLeave = &NwkNotMyChildSendLeaveCustom;
++
++    // Disable child aging leave for Xiaomi/Aqara extAddr range to prevent them from being kicekd out of the network.
++    // They do not support child aging.
++    uint8_t extAddrXiaomi [] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x8d, 0x15, 0x00};
++    NwkDisableChildAgingLeaveAdd(extAddrXiaomi, 3);
++
+     /* Initialize MAC buffer */
+     macLowLevelBufferInit();
+ 
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt.h b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt.h
 index a14a328..5153fa3 100644
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt.h
@@ -87,7 +118,7 @@ index a14a328..5153fa3 100644
  #define MT_UTIL_ZCL_KEY_EST_INIT_EST         0x80
  #define MT_UTIL_ZCL_KEY_EST_SIGN             0x81
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
-index 9eb8396..02006b4 100644
+index 9eb8396..a7c302e 100644
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
 @@ -79,6 +79,9 @@
@@ -232,15 +263,43 @@ index 9eb8396..02006b4 100644
  /***************************************************************************************************
   * @fn      MT_UtilAssocFindDevice
   *
+@@ -1525,6 +1632,9 @@ static void MT_UtilBindAddEntry(uint8_t *pBuf)
+  ***************************************************************************************************/
+ static void packDev_t(uint8_t *pBuf, associated_devices_t *pDev)
+ {
++  // Applied some fixes here, see https://github.com/Koenkk/zigbee2mqtt/issues/13478#issuecomment-1501085509
++  memset(pBuf, 0, sizeof(associated_devices_t));
++
+   if (NULL == pDev)
+   {
+     uint16_t rtrn = INVALID_NODE_ADDR;
+@@ -1546,9 +1656,16 @@ static void packDev_t(uint8_t *pBuf, associated_devices_t *pDev)
+     *pBuf++ = pDev->linkInfo.rxLqi;
+     *pBuf++ = pDev->linkInfo.inKeySeqNum;
+     OsalPort_bufferUint32( pBuf, pDev->linkInfo.inFrmCntr );
+-    *pBuf += 4;
++    pBuf += 4;
+     *pBuf++ = LO_UINT16(pDev->linkInfo.txFailure);
+     *pBuf++ = HI_UINT16(pDev->linkInfo.txFailure);
++    *pBuf++ = pDev->endDev.endDevCfg;
++    OsalPort_bufferUint32( pBuf, pDev->endDev.deviceTimeout);
++    pBuf += 4;
++    OsalPort_bufferUint32( pBuf, pDev->timeoutCounter);
++    pBuf += 4;
++    *pBuf++ = pDev->keepaliveRcv;
++    *pBuf++ = pDev->ctrl;
+   }
+ }
+ 
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
-index 6a9b760..7c1e9ab 100644
+index 6a9b760..2cc4cab 100644
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20230405
++#define CODE_REVISION_NUMBER 20230410
 +
  /******************************************************************************
   * CONSTANTS
@@ -277,12 +336,15 @@ index 7ee216e..2032cc0 100644
  }
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..6908190
+index 0000000..f7df3ef
 --- /dev/null
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
-@@ -0,0 +1,90 @@
+@@ -0,0 +1,93 @@
 +#define MT_SYS_KEY_MANAGEMENT 1
 +#define FEATURE_NVEXID 1
++
++// Increase by 1 to compensate for lag (default is 7)
++#define NWK_INDIRECT_MSG_TIMEOUT 8
 +
 +// Increase frame retries
 +#define ZMAC_MAX_FRAME_RETRIES 7
@@ -311,7 +373,7 @@ index 0000000..6908190
 +
 +// Increase NV pages to 3 to allow for bigger device tables
 +#undef NVOCMP_NVPAGES
-+#define NVOCMP_NVPAGES 3
++#define NVOCMP_NVPAGES 4
 +
 +// Disabling MULTICAST is required in order for proper group support.
 +// If MULTICAST is not disabled, the group adress is not included in the APS header
@@ -442,8 +504,78 @@ index a0acd95..7b12a23
  
  // 1-255 (0 -> 256) X RTG_TIMER_INTERVAL
  // A known shortcoming is that when a message is enqueued as "hold" for a
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_util.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_util.c
+new file mode 100644
+index 0000000..da24c03
+--- /dev/null
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_util.c
+@@ -0,0 +1,49 @@
++#include "nwk_util.h"
++#include "aps_mede.h"
++
++#ifndef NWK_MAX_CHILD_AGING_LEAVE_DISABLED_ENTRIES
++#define NWK_MAX_CHILD_AGING_LEAVE_DISABLED_ENTRIES 50
++#endif
++
++typedef struct
++{
++    uint8_t extAddr[Z_EXTADDR_LEN];
++    uint8_t numBytesToMatch;
++} child_aging_leave_disabled_entry_t;
++
++child_aging_leave_disabled_entry_t childAgingLeaveDisabledList[NWK_MAX_CHILD_AGING_LEAVE_DISABLED_ENTRIES];
++uint8_t chidlAgingLeaveDisabledCnt = 0;
++
++uint8_t NwkDisableChildAgingLeaveAdd(uint8_t* extAddr, uint8_t numBytesToMatch)
++{
++    if (chidlAgingLeaveDisabledCnt == NWK_MAX_CHILD_AGING_LEAVE_DISABLED_ENTRIES) {
++        return 1;
++    }
++
++    memcpy(childAgingLeaveDisabledList[chidlAgingLeaveDisabledCnt].extAddr, extAddr, Z_EXTADDR_LEN);
++    childAgingLeaveDisabledList[chidlAgingLeaveDisabledCnt].numBytesToMatch = numBytesToMatch;
++    ++chidlAgingLeaveDisabledCnt;
++
++    return 0;
++}
++
++void NwkNotMyChildSendLeaveCustom (uint16_t dstAddr)
++{
++    uint8_t extAddr[Z_EXTADDR_LEN];
++    uint8_t idx;
++
++    if (!APSME_LookupExtAddr(dstAddr, extAddr)) {
++        return;
++    }
++
++    // Do not send leave request to devices where it is disabled for
++    for (idx = 0; idx < chidlAgingLeaveDisabledCnt; ++idx)
++    {
++        uint8_t offset = Z_EXTADDR_LEN - childAgingLeaveDisabledList[idx].numBytesToMatch;
++        if (memcmp(childAgingLeaveDisabledList[idx].extAddr + offset, extAddr + offset, childAgingLeaveDisabledList[idx].numBytesToMatch) == 0) {
++            return;
++        }
++    }
++
++    NwkNotMyChildSendLeave (dstAddr);
++};
+diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_util.h b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_util.h
+index 584c35a..a567e0c 100644
+--- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_util.h
++++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_util.h
+@@ -638,6 +638,10 @@ extern uint8_t (*pNwkNotMyChildListAdd)( uint16_t devAddr, uint32_t timeoutValue
+ extern void (*pNwkNotMyChildListDelete)( uint16_t devAddr );
+ extern void (*pNwkNotMyChildSendLeave)( uint16_t dstAddr );
+ 
++// Custom functions
++void NwkNotMyChildSendLeaveCustom (uint16_t dstAddr);
++uint8_t NwkDisableChildAgingLeaveAdd(uint8_t* extAddr, uint8_t numBytesToMatch);
++
+ /****************************************************************************
+  * Utility function to copy NV items
+  ****************************************************************************/
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
-index 706736b..14d5932 100644
+index 706736b..07bede3 100644
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
 @@ -131,7 +131,7 @@ uint8_t zgSecurePermitJoin = TRUE;
@@ -455,58 +587,11 @@ index 706736b..14d5932 100644
  
  //allowInstallCodes
  uint8_t zgAllowInstallCodes = ZG_IC_SUPPORTED_NOT_REQUIRED;
-@@ -225,7 +225,9 @@ uint8_t zgEndDeviceConfiguration = END_DEV_CONFIGURATION;
- //
- // NOTICE:  Before enabling Child Aging make sure to review all the related
- // definitions in this file, especially zgNwkParentInformation.
--uint8_t zgChildAgingEnable = TRUE;
-+
-+// Disable child aging, otherwise Xiaomi devices are being kicked off the network.
-+uint8_t zgChildAgingEnable = FALSE;
- 
- //==========    TouchLink NWK configuration    ===============
- // Values used by Router when starts a network as initiator
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
-index 1f30180..5fc438c 100644
+index 1f30180..289afa6 100644
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
-@@ -441,12 +441,11 @@ uint32_t ZDApp_event_loop( uint8_t task_id, uint32_t events )
-           ZDApp_ChangeState( DEV_ROUTER );
-         }
- 
--        if ( zgChildAgingEnable == TRUE )
--        {
--          // Once the device has changed its state to a ROUTER set the timer to send
--          // Parent annce
--          ZDApp_SetParentAnnceTimer();
--        }
-+        // As we cannot enable child aging as Xiaomi devices will drop off
-+        // but we stil want to have the parent announces we always enable it here.
-+        // Otherwise some end devices could be unreachable when they changed parent
-+        // while the coordinator was powered off.
-+        ZDApp_SetParentAnnceTimer();
-       }
-       else
-       {
-@@ -907,12 +906,11 @@ void ZDApp_NetworkStartEvt( void )
-         bdb_reportCommissioningState(BDB_INITIALIZATION,TRUE);
-       }
- 
--      if ( zgChildAgingEnable == TRUE )
--      {
--        // Once the device has changed its state to a COORDINATOR set the timer to send
--        // Parent annce
--        ZDApp_SetParentAnnceTimer();
--      }
-+      // As we cannot enable child aging as Xiaomi devices will drop off
-+      // but we stil want to have the parent announces we always enable it here.
-+      // Otherwise some end devices could be unreachable when they changed parent
-+      // while the coordinator was powered off.
-+      ZDApp_SetParentAnnceTimer();
-     }
-     else
-     {
-@@ -3163,6 +3161,14 @@ void ZDO_NetworkStatusCB( uint16_t nwkDstAddr, uint8_t statusCode, uint16_t dstA
+@@ -3163,6 +3163,14 @@ void ZDO_NetworkStatusCB( uint16_t nwkDstAddr, uint8_t statusCode, uint16_t dstA
      // Routing error for dstAddr, this is informational and a Route
      // Request should happen automatically.
    }
@@ -632,9 +717,18 @@ index 9db9d84..e2a0eb5 100644
  {
  uint32_t              FrameCounter;
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
-index da62af1..234ac56 100755
+index da62af1..8bbffea 100755
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
+@@ -60,7 +60,7 @@
+ /* modifications in your CCS project and leave this file alone.              */
+ /*                                                                           */
+ /* --heap_size=0                                                             */
+---stack_size=1024
++--stack_size=4048
+ /* --library=rtsv7M3_T_le_eabi.lib                                           */
+ 
+ /* The starting address of the application.  Normally the interrupt vectors  */
 @@ -71,9 +71,9 @@
  #endif
  
@@ -642,9 +736,9 @@ index da62af1..234ac56 100755
 -#define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
 -#define FLASH_NV_BASE           (0x56000 - (NVOCMP_NVPAGES * 0x2000))
 -#define FLASH_NV_SIZE           (NVOCMP_NVPAGES * 0x2000)
-+#define FLASH_SIZE              0x50000
-+#define FLASH_NV_BASE           0x50000
-+#define FLASH_NV_SIZE           0x6000
++#define FLASH_SIZE              0x48000
++#define FLASH_NV_BASE           0x48000
++#define FLASH_NV_SIZE           0x8000
  #define FLASH_LAST_BASE         0x56000
  #define FLASH_LAST_SIZE         0x2000
  
@@ -1523,7 +1617,7 @@ index 0000000..1705fe7
 +
 +#endif // _TI_RADIO_CONFIG_H_
 diff --git a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/znp.syscfg b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/znp.syscfg
-index d51ee59..190c770 100644
+index d51ee59..8215580 100644
 --- a/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/znp.syscfg
 +++ b/znp_CC1352P_2_LAUNCHXL_tirtos7_ticlang/znp.syscfg
 @@ -4,6 +4,10 @@
@@ -1551,8 +1645,8 @@ index d51ee59..190c770 100644
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
 -NVS1.internalFlash.regionSize = 0x4000;
 -NVS1.internalFlash.regionBase = 0x52000;
-+NVS1.internalFlash.regionSize = 0x6000;
-+NVS1.internalFlash.regionBase = 0x50000;
++NVS1.internalFlash.regionSize = 0x8000;
++NVS1.internalFlash.regionBase = 0x48000;
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
@@ -1564,6 +1658,25 @@ index d51ee59..190c770 100644
  zstack.rf.radioConfig.$name                  = "ti_devices_radioconfig_settings_ieee_15_40";
  zstack.rf.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
  zstack.rf.coexSettings.$name                 = "ti_zstack_rf_zstack_coex_mod0";
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/StartUp/zstackstartup.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/StartUp/zstackstartup.c
+index 88acb5b..3b601d9 100644
+--- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/StartUp/zstackstartup.c
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/StartUp/zstackstartup.c
+@@ -701,6 +701,14 @@ static void stackInit(void)
+     //Initialize default poll rates
+     nwk_InitializeDefaultPollRates();
+ 
++    // Use custom function for child aging leave requests
++    pNwkNotMyChildSendLeave = &NwkNotMyChildSendLeaveCustom;
++
++    // Disable child aging leave for Xiaomi/Aqara extAddr range to prevent them from being kicekd out of the network.
++    // They do not support child aging.
++    uint8_t extAddrXiaomi [] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x8d, 0x15, 0x00};
++    NwkDisableChildAgingLeaveAdd(extAddrXiaomi, 3);
++
+     /* Initialize MAC buffer */
+     macLowLevelBufferInit();
+ 
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt.h b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt.h
 index a14a328..5153fa3 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt.h
@@ -1587,7 +1700,7 @@ index a14a328..5153fa3 100644
  #define MT_UTIL_ZCL_KEY_EST_INIT_EST         0x80
  #define MT_UTIL_ZCL_KEY_EST_SIGN             0x81
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
-index 9eb8396..02006b4 100644
+index 9eb8396..a7c302e 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_util.c
 @@ -79,6 +79,9 @@
@@ -1732,15 +1845,43 @@ index 9eb8396..02006b4 100644
  /***************************************************************************************************
   * @fn      MT_UtilAssocFindDevice
   *
+@@ -1525,6 +1632,9 @@ static void MT_UtilBindAddEntry(uint8_t *pBuf)
+  ***************************************************************************************************/
+ static void packDev_t(uint8_t *pBuf, associated_devices_t *pDev)
+ {
++  // Applied some fixes here, see https://github.com/Koenkk/zigbee2mqtt/issues/13478#issuecomment-1501085509
++  memset(pBuf, 0, sizeof(associated_devices_t));
++
+   if (NULL == pDev)
+   {
+     uint16_t rtrn = INVALID_NODE_ADDR;
+@@ -1546,9 +1656,16 @@ static void packDev_t(uint8_t *pBuf, associated_devices_t *pDev)
+     *pBuf++ = pDev->linkInfo.rxLqi;
+     *pBuf++ = pDev->linkInfo.inKeySeqNum;
+     OsalPort_bufferUint32( pBuf, pDev->linkInfo.inFrmCntr );
+-    *pBuf += 4;
++    pBuf += 4;
+     *pBuf++ = LO_UINT16(pDev->linkInfo.txFailure);
+     *pBuf++ = HI_UINT16(pDev->linkInfo.txFailure);
++    *pBuf++ = pDev->endDev.endDevCfg;
++    OsalPort_bufferUint32( pBuf, pDev->endDev.deviceTimeout);
++    pBuf += 4;
++    OsalPort_bufferUint32( pBuf, pDev->timeoutCounter);
++    pBuf += 4;
++    *pBuf++ = pDev->keepaliveRcv;
++    *pBuf++ = pDev->ctrl;
+   }
+ }
+ 
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
-index 6a9b760..7c1e9ab 100644
+index 6a9b760..2cc4cab 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20230405
++#define CODE_REVISION_NUMBER 20230410
 +
  /******************************************************************************
   * CONSTANTS
@@ -1777,12 +1918,15 @@ index 7ee216e..1f884ca 100644
  
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..cf320f2
+index 0000000..155dd50
 --- /dev/null
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/Config/preinclude.h
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,75 @@
 +#define MT_SYS_KEY_MANAGEMENT 1
 +#define FEATURE_NVEXID 1
++
++// Increase by 1 to compensate for lag (default is 7)
++#define NWK_INDIRECT_MSG_TIMEOUT 8
 +
 +// Increase frame retries
 +#define ZMAC_MAX_FRAME_RETRIES 7
@@ -1811,7 +1955,7 @@ index 0000000..cf320f2
 +
 +// Increase NV pages to 3 to allow for bigger device tables
 +#undef NVOCMP_NVPAGES
-+#define NVOCMP_NVPAGES 3
++#define NVOCMP_NVPAGES 4
 +
 +// Disabling MULTICAST is required in order for proper group support.
 +// If MULTICAST is not disabled, the group adress is not included in the APS header
@@ -1920,8 +2064,78 @@ index a0acd95..7b12a23 100644
  
  // 1-255 (0 -> 256) X RTG_TIMER_INTERVAL
  // A known shortcoming is that when a message is enqueued as "hold" for a
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_util.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_util.c
+new file mode 100644
+index 0000000..da24c03
+--- /dev/null
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_util.c
+@@ -0,0 +1,49 @@
++#include "nwk_util.h"
++#include "aps_mede.h"
++
++#ifndef NWK_MAX_CHILD_AGING_LEAVE_DISABLED_ENTRIES
++#define NWK_MAX_CHILD_AGING_LEAVE_DISABLED_ENTRIES 50
++#endif
++
++typedef struct
++{
++    uint8_t extAddr[Z_EXTADDR_LEN];
++    uint8_t numBytesToMatch;
++} child_aging_leave_disabled_entry_t;
++
++child_aging_leave_disabled_entry_t childAgingLeaveDisabledList[NWK_MAX_CHILD_AGING_LEAVE_DISABLED_ENTRIES];
++uint8_t chidlAgingLeaveDisabledCnt = 0;
++
++uint8_t NwkDisableChildAgingLeaveAdd(uint8_t* extAddr, uint8_t numBytesToMatch)
++{
++    if (chidlAgingLeaveDisabledCnt == NWK_MAX_CHILD_AGING_LEAVE_DISABLED_ENTRIES) {
++        return 1;
++    }
++
++    memcpy(childAgingLeaveDisabledList[chidlAgingLeaveDisabledCnt].extAddr, extAddr, Z_EXTADDR_LEN);
++    childAgingLeaveDisabledList[chidlAgingLeaveDisabledCnt].numBytesToMatch = numBytesToMatch;
++    ++chidlAgingLeaveDisabledCnt;
++
++    return 0;
++}
++
++void NwkNotMyChildSendLeaveCustom (uint16_t dstAddr)
++{
++    uint8_t extAddr[Z_EXTADDR_LEN];
++    uint8_t idx;
++
++    if (!APSME_LookupExtAddr(dstAddr, extAddr)) {
++        return;
++    }
++
++    // Do not send leave request to devices where it is disabled for
++    for (idx = 0; idx < chidlAgingLeaveDisabledCnt; ++idx)
++    {
++        uint8_t offset = Z_EXTADDR_LEN - childAgingLeaveDisabledList[idx].numBytesToMatch;
++        if (memcmp(childAgingLeaveDisabledList[idx].extAddr + offset, extAddr + offset, childAgingLeaveDisabledList[idx].numBytesToMatch) == 0) {
++            return;
++        }
++    }
++
++    NwkNotMyChildSendLeave (dstAddr);
++};
+diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_util.h b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_util.h
+index 584c35a..a567e0c 100644
+--- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_util.h
++++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/nwk/nwk_util.h
+@@ -638,6 +638,10 @@ extern uint8_t (*pNwkNotMyChildListAdd)( uint16_t devAddr, uint32_t timeoutValue
+ extern void (*pNwkNotMyChildListDelete)( uint16_t devAddr );
+ extern void (*pNwkNotMyChildSendLeave)( uint16_t dstAddr );
+ 
++// Custom functions
++void NwkNotMyChildSendLeaveCustom (uint16_t dstAddr);
++uint8_t NwkDisableChildAgingLeaveAdd(uint8_t* extAddr, uint8_t numBytesToMatch);
++
+ /****************************************************************************
+  * Utility function to copy NV items
+  ****************************************************************************/
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
-index 706736b..14d5932 100644
+index 706736b..07bede3 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/sys/zglobals.c
 @@ -131,7 +131,7 @@ uint8_t zgSecurePermitJoin = TRUE;
@@ -1933,58 +2147,11 @@ index 706736b..14d5932 100644
  
  //allowInstallCodes
  uint8_t zgAllowInstallCodes = ZG_IC_SUPPORTED_NOT_REQUIRED;
-@@ -225,7 +225,9 @@ uint8_t zgEndDeviceConfiguration = END_DEV_CONFIGURATION;
- //
- // NOTICE:  Before enabling Child Aging make sure to review all the related
- // definitions in this file, especially zgNwkParentInformation.
--uint8_t zgChildAgingEnable = TRUE;
-+
-+// Disable child aging, otherwise Xiaomi devices are being kicked off the network.
-+uint8_t zgChildAgingEnable = FALSE;
- 
- //==========    TouchLink NWK configuration    ===============
- // Values used by Router when starts a network as initiator
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
-index 1f30180..5fc438c 100644
+index 1f30180..289afa6 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/Stack/zdo/zd_app.c
-@@ -441,12 +441,11 @@ uint32_t ZDApp_event_loop( uint8_t task_id, uint32_t events )
-           ZDApp_ChangeState( DEV_ROUTER );
-         }
- 
--        if ( zgChildAgingEnable == TRUE )
--        {
--          // Once the device has changed its state to a ROUTER set the timer to send
--          // Parent annce
--          ZDApp_SetParentAnnceTimer();
--        }
-+        // As we cannot enable child aging as Xiaomi devices will drop off
-+        // but we stil want to have the parent announces we always enable it here.
-+        // Otherwise some end devices could be unreachable when they changed parent
-+        // while the coordinator was powered off.
-+        ZDApp_SetParentAnnceTimer();
-       }
-       else
-       {
-@@ -907,12 +906,11 @@ void ZDApp_NetworkStartEvt( void )
-         bdb_reportCommissioningState(BDB_INITIALIZATION,TRUE);
-       }
- 
--      if ( zgChildAgingEnable == TRUE )
--      {
--        // Once the device has changed its state to a COORDINATOR set the timer to send
--        // Parent annce
--        ZDApp_SetParentAnnceTimer();
--      }
-+      // As we cannot enable child aging as Xiaomi devices will drop off
-+      // but we stil want to have the parent announces we always enable it here.
-+      // Otherwise some end devices could be unreachable when they changed parent
-+      // while the coordinator was powered off.
-+      ZDApp_SetParentAnnceTimer();
-     }
-     else
-     {
-@@ -3163,6 +3161,14 @@ void ZDO_NetworkStatusCB( uint16_t nwkDstAddr, uint8_t statusCode, uint16_t dstA
+@@ -3163,6 +3163,14 @@ void ZDO_NetworkStatusCB( uint16_t nwkDstAddr, uint8_t statusCode, uint16_t dstA
      // Routing error for dstAddr, this is informational and a Route
      // Request should happen automatically.
    }
@@ -2110,9 +2277,18 @@ index 9db9d84..e2a0eb5 100644
  {
  uint32_t              FrameCounter;
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
-index da62af1..234ac56 100755
+index da62af1..8bbffea 100755
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
+@@ -60,7 +60,7 @@
+ /* modifications in your CCS project and leave this file alone.              */
+ /*                                                                           */
+ /* --heap_size=0                                                             */
+---stack_size=1024
++--stack_size=4048
+ /* --library=rtsv7M3_T_le_eabi.lib                                           */
+ 
+ /* The starting address of the application.  Normally the interrupt vectors  */
 @@ -71,9 +71,9 @@
  #endif
  
@@ -2120,14 +2296,14 @@ index da62af1..234ac56 100755
 -#define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
 -#define FLASH_NV_BASE           (0x56000 - (NVOCMP_NVPAGES * 0x2000))
 -#define FLASH_NV_SIZE           (NVOCMP_NVPAGES * 0x2000)
-+#define FLASH_SIZE              0x50000
-+#define FLASH_NV_BASE           0x50000
-+#define FLASH_NV_SIZE           0x6000
++#define FLASH_SIZE              0x48000
++#define FLASH_NV_BASE           0x48000
++#define FLASH_NV_SIZE           0x8000
  #define FLASH_LAST_BASE         0x56000
  #define FLASH_LAST_SIZE         0x2000
  
 diff --git a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/znp.syscfg b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/znp.syscfg
-index 14c5212..e07512b 100644
+index 14c5212..e9d1440 100644
 --- a/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/znp.syscfg
 +++ b/znp_CC26X2R1_LAUNCHXL_tirtos7_ticlang/znp.syscfg
 @@ -62,6 +62,7 @@ CCFG.enableBootloader         = true;
@@ -2144,8 +2320,8 @@ index 14c5212..e07512b 100644
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
 -NVS1.internalFlash.regionSize = 0x4000;
 -NVS1.internalFlash.regionBase = 0x52000;
-+NVS1.internalFlash.regionSize = 0x6000;
-+NVS1.internalFlash.regionBase = 0x50000;
++NVS1.internalFlash.regionSize = 0x8000;
++NVS1.internalFlash.regionBase = 0x48000;
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
@@ -2157,6 +2333,25 @@ index 14c5212..e07512b 100644
  zstack.rf.radioConfig.$name                  = "ti_devices_radioconfig_settings_ieee_15_40";
  zstack.rf.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
  zstack.rf.coexSettings.$name                 = "ti_zstack_rf_zstack_coex_mod0";
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Application/StartUp/zstackstartup.c b/znp_LP_CC2652RB_tirtos7_ticlang/Application/StartUp/zstackstartup.c
+index 88acb5b..3b601d9 100644
+--- a/znp_LP_CC2652RB_tirtos7_ticlang/Application/StartUp/zstackstartup.c
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/Application/StartUp/zstackstartup.c
+@@ -701,6 +701,14 @@ static void stackInit(void)
+     //Initialize default poll rates
+     nwk_InitializeDefaultPollRates();
+ 
++    // Use custom function for child aging leave requests
++    pNwkNotMyChildSendLeave = &NwkNotMyChildSendLeaveCustom;
++
++    // Disable child aging leave for Xiaomi/Aqara extAddr range to prevent them from being kicekd out of the network.
++    // They do not support child aging.
++    uint8_t extAddrXiaomi [] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x8d, 0x15, 0x00};
++    NwkDisableChildAgingLeaveAdd(extAddrXiaomi, 3);
++
+     /* Initialize MAC buffer */
+     macLowLevelBufferInit();
+ 
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt.h b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt.h
 index a14a328..5153fa3 100644
 --- a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt.h
@@ -2180,7 +2375,7 @@ index a14a328..5153fa3 100644
  #define MT_UTIL_ZCL_KEY_EST_INIT_EST         0x80
  #define MT_UTIL_ZCL_KEY_EST_SIGN             0x81
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_util.c b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_util.c
-index 9eb8396..02006b4 100644
+index 9eb8396..a7c302e 100644
 --- a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_util.c
 +++ b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_util.c
 @@ -79,6 +79,9 @@
@@ -2325,15 +2520,43 @@ index 9eb8396..02006b4 100644
  /***************************************************************************************************
   * @fn      MT_UtilAssocFindDevice
   *
+@@ -1525,6 +1632,9 @@ static void MT_UtilBindAddEntry(uint8_t *pBuf)
+  ***************************************************************************************************/
+ static void packDev_t(uint8_t *pBuf, associated_devices_t *pDev)
+ {
++  // Applied some fixes here, see https://github.com/Koenkk/zigbee2mqtt/issues/13478#issuecomment-1501085509
++  memset(pBuf, 0, sizeof(associated_devices_t));
++
+   if (NULL == pDev)
+   {
+     uint16_t rtrn = INVALID_NODE_ADDR;
+@@ -1546,9 +1656,16 @@ static void packDev_t(uint8_t *pBuf, associated_devices_t *pDev)
+     *pBuf++ = pDev->linkInfo.rxLqi;
+     *pBuf++ = pDev->linkInfo.inKeySeqNum;
+     OsalPort_bufferUint32( pBuf, pDev->linkInfo.inFrmCntr );
+-    *pBuf += 4;
++    pBuf += 4;
+     *pBuf++ = LO_UINT16(pDev->linkInfo.txFailure);
+     *pBuf++ = HI_UINT16(pDev->linkInfo.txFailure);
++    *pBuf++ = pDev->endDev.endDevCfg;
++    OsalPort_bufferUint32( pBuf, pDev->endDev.deviceTimeout);
++    pBuf += 4;
++    OsalPort_bufferUint32( pBuf, pDev->timeoutCounter);
++    pBuf += 4;
++    *pBuf++ = pDev->keepaliveRcv;
++    *pBuf++ = pDev->ctrl;
+   }
+ }
+ 
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_version.c b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_version.c
-index 6a9b760..7c1e9ab 100644
+index 6a9b760..2cc4cab 100644
 --- a/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_version.c
 +++ b/znp_LP_CC2652RB_tirtos7_ticlang/Application/mt/mt_version.c
 @@ -69,15 +69,21 @@
  #include "zcomdef.h"
  #include "mt_version.h"
  
-+#define CODE_REVISION_NUMBER 20230405
++#define CODE_REVISION_NUMBER 20230410
 +
  /******************************************************************************
   * CONSTANTS
@@ -2370,12 +2593,15 @@ index 7ee216e..1f884ca 100644
  
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h
 new file mode 100644
-index 0000000..cf320f2
+index 0000000..155dd50
 --- /dev/null
 +++ b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/Config/preinclude.h
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,75 @@
 +#define MT_SYS_KEY_MANAGEMENT 1
 +#define FEATURE_NVEXID 1
++
++// Increase by 1 to compensate for lag (default is 7)
++#define NWK_INDIRECT_MSG_TIMEOUT 8
 +
 +// Increase frame retries
 +#define ZMAC_MAX_FRAME_RETRIES 7
@@ -2404,7 +2630,7 @@ index 0000000..cf320f2
 +
 +// Increase NV pages to 3 to allow for bigger device tables
 +#undef NVOCMP_NVPAGES
-+#define NVOCMP_NVPAGES 3
++#define NVOCMP_NVPAGES 4
 +
 +// Disabling MULTICAST is required in order for proper group support.
 +// If MULTICAST is not disabled, the group adress is not included in the APS header
@@ -2513,8 +2739,78 @@ index a0acd95..7b12a23 100644
  
  // 1-255 (0 -> 256) X RTG_TIMER_INTERVAL
  // A known shortcoming is that when a message is enqueued as "hold" for a
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/nwk/nwk_util.c b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/nwk/nwk_util.c
+new file mode 100644
+index 0000000..da24c03
+--- /dev/null
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/nwk/nwk_util.c
+@@ -0,0 +1,49 @@
++#include "nwk_util.h"
++#include "aps_mede.h"
++
++#ifndef NWK_MAX_CHILD_AGING_LEAVE_DISABLED_ENTRIES
++#define NWK_MAX_CHILD_AGING_LEAVE_DISABLED_ENTRIES 50
++#endif
++
++typedef struct
++{
++    uint8_t extAddr[Z_EXTADDR_LEN];
++    uint8_t numBytesToMatch;
++} child_aging_leave_disabled_entry_t;
++
++child_aging_leave_disabled_entry_t childAgingLeaveDisabledList[NWK_MAX_CHILD_AGING_LEAVE_DISABLED_ENTRIES];
++uint8_t chidlAgingLeaveDisabledCnt = 0;
++
++uint8_t NwkDisableChildAgingLeaveAdd(uint8_t* extAddr, uint8_t numBytesToMatch)
++{
++    if (chidlAgingLeaveDisabledCnt == NWK_MAX_CHILD_AGING_LEAVE_DISABLED_ENTRIES) {
++        return 1;
++    }
++
++    memcpy(childAgingLeaveDisabledList[chidlAgingLeaveDisabledCnt].extAddr, extAddr, Z_EXTADDR_LEN);
++    childAgingLeaveDisabledList[chidlAgingLeaveDisabledCnt].numBytesToMatch = numBytesToMatch;
++    ++chidlAgingLeaveDisabledCnt;
++
++    return 0;
++}
++
++void NwkNotMyChildSendLeaveCustom (uint16_t dstAddr)
++{
++    uint8_t extAddr[Z_EXTADDR_LEN];
++    uint8_t idx;
++
++    if (!APSME_LookupExtAddr(dstAddr, extAddr)) {
++        return;
++    }
++
++    // Do not send leave request to devices where it is disabled for
++    for (idx = 0; idx < chidlAgingLeaveDisabledCnt; ++idx)
++    {
++        uint8_t offset = Z_EXTADDR_LEN - childAgingLeaveDisabledList[idx].numBytesToMatch;
++        if (memcmp(childAgingLeaveDisabledList[idx].extAddr + offset, extAddr + offset, childAgingLeaveDisabledList[idx].numBytesToMatch) == 0) {
++            return;
++        }
++    }
++
++    NwkNotMyChildSendLeave (dstAddr);
++};
+diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/nwk/nwk_util.h b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/nwk/nwk_util.h
+index 584c35a..a567e0c 100644
+--- a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/nwk/nwk_util.h
++++ b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/nwk/nwk_util.h
+@@ -638,6 +638,10 @@ extern uint8_t (*pNwkNotMyChildListAdd)( uint16_t devAddr, uint32_t timeoutValue
+ extern void (*pNwkNotMyChildListDelete)( uint16_t devAddr );
+ extern void (*pNwkNotMyChildSendLeave)( uint16_t dstAddr );
+ 
++// Custom functions
++void NwkNotMyChildSendLeaveCustom (uint16_t dstAddr);
++uint8_t NwkDisableChildAgingLeaveAdd(uint8_t* extAddr, uint8_t numBytesToMatch);
++
+ /****************************************************************************
+  * Utility function to copy NV items
+  ****************************************************************************/
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/sys/zglobals.c b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/sys/zglobals.c
-index 706736b..14d5932 100644
+index 706736b..07bede3 100644
 --- a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/sys/zglobals.c
 +++ b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/sys/zglobals.c
 @@ -131,7 +131,7 @@ uint8_t zgSecurePermitJoin = TRUE;
@@ -2526,58 +2822,11 @@ index 706736b..14d5932 100644
  
  //allowInstallCodes
  uint8_t zgAllowInstallCodes = ZG_IC_SUPPORTED_NOT_REQUIRED;
-@@ -225,7 +225,9 @@ uint8_t zgEndDeviceConfiguration = END_DEV_CONFIGURATION;
- //
- // NOTICE:  Before enabling Child Aging make sure to review all the related
- // definitions in this file, especially zgNwkParentInformation.
--uint8_t zgChildAgingEnable = TRUE;
-+
-+// Disable child aging, otherwise Xiaomi devices are being kicked off the network.
-+uint8_t zgChildAgingEnable = FALSE;
- 
- //==========    TouchLink NWK configuration    ===============
- // Values used by Router when starts a network as initiator
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_app.c b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_app.c
-index 1f30180..5fc438c 100644
+index 1f30180..289afa6 100644
 --- a/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_app.c
 +++ b/znp_LP_CC2652RB_tirtos7_ticlang/Stack/zdo/zd_app.c
-@@ -441,12 +441,11 @@ uint32_t ZDApp_event_loop( uint8_t task_id, uint32_t events )
-           ZDApp_ChangeState( DEV_ROUTER );
-         }
- 
--        if ( zgChildAgingEnable == TRUE )
--        {
--          // Once the device has changed its state to a ROUTER set the timer to send
--          // Parent annce
--          ZDApp_SetParentAnnceTimer();
--        }
-+        // As we cannot enable child aging as Xiaomi devices will drop off
-+        // but we stil want to have the parent announces we always enable it here.
-+        // Otherwise some end devices could be unreachable when they changed parent
-+        // while the coordinator was powered off.
-+        ZDApp_SetParentAnnceTimer();
-       }
-       else
-       {
-@@ -907,12 +906,11 @@ void ZDApp_NetworkStartEvt( void )
-         bdb_reportCommissioningState(BDB_INITIALIZATION,TRUE);
-       }
- 
--      if ( zgChildAgingEnable == TRUE )
--      {
--        // Once the device has changed its state to a COORDINATOR set the timer to send
--        // Parent annce
--        ZDApp_SetParentAnnceTimer();
--      }
-+      // As we cannot enable child aging as Xiaomi devices will drop off
-+      // but we stil want to have the parent announces we always enable it here.
-+      // Otherwise some end devices could be unreachable when they changed parent
-+      // while the coordinator was powered off.
-+      ZDApp_SetParentAnnceTimer();
-     }
-     else
-     {
-@@ -3163,6 +3161,14 @@ void ZDO_NetworkStatusCB( uint16_t nwkDstAddr, uint8_t statusCode, uint16_t dstA
+@@ -3163,6 +3163,14 @@ void ZDO_NetworkStatusCB( uint16_t nwkDstAddr, uint8_t statusCode, uint16_t dstA
      // Routing error for dstAddr, this is informational and a Route
      // Request should happen automatically.
    }
@@ -2703,9 +2952,18 @@ index 9db9d84..e2a0eb5 100644
  {
  uint32_t              FrameCounter;
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd b/znp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
-index da62af1..234ac56 100755
+index da62af1..8bbffea 100755
 --- a/znp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
 +++ b/znp_LP_CC2652RB_tirtos7_ticlang/cc13x2_cc26x2_tirtos7_ticlang.cmd
+@@ -60,7 +60,7 @@
+ /* modifications in your CCS project and leave this file alone.              */
+ /*                                                                           */
+ /* --heap_size=0                                                             */
+---stack_size=1024
++--stack_size=4048
+ /* --library=rtsv7M3_T_le_eabi.lib                                           */
+ 
+ /* The starting address of the application.  Normally the interrupt vectors  */
 @@ -71,9 +71,9 @@
  #endif
  
@@ -2713,14 +2971,14 @@ index da62af1..234ac56 100755
 -#define FLASH_SIZE              (0x56000 - (NVOCMP_NVPAGES * 0x2000))
 -#define FLASH_NV_BASE           (0x56000 - (NVOCMP_NVPAGES * 0x2000))
 -#define FLASH_NV_SIZE           (NVOCMP_NVPAGES * 0x2000)
-+#define FLASH_SIZE              0x50000
-+#define FLASH_NV_BASE           0x50000
-+#define FLASH_NV_SIZE           0x6000
++#define FLASH_SIZE              0x48000
++#define FLASH_NV_BASE           0x48000
++#define FLASH_NV_SIZE           0x8000
  #define FLASH_LAST_BASE         0x56000
  #define FLASH_LAST_SIZE         0x2000
  
 diff --git a/znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg b/znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg
-index ae8ef2a..d35c44a 100644
+index ae8ef2a..2c255b4 100644
 --- a/znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg
 +++ b/znp_LP_CC2652RB_tirtos7_ticlang/znp.syscfg
 @@ -63,6 +63,7 @@ CCFG.enableBootloaderBackdoor = true;
@@ -2737,8 +2995,8 @@ index ae8ef2a..d35c44a 100644
  NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
 -NVS1.internalFlash.regionSize = 0x4000;
 -NVS1.internalFlash.regionBase = 0x52000;
-+NVS1.internalFlash.regionSize = 0x6000;
-+NVS1.internalFlash.regionBase = 0x50000;
++NVS1.internalFlash.regionSize = 0x8000;
++NVS1.internalFlash.regionBase = 0x48000;
  
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
