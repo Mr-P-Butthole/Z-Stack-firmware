@@ -1,4 +1,4 @@
-From 0c3ba3cc4718b8008f50305cde4daf8c9391b17d Mon Sep 17 00:00:00 2001
+From 413f23278c51512eb3f32e0c1fea484c4465428c Mon Sep 17 00:00:00 2001
 From: Koen Kanters <koenkanters94@gmail.com>
 Date: Sun, 7 May 2023 20:55:19 +0200
 Subject: [PATCH 1/1] Own changes
@@ -10,7 +10,7 @@ Subject: [PATCH 1/1] Own changes
  source/ti/zstack/mt/mt_util.c                 | 119 +++++-
  source/ti/zstack/mt/mt_version.c              |   8 +-
  source/ti/zstack/mt/mt_zdo.c                  |   5 +
- source/ti/zstack/stack/Config/preinclude.h    | 161 ++++++++
+ source/ti/zstack/stack/Config/preinclude.h    | 159 ++++++++
  source/ti/zstack/stack/af/af.c                |  18 +-
  source/ti/zstack/stack/nwk/nwk_globals.c      |   8 +-
  source/ti/zstack/stack/nwk/nwk_util.c         |  49 +++
@@ -37,7 +37,7 @@ Subject: [PATCH 1/1] Own changes
  .../znp_LP_CC2652RB_tirtos7_ticlang/.project  |  10 +
  .../Stack/Config/znp_cnf.opts                 |   2 +
  .../znp.syscfg                                |   6 +-
- 33 files changed, 1349 insertions(+), 27 deletions(-)
+ 33 files changed, 1347 insertions(+), 27 deletions(-)
  create mode 100644 source/ti/zstack/stack/Config/preinclude.h
  mode change 100644 => 100755 source/ti/zstack/stack/af/af.c
  mode change 100644 => 100755 source/ti/zstack/stack/nwk/nwk_globals.c
@@ -335,10 +335,10 @@ index 7ee216ee..2032cc02 100644
  }
 diff --git a/source/ti/zstack/stack/Config/preinclude.h b/source/ti/zstack/stack/Config/preinclude.h
 new file mode 100644
-index 00000000..5d930064
+index 00000000..a50a178c
 --- /dev/null
 +++ b/source/ti/zstack/stack/Config/preinclude.h
-@@ -0,0 +1,161 @@
+@@ -0,0 +1,159 @@
 +#define MT_SYS_KEY_MANAGEMENT 1
 +#define FEATURE_NVEXID 1
 +
@@ -497,8 +497,6 @@ index 00000000..5d930064
 +        #define CONFIG_RF_HIGH_PA                       0x0000005
 +        #define SET_CCFG_MODE_CONF_XOSC_CAPARRAY_DELTA  0xfa
 +    #endif
-+#elif DeviceFamily_CC13X2X7
-+    #define TXPOWER 9
 +#endif
 diff --git a/source/ti/zstack/stack/af/af.c b/source/ti/zstack/stack/af/af.c
 old mode 100644
@@ -1853,7 +1851,7 @@ index 6e3cb6ae..7062cf24 100644
 +
 +-include ../../../source/ti/zstack/stack/Config/preinclude.h
 diff --git a/workspace/znp_LP_CC1352P7_4_tirtos7_ticlang/znp.syscfg b/workspace/znp_LP_CC1352P7_4_tirtos7_ticlang/znp.syscfg
-index 6bdc13f9..569d1838 100644
+index 6bdc13f9..dd2a4bcc 100644
 --- a/workspace/znp_LP_CC1352P7_4_tirtos7_ticlang/znp.syscfg
 +++ b/workspace/znp_LP_CC1352P7_4_tirtos7_ticlang/znp.syscfg
 @@ -64,6 +64,7 @@ CCFG.enableBootloader         = true;
@@ -1879,7 +1877,7 @@ index 6bdc13f9..569d1838 100644
  zstack.touchlink.$name                       = "ti_zstack_touchlink_zstack_touchlink0";
  zstack.pm.$name                              = "ti_zstack_pm_zstack_pm0";
  zstack.rf.$name                              = "ti_zstack_rf_zstack_rf0";
-+zstack.rf.txPower                            = "10";
++zstack.rf.txPower                            = "5";
  zstack.rf.radioConfig.$name                  = "ti_devices_radioconfig_settings_ieee_15_40";
  zstack.rf.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
  zstack.rf.coexSettings.$name                 = "ti_zstack_rf_zstack_coex_mod0";
