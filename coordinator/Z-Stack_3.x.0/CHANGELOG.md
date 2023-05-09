@@ -1,9 +1,10 @@
-# 20230410
+# 20230507
 - Enable child aging to fix issues like [#13478](https://github.com/Koenkk/zigbee2mqtt/issues/13478) (but not for older Xiaomi devices as they do not implement child aging correctly which gets them kicked out of the network)
 - Increase message timeout from 7 to 8 seconds to increase message delivery success rate for devices using a 7.5 seconds poll interval ([#13478](https://github.com/Koenkk/zigbee2mqtt/issues/13478#issuecomment-1501188485))
-- Increase `stack_size` from `1024` to `4048` in an attempt to improve stability with larger networks
-- Attempt to improve routing tables
-- SimpleLink SDK 6.41.00.17 ([changelog](https://software-dl.ti.com/simplelink/esd/simplelink_cc13xx_cc26xx_sdk/6.41.00.17/exports/changelog.html))
+- Improve performance with larger network
+    - Optimize table sizes
+    - Increase `stack_size` from `1024` to `8192`
+- SimpleLink SDK 7.10.00.98
 
 # 20221226
 - Improve performance/reliability for larger network (100+ devices)
