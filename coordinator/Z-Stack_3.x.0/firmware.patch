@@ -1,4 +1,4 @@
-From 413f23278c51512eb3f32e0c1fea484c4465428c Mon Sep 17 00:00:00 2001
+From 995449cb349571fe7081821225f10ea869c9bfd5 Mon Sep 17 00:00:00 2001
 From: Koen Kanters <koenkanters94@gmail.com>
 Date: Sun, 7 May 2023 20:55:19 +0200
 Subject: [PATCH 1/1] Own changes
@@ -34,10 +34,13 @@ Subject: [PATCH 1/1] Own changes
  .../.project                                  |  10 +
  .../Stack/Config/znp_cnf.opts                 |   2 +
  .../znp.syscfg                                |   6 +-
+ .../znp_LP_CC2652R7_tirtos7_ticlang/.project  |  10 +
+ .../Stack/Config/znp_cnf.opts                 |   2 +
+ .../znp.syscfg                                |   6 +-
  .../znp_LP_CC2652RB_tirtos7_ticlang/.project  |  10 +
  .../Stack/Config/znp_cnf.opts                 |   2 +
  .../znp.syscfg                                |   6 +-
- 33 files changed, 1347 insertions(+), 27 deletions(-)
+ 36 files changed, 1363 insertions(+), 29 deletions(-)
  create mode 100644 source/ti/zstack/stack/Config/preinclude.h
  mode change 100644 => 100755 source/ti/zstack/stack/af/af.c
  mode change 100644 => 100755 source/ti/zstack/stack/nwk/nwk_globals.c
@@ -1874,6 +1877,76 @@ index 6bdc13f9..dd2a4bcc 100644
  NVS2.$name                          = "CONFIG_NVSEXTERNAL";
  NVS2.nvsType                        = "External";
 @@ -178,6 +179,7 @@ zstack.deviceTypeReadOnly                    = true;
+ zstack.touchlink.$name                       = "ti_zstack_touchlink_zstack_touchlink0";
+ zstack.pm.$name                              = "ti_zstack_pm_zstack_pm0";
+ zstack.rf.$name                              = "ti_zstack_rf_zstack_rf0";
++zstack.rf.txPower                            = "5";
+ zstack.rf.radioConfig.$name                  = "ti_devices_radioconfig_settings_ieee_15_40";
+ zstack.rf.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
+ zstack.rf.coexSettings.$name                 = "ti_zstack_rf_zstack_coex_mod0";
+diff --git a/workspace/znp_LP_CC2652R7_tirtos7_ticlang/.project b/workspace/znp_LP_CC2652R7_tirtos7_ticlang/.project
+index 7391bc14..21e0fb34 100644
+--- a/workspace/znp_LP_CC2652R7_tirtos7_ticlang/.project
++++ b/workspace/znp_LP_CC2652R7_tirtos7_ticlang/.project
+@@ -450,6 +450,11 @@
+ 			<type>1</type>
+ 			<locationURI>COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR/source/ti/ti154stack/common/boards/mac_user_config.h</locationURI>
+ 		</link>
++		<link>
++			<name>Stack/Config/preinclude.h</name>
++			<type>1</type>
++			<locationURI>COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR/source/ti/zstack/stack/Config/preinclude.h</locationURI>
++		</link>
+ 		<link>
+ 			<name>Stack/MAC/mac_api.h</name>
+ 			<type>1</type>
+@@ -715,6 +720,11 @@
+ 			<type>1</type>
+ 			<locationURI>COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR/source/ti/zstack/stack/nwk/nwk_util.h</locationURI>
+ 		</link>
++		<link>
++			<name>Stack/nwk/nwk_util.c</name>
++			<type>1</type>
++			<locationURI>COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR/source/ti/zstack/stack/nwk/nwk_util.c</locationURI>
++		</link>
+ 		<link>
+ 			<name>Stack/nwk/reflecttrack.h</name>
+ 			<type>1</type>
+diff --git a/workspace/znp_LP_CC2652R7_tirtos7_ticlang/Stack/Config/znp_cnf.opts b/workspace/znp_LP_CC2652R7_tirtos7_ticlang/Stack/Config/znp_cnf.opts
+index 6e3cb6ae..76cd6699 100644
+--- a/workspace/znp_LP_CC2652R7_tirtos7_ticlang/Stack/Config/znp_cnf.opts
++++ b/workspace/znp_LP_CC2652R7_tirtos7_ticlang/Stack/Config/znp_cnf.opts
+@@ -32,3 +32,5 @@
+ -DMT_GP_CB_FUNC
+ 
+ -DMT_APP_CNF_FUNC
++
++-include ../../../source/ti/zstack/stack/Config/preinclude.h
+\ No newline at end of file
+diff --git a/workspace/znp_LP_CC2652R7_tirtos7_ticlang/znp.syscfg b/workspace/znp_LP_CC2652R7_tirtos7_ticlang/znp.syscfg
+index 3f127f08..6cf7f943 100644
+--- a/workspace/znp_LP_CC2652R7_tirtos7_ticlang/znp.syscfg
++++ b/workspace/znp_LP_CC2652R7_tirtos7_ticlang/znp.syscfg
+@@ -62,6 +62,7 @@ CCFG.enableBootloader         = true;
+ CCFG.enableBootloaderBackdoor = true;
+ CCFG.dioBootloaderBackdoor    = 13;
+ CCFG.levelBootloaderBackdoor  = "Active low";
++CCFG.enableDCDC               = false;
+ CCFG.ccfgTemplate.$name       = "ti_devices_CCFG_CCFGCC26XXTemplate0";
+ 
+ Display1.$hardware  = system.deviceData.board.components.XDS110UART;
+@@ -82,8 +83,8 @@ ECDSA1.$name = "CONFIG_ECDSA_0";
+ 
+ NVS1.$name                    = "CONFIG_NVSINTERNAL";
+ NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
+-NVS1.internalFlash.regionSize = 0x4000;
+-NVS1.internalFlash.regionBase = 0xAA000;
++NVS1.internalFlash.regionSize = 0x8000;
++NVS1.internalFlash.regionBase = 0xA6000;
+ 
+ NVS2.$name                          = "CONFIG_NVSEXTERNAL";
+ NVS2.nvsType                        = "External";
+@@ -172,6 +173,7 @@ zstack.deviceTypeReadOnly                    = true;
  zstack.touchlink.$name                       = "ti_zstack_touchlink_zstack_touchlink0";
  zstack.pm.$name                              = "ti_zstack_pm_zstack_pm0";
  zstack.rf.$name                              = "ti_zstack_rf_zstack_rf0";

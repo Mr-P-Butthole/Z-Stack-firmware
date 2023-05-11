@@ -4,7 +4,7 @@
 - Improve performance with larger network
     - Optimize table sizes
     - Increase `stack_size` from `1024` to `8192`
-- Add firmware for CC1352P7
+- Add firmware for CC1352P7 and CC2652R7
 - SimpleLink SDK 7.10.00.98
 
 # 20221226
